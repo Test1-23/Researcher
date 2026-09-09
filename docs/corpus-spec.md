@@ -10,13 +10,13 @@ is a measurement, not an impression. Re-run the script to reproduce it.
 
 ## 1 Structural counts
 
-| L | numbered chapters | subsections | inline exercises | chapter exercises | Discussion sections | Review items | Notes checkboxes | hand-made tables | mark tags |
+| L | content chapters | subsections | inline exercises | chapter exercises | Discussion blocks | Review items | Notes checkboxes | hand-made tables | mark tags |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | 4 | 4 | 16 | 8 | 1 | 5 | 6 | 10 | 15 |
-| 2 | 6 | 15 | 16 | 8 | 4 | 5 | 9 | 3 | 17 |
-| 3 | 6 | 10 | 16 | 8 | 4 | 5 | 11 | 1 | 21 |
-| 4 | 8 | 9 | 24 | 8 | 6 | 6 | 11 | 0 | 21 |
-| 5 | 7 | 11 | 20 | 8 | 5 | 6 | 9 | 0 | 24 |
+| 1 | 2 | 4 | 16 | 8 | 1 | 5 | 6 | 10 | 15 |
+| 2 | 4 | 15 | 16 | 8 | 4 | 5 | 9 | 3 | 17 |
+| 3 | 4 | 10 | 16 | 8 | 4 | 5 | 11 | 1 | 21 |
+| 4 | 6 | 9 | 24 | 8 | 6 | 6 | 11 | 0 | 21 |
+| 5 | 5 | 11 | 20 | 8 | 5 | 6 | 9 | 0 | 24 |
 
 Readings:
 
@@ -26,7 +26,10 @@ Readings:
   Lecture 4 chapter 5 has no subsections and four exercises. Measured
   per-chapter in every lecture, the value is 4 without exception.
 - **Chapter exercises are exactly 8 in every lecture.**
-- Every numbered chapter carries a `## Discussion:` block with questions only.
+- Every content chapter carries a `## Discussion:` block with questions only —
+  **with one exception**: Lecture 1 chapter 2 has none. That chapter is a table
+  of examples and non-groups rather than a theory chapter, so the exception is
+  structural, not an oversight.
 - Review is fill-in-the-blank; item count drifts between 5 and 6.
 - Notes is a checkbox list; item count drifts between 6 and 11.
 - Lectures 4 and 5 contain **no hand-made tables**; earlier lectures do, and
