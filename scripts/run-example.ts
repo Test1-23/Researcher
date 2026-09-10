@@ -190,6 +190,26 @@ try {
   console.log(`  产物：${outcome.artifacts.map((artifact) => artifact.path).join('、')}`)
   console.log(`  目录：${outcome.runDir}`)
 
+  // 代理式主流程的观测：拿到真 key 跑的人应该直接看到这些，而不是去翻 JSON
+  const agentic = outcome.report.provenance.agentic
+  if (agentic !== undefined) {
+    const outcomeText = agentic.outcome === 'converged'
+      ? '已收敛'
+      : agentic.outcome === 'stalled' ? '卡住后收工' : '撞上护栏后收工'
+    console.log('')
+    console.log(`  本次调研过程：${outcomeText}（${agentic.outcomeMessage}）`)
+    console.log(`    不动点迭代 ${agentic.iterations} 轮 · 搜索 ${agentic.searchRounds} 轮`)
+    console.log(`    地图 ${agentic.mapNodes} 个主题 / ${agentic.gaps} 个盲区 / ${agentic.conflicts} 处分歧`)
+    console.log(`    写作 ${agentic.toolCalls} 次工具调用 · 大模型 ${agentic.llmCalls} 次调用（输入 ${agentic.promptTokens} / 输出 ${agentic.completionTokens} token）`)
+    console.log(`    正文抽取：Readability ${agentic.extraction.readability} 篇 / 回退纯文本 ${agentic.extraction.plainText} 篇`)
+    if (agentic.reused !== undefined) {
+      console.log(`    复用话题缓存：${agentic.reused.sources} 条来源 / ${agentic.reused.mapNodes} 个主题`)
+    }
+    for (const task of agentic.tasks) {
+      console.log(`    ${task.name.padEnd(8)} ${task.steps} 步 · ${task.satisfied ? '满足' : '未满足'} · ${task.reason}`)
+    }
+  }
+
   if (saveExample) {
     const exampleDir = join(process.cwd(), 'examples')
     await mkdir(exampleDir, { recursive: true })

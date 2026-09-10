@@ -63,6 +63,12 @@ export function ProgressPanel({ progress }: ProgressPanelProps): React.JSX.Eleme
             任务
             <span className="count">每个任务达成自己的条件才算完成</span>
           </h3>
+          {progress.board === undefined ? null : (
+            <p className="hint">
+              黑板规模：语料 {progress.board.sources} · 主题 {progress.board.mapNodes} · 盲区{' '}
+              {progress.board.gaps} · 小节 {progress.board.sections}
+            </p>
+          )}
           <ul className="stages">
             {progress.tasks.map((task) => (
               <li key={task.task} className={`stage ${task.satisfied ? 'done' : ''}`}>

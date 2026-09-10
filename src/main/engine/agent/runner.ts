@@ -125,6 +125,15 @@ export async function runToFixedPoint(
       }
     } else {
       unproductiveRounds = 0
+      // 让界面看得见这一轮攒到了多少东西——否则「它在收敛吗」只能靠猜
+      announce({
+        type: 'board:change',
+        revision: board.revision,
+        sources: board.sources.length,
+        mapNodes: board.map.nodes.length,
+        gaps: board.map.gaps.length,
+        sections: board.document.length,
+      })
     }
   }
 

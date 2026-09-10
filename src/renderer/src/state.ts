@@ -38,6 +38,14 @@ export interface TaskProgress {
   readonly steps: number
 }
 
+/** 黑板规模：让「它在收敛吗」看得见。 */
+export interface BoardScale {
+  readonly sources: number
+  readonly mapNodes: number
+  readonly gaps: number
+  readonly sections: number
+}
+
 /** 一次运行的完整界面状态。 */
 export interface RunProgress {
   readonly runId: string | null
@@ -48,6 +56,8 @@ export interface RunProgress {
   readonly logs: readonly LogLine[]
   /** 自主任务的状态：让「为什么停」看得见。 */
   readonly tasks: readonly TaskProgress[]
+  /** 黑板当前规模（代理式主流程才有）。 */
+  readonly board?: BoardScale
   readonly report?: Report
   readonly artifacts: readonly Artifact[]
   readonly error?: { readonly code: string; readonly message: string }
@@ -147,6 +157,17 @@ export function reduceRunEvent(state: RunProgress, event: RunEvent): RunProgress
           reason: event.reason,
           steps: current?.steps ?? 0,
         })),
+      }
+
+    case 'board:change':
+      return {
+        ...state,
+        board: {
+          sources: event.sources,
+          mapNodes: event.mapNodes,
+          gaps: event.gaps,
+          sections: event.sections,
+        },
       }
 
     case 'run:done':

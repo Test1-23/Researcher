@@ -421,6 +421,15 @@ export type RunEventPayload =
   | { readonly type: 'task:step'; readonly task: string; readonly step: number; readonly message: string }
   /** 任务的满足状态变化（含为什么不能停）。 */
   | { readonly type: 'task:state'; readonly task: string; readonly satisfied: boolean; readonly reason: string }
+  /** 黑板变了：让界面看得出「这一轮攒到了多少东西」。 */
+  | {
+      readonly type: 'board:change'
+      readonly revision: number
+      readonly sources: number
+      readonly mapNodes: number
+      readonly gaps: number
+      readonly sections: number
+    }
   | { readonly type: 'run:done'; readonly report: Report; readonly artifacts: readonly Artifact[] }
   | { readonly type: 'run:error'; readonly code: string; readonly message: string }
 
