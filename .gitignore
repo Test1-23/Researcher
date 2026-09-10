@@ -11,3 +11,13 @@ Thumbs.db
 .vite/
 coverage/
 *.tsbuildinfo
+
+# 密钥与本地配置：绝不能进仓库
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+config.json
+secrets.json

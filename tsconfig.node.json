@@ -21,6 +21,7 @@
     "src/shared/**/*.ts",
     "tests/**/*.ts",
     "scripts/**/*.ts",
+    "tools/**/*.ts",
     "fixtures/**/*.ts",
     "electron.vite.config.ts",
     "vitest.config.ts"

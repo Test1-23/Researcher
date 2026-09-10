@@ -2,6 +2,7 @@
   "name": "researcher",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@11.7.0",
   "description": "综合信息搜索与整理引擎 — 模块化插件内核 + Electron 桌面应用",
   "main": "out/main/index.js",
   "scripts": {
@@ -13,7 +14,8 @@
     "test:watch": "vitest",
     "example": "node --no-warnings scripts/run-example.ts",
     "example:offline": "node --no-warnings scripts/run-example.ts --offline",
-    "smoke:ui": "node --no-warnings scripts/smoke-ui.ts"
+    "smoke:ui": "node --no-warnings scripts/smoke-ui.ts",
+    "scan:secrets": "node --no-warnings scripts/scan-secrets.ts --history"
   },
   "dependencies": {
     "react": "^18.3.1",

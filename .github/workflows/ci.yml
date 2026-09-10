@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# CI 只需要读仓库：任何写权限都是不必要风险
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: 类型检查 · 测试 · 构建
+    runs-on: ubuntu-latest
+    env:
+      # 这个任务不需要 Electron 运行时二进制，省掉约 100MB 下载
+      ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        # 版本来自 package.json 的 packageManager 字段
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 类型检查
+        run: pnpm typecheck
+
+      - name: 测试（含「仓库不含密钥」检查）
+        run: pnpm test
+
+      - name: 构建 main / preload / renderer
+        run: pnpm build
+
+  secret-scan:
+    name: 密钥扫描（工作树 + 全量历史）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # 需要完整历史才能扫描过去提交里引入过的密钥
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      # 扫描器零依赖，因此这里刻意不装依赖：少一步、快一步、少一处供应链面
+      - name: 扫描密钥
+        run: node --no-warnings scripts/scan-secrets.ts --history
+
+  ui-smoke:
+    name: 界面冒烟（真实 Electron + safeStorage）
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 构建
+        run: pnpm build
+
+      # 启动真实窗口，用 DevTools 协议断言界面渲染、IPC 往返，
+      # 并验证 API key 确实以密文落盘（Windows 上走 DPAPI）
+      - name: 界面冒烟测试
+        run: pnpm smoke:ui
