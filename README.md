@@ -151,6 +151,7 @@ pnpm dev           # 启动 Electron 桌面应用（渲染进程热更新）
 pnpm build         # 构建 main / preload / renderer 到 out/
 pnpm test          # 278 个测试
 pnpm typecheck     # 主进程 + 渲染进程分别类型检查
+pnpm check:bundle  # 检查打包产物里没有"替身模块"（先 pnpm build）
 pnpm smoke:ui      # 启动打包后的应用，用 DevTools 协议验证界面与真实加密
 pnpm scan:secrets  # 扫描工作树 + 全量 git 历史里的密钥
 ```
@@ -193,7 +194,7 @@ pnpm scan:secrets  # 扫描工作树 + 全量 git 历史里的密钥
 
 | Job | Runner | 内容 |
 |---|---|---|
-| `verify` | ubuntu | 类型检查 → 测试（含「仓库不含密钥」检查）→ 构建（跳过 Electron 二进制下载） |
+| `verify` | ubuntu | 类型检查 → 测试（含「仓库不含密钥」检查）→ 构建 → 打包产物体检（跳过 Electron 二进制下载） |
 | `secret-scan` | ubuntu | 扫描工作树与**全量 git 历史**（`fetch-depth: 0`），零依赖 |
 | `ui-smoke` | windows | 启动真实 Electron 窗口，验证界面渲染、IPC 往返、以及 API key 确实以密文落盘（DPAPI） |
 
@@ -344,6 +345,26 @@ Readability 是按 DOM 结构打分的，裁过头就等于在测一个线上不
 界面与真实加密由 `pnpm smoke:ui` 验证：启动打包后的应用，通过 DevTools 协议读取真实 DOM，
 确认 preload 桥已注入、界面渲染出内容、IPC 可以往返，并写入一个测试密钥后断言
 **磁盘上是密文、没有明文**（结束后按字节还原用户的配置）。
+
+### 打包产物体检
+
+有一类缺陷只活在打包产物里，类型检查、单元测试、界面冒烟都看不见：
+**依赖解析失败时打包器不报错，而是塞进一个「替身模块」。**
+
+- 开发构建里替身是**模块级 `throw`**：Electron 加载主进程包时立刻崩，窗口都出不来。
+- 生产构建里替身是**一个空对象**：安静得多，直到代码真的用到它才崩。
+
+真实案例：`linkedom` 把 `canvas` 声明为**可选** peer 依赖（真身是需要本地编译的原生模块，
+本项目不装），于是 `pnpm dev` 弹出 `Could not resolve "canvas" imported by "linkedom"`；
+而 `pnpm build` 出来的包只是悄悄把 `createCanvas` 变成了 `undefined`——页面里一出现 `<canvas>`
+就在构造元素时抛错，**整篇正文都抽不出来**。修复是在 `electron.vite.config.ts` 里把 `canvas`
+声明为 `external`，让 linkedom 自带的兜底实现接手。
+
+`pnpm check:bundle`（CI 的 `verify` 任务里构建之后执行）扫描产物并断言两件事：
+
+1. 不含 `__viteOptionalPeerDep`、`Could not resolve`、`__vite-browser-external` 这类替身标记；
+2. 主进程包**确实**打进了 linkedom 与 `@mozilla/readability`——它们被外部化的话，运行期会
+   `ERR_REQUIRE_ESM`（Electron 33 内置的 Node 不支持 `require(ESM)`）。
 
 ## 已知限制
 
