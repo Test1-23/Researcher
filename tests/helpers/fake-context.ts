@@ -6,6 +6,7 @@
  */
 
 import { SimpleEventBus } from '../../src/main/engine/events.ts'
+import { createLogger } from '../../src/main/engine/events.ts'
 import { DEFAULT_CONFIG } from '../../src/main/engine/config.ts'
 import type {
   AppConfig,
@@ -44,7 +45,7 @@ export class MemoryRunStore implements RunStore {
   }
 }
 
-/** 什么都不做的日志器。 */
+/** 什么都不做的日志器（需要完全静音时用）。 */
 const silentLogger: Logger = { debug: () => {}, info: () => {}, warn: () => {}, error: () => {} }
 
 /** 构造依赖。 */
@@ -93,7 +94,9 @@ export function makeContext(options: ContextOptions): TestContext {
     config: configView,
     store,
     events: bus,
-    log: options.logger ?? silentLogger,
+    // 默认用真实日志器接到事件总线上：与内核行为一致，
+    // 测试才能断言「降级时确实发了警告」这类可观测性要求。
+    log: options.logger ?? createLogger(bus, '[test] ', [], false),
     fetch: options.fetch,
     search: () => options.search,
     llm: () => options.llm,
