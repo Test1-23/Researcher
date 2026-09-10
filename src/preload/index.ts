@@ -17,6 +17,7 @@ import {
   type RunRequest,
   type RunSummary,
   type RunStarted,
+  type TopicSummary,
 } from '../shared/ipc.ts'
 import type { PluginInfo, PluginKind, RunEvent } from '../main/engine/types.ts'
 
@@ -29,6 +30,7 @@ const api: ResearcherApi = {
   startRun: (request: RunRequest) => ipcRenderer.invoke(IPC.runStart, request) as Promise<RunStarted>,
   cancelRun: () => ipcRenderer.invoke(IPC.runCancel) as Promise<boolean>,
   listRuns: () => ipcRenderer.invoke(IPC.runsList) as Promise<readonly RunSummary[]>,
+  listTopics: () => ipcRenderer.invoke(IPC.topicsList) as Promise<readonly TopicSummary[]>,
   getRun: (runId: string) => ipcRenderer.invoke(IPC.runGet, runId) as Promise<RunDetail | null>,
   readArtifact: (runId: string, path: string) =>
     ipcRenderer.invoke(IPC.artifactRead, runId, path) as Promise<string>,

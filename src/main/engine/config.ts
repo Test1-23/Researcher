@@ -49,6 +49,7 @@ export const DEFAULT_CONFIG: AppConfig = {
     maxSections: 10,
     maxToolSteps: 12,
     maxRewriteAttempts: 2,
+    reuseTopicMaps: true,
   },
   fetch: {
     concurrency: 4,

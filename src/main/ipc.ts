@@ -13,6 +13,7 @@ import type { SecretCodec } from './engine/config.ts'
 import { FileRunStore } from './engine/run-store.ts'
 import { ResearcherError, toResearcherError } from './engine/errors.ts'
 import { SimpleEventBus } from './engine/events.ts'
+import { FileTopicStore } from './engine/agent/topic-store.ts'
 import type { Kernel } from './engine/kernel.ts'
 import type { AppConfig, PluginKind, Report, RunEvent } from './engine/types.ts'
 import type { SecretStorage } from './secrets.ts'
@@ -26,6 +27,7 @@ import {
   type RunRequest,
   type RunSummary,
   type SecretStatus,
+  type TopicSummary,
 } from '../shared/ipc.ts'
 
 /** 配置密钥时使用的默认环境变量名。 */
@@ -132,6 +134,11 @@ export function registerIpc(context: IpcContext): void {
   })
 
   handle(IPC.runsList, async (): Promise<readonly RunSummary[]> => summariseRuns(dataRoot))
+
+  handle(IPC.topicsList, async (): Promise<readonly TopicSummary[]> => {
+    // 话题缓存损坏不该让界面报错：仓库自己会跳过读不出来的条目
+    return await new FileTopicStore(join(dataRoot, 'topics')).list()
+  })
 
   handle(IPC.runGet, async (_event, runId: string): Promise<RunDetail | null> => {
     const dir = safeRunDir(dataRoot, runId)

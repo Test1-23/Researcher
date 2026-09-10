@@ -14,6 +14,23 @@ import type {
   RunEvent,
 } from '../main/engine/types.ts'
 
+/**
+ * 一个话题的摘要。
+ *
+ * 刻意在这里重新声明而不是从 `agent/topic-store.ts` 导入：那个模块用 `node:fs`，
+ * 渲染进程的类型图里不该出现 Node 的东西。
+ * 引擎侧的 `TopicRecord` 与它结构一致，可以直接传过来。
+ */
+export interface TopicSummary {
+  readonly id: string
+  readonly query: string
+  readonly createdAt: string
+  readonly updatedAt: string
+  readonly runs: readonly { readonly runId: string; readonly at: string }[]
+  readonly sourceCount: number
+  readonly mapNodeCount: number
+}
+
 /** 渲染进程发起的一次运行请求。 */
 export interface RunRequest {
   readonly query: string
@@ -122,6 +139,8 @@ export const IPC = {
   runCancel: 'run:cancel',
   runsList: 'runs:list',
   runGet: 'run:get',
+  /** 按话题持久化的语料/地图。 */
+  topicsList: 'topics:list',
   artifactRead: 'artifact:read',
   artifactReveal: 'artifact:reveal',
   appInfo: 'app:info',
@@ -140,6 +159,8 @@ export interface ResearcherApi {
   startRun(request: RunRequest): Promise<RunStarted>
   cancelRun(): Promise<boolean>
   listRuns(): Promise<readonly RunSummary[]>
+  /** 列出已有的话题缓存（代理式主流程下次研究同一话题时会复用它们）。 */
+  listTopics(): Promise<readonly TopicSummary[]>
   getRun(runId: string): Promise<RunDetail | null>
   readArtifact(runId: string, path: string): Promise<string>
   revealArtifact(runId: string, path: string): Promise<void>

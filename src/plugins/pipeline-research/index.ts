@@ -14,12 +14,14 @@ import { ENGINE_VERSION } from '../../main/engine/config.ts'
 import { isCancellation, ResearcherError, throwIfAborted } from '../../main/engine/errors.ts'
 import { renderOutputs, selectOutputs } from '../../main/engine/output.ts'
 import { definePlugin } from '../../main/engine/registry.ts'
+import { join } from 'node:path'
 import { templateById } from '../../templates/index.ts'
 import { Blackboard } from '../../main/engine/agent/blackboard.ts'
 import { LlmMeter } from '../../main/engine/agent/llm.ts'
 import { OutlineTask } from '../../main/engine/agent/outline-task.ts'
 import { runToFixedPoint, type RunOutcome } from '../../main/engine/agent/runner.ts'
 import { SearchTask } from '../../main/engine/agent/search-task.ts'
+import { FileTopicStore, type ReuseInfo } from '../../main/engine/agent/topic-store.ts'
 import { WritingTask } from '../../main/engine/agent/writing-task.ts'
 import type {
   AgenticProvenance,
@@ -56,7 +58,22 @@ export class ResearchPipeline implements Pipeline {
 
     throwIfAborted(signal)
 
-    const board = new Blackboard(input.query)
+    // 按话题复用：同一话题已有语料与地图时读回来，搜索任务会因为
+    // 「新增内容对地图贡献很低」而很快饱和——复用走的就是原本那套机制。
+    const topics = new FileTopicStore(join(ctx.dataRoot, 'topics'))
+    let board = new Blackboard(input.query)
+    let reuse: ReuseInfo | undefined
+    if (agentic.reuseTopicMaps) {
+      const loaded = await topics.load(input.query)
+      if (loaded !== undefined) {
+        board = loaded.board
+        reuse = loaded.info
+        ctx.log.info(
+          `复用话题缓存：${reuse.sources} 条来源、${reuse.mapNodes} 个主题节点（更新于 ${reuse.updatedAt}）`,
+        )
+      }
+    }
+
     const searchTask = new SearchTask(
       {
         candidatesPerQuery: agentic.candidatesPerQuery,
@@ -117,8 +134,17 @@ export class ResearchPipeline implements Pipeline {
     ctx.events.emit({
       type: 'stage:done',
       stage: 'research',
-      summary: `${outcome.message}；地图 ${board.map.nodes.length} 个主题，正文 ${board.document.length} 节`,
+      summary: `${outcome.message}；地图 ${board.map.nodes.length} 个主题，正文 ${board.document.length} 节`
+        + (reuse === undefined ? '' : `；复用了 ${reuse.sources} 条既有资料`),
     })
+
+    // 把这次的语料与地图写回话题缓存，供下次复用。
+    // 失败不影响本次产出——持久化是加速手段，不是正确性依赖。
+    try {
+      await topics.save(board, ctx.runId)
+    } catch (error) {
+      ctx.log.warn(`话题缓存写入失败（不影响本次结果）：${error instanceof Error ? error.message : String(error)}`)
+    }
 
     // ── 组装报告（契约与 pipeline-default 完全一致）──
     const outputs = ctx.outputs()
@@ -159,7 +185,7 @@ export class ResearchPipeline implements Pipeline {
       ...(degradation === undefined ? {} : { degraded: degradation }),
       generatedAt: finishedAt.toISOString(),
       template: template.id,
-      agentic: buildAgenticProvenance(outcome, board, searchTask, writingTask, meter),
+      agentic: buildAgenticProvenance(outcome, board, searchTask, writingTask, meter, reuse),
     }
 
     const report: Report = {
@@ -251,6 +277,7 @@ function buildAgenticProvenance(
   searchTask: SearchTask,
   writingTask: WritingTask,
   meter: LlmMeter,
+  reuse: ReuseInfo | undefined,
 ): AgenticProvenance {
   let readability = 0
   let plainText = 0
@@ -280,6 +307,7 @@ function buildAgenticProvenance(
     completionTokens: meter.completionTokens,
     extraction: { readability, plainText },
     tasks,
+    ...(reuse === undefined ? {} : { reused: reuse }),
   }
 }
 

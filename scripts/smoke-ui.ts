@@ -253,6 +253,10 @@ try {
   console.log(`  IPC 历史运行  ${runsCount}`)
   if (!Number.isFinite(runsCount)) problems.push('runs:list IPC 失败')
 
+  const topicCount = Number(await client.evaluate('window.researcher.listTopics().then(t => String(t.length))'))
+  console.log(`  IPC 话题缓存  ${topicCount}`)
+  if (!Number.isFinite(topicCount)) problems.push('topics:list IPC 失败')
+
   // ── 真实 safeStorage 加密：只有在真窗口里才能验证 ──
   problems.push(...(await verifyKeyEncryption(client, String(info['dataRoot']))))
 

@@ -292,6 +292,13 @@ export interface AgenticProvenance {
     readonly satisfied: boolean
     readonly reason: string
   }[]
+  /** 复用了哪个话题缓存（没有复用则无此字段）。 */
+  readonly reused?: {
+    readonly topicId: string
+    readonly sources: number
+    readonly mapNodes: number
+    readonly updatedAt: string
+  }
 }
 
 /** 一个输出插件渲染失败。 */
@@ -438,6 +445,8 @@ export interface PluginConfigView {
  */
 export interface PluginContext {
   readonly runId: string
+  /** 数据根目录：插件需要跨运行持久化时（例如按话题缓存语料）用它，而不是去猜路径。 */
+  readonly dataRoot: string
   readonly config: PluginConfigView
   readonly store: RunStore
   readonly events: EventBus
@@ -511,6 +520,8 @@ export interface AppConfig {
     readonly maxToolSteps: number
     /** 单节自检不过时的最大重写次数。 */
     readonly maxRewriteAttempts: number
+    /** 是否复用同话题的历史语料与地图。 */
+    readonly reuseTopicMaps: boolean
   }
   readonly fetch: {
     readonly concurrency: number

@@ -91,6 +91,7 @@ export function makeContext(options: ContextOptions): TestContext {
 
   const ctx: PluginContext = {
     runId: 'test-run',
+    dataRoot: '/memory-data',
     config: configView,
     store,
     events: bus,

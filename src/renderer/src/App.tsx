@@ -4,7 +4,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import type { AppConfig, PluginInfo } from '../../main/engine/types.ts'
-import type { AppInfo, ConfigSnapshot, RunSummary } from '../../shared/ipc.ts'
+import type { AppInfo, ConfigSnapshot, RunSummary, TopicSummary } from '../../shared/ipc.ts'
 import { parseIpcError, requireApi } from './api.ts'
 import { IDLE_PROGRESS, reduceRunEvent, type RunProgress } from './state.ts'
 import { PluginsPanel } from './components/PluginsPanel.tsx'
@@ -18,6 +18,7 @@ export function App(): React.JSX.Element {
   const [snapshot, setSnapshot] = useState<ConfigSnapshot | null>(null)
   const [plugins, setPlugins] = useState<readonly PluginInfo[]>([])
   const [runs, setRuns] = useState<readonly RunSummary[]>([])
+  const [topics, setTopics] = useState<readonly TopicSummary[]>([])
   const [progress, setProgress] = useState<RunProgress>(IDLE_PROGRESS)
   const [query, setQuery] = useState('')
   const [tab, setTab] = useState<'progress' | 'report'>('progress')
@@ -28,16 +29,18 @@ export function App(): React.JSX.Element {
   const refresh = useCallback(async (): Promise<void> => {
     const api = requireApi()
     try {
-      const [nextInfo, nextSnapshot, nextPlugins, nextRuns] = await Promise.all([
+      const [nextInfo, nextSnapshot, nextPlugins, nextRuns, nextTopics] = await Promise.all([
         api.appInfo(),
         api.getConfig(),
         api.listPlugins(),
         api.listRuns(),
+        api.listTopics(),
       ])
       setInfo(nextInfo)
       setSnapshot(nextSnapshot)
       setPlugins(nextPlugins)
       setRuns(nextRuns)
+      setTopics(nextTopics)
     } catch (error) {
       setNotice(parseIpcError(error).message)
     }
@@ -177,6 +180,34 @@ export function App(): React.JSX.Element {
             </div>
             <p className="hint">⌘/Ctrl + Enter 直接开始。搜索与整理会用配置里的活动插件。</p>
           </section>
+
+          {topics.length === 0 ? null : (
+            <section className="panel">
+              <h2 className="panel-title">
+                话题缓存
+                <span className="count">{topics.length}</span>
+              </h2>
+              <ul className="run-list">
+                {topics.slice(0, 8).map((topic) => (
+                  <li key={topic.id}>
+                    <button
+                      type="button"
+                      className="run-item"
+                      title="代理式主流程会复用这个话题的语料与地图"
+                      onClick={() => setQuery(topic.query)}
+                    >
+                      <span className="run-query">{topic.query}</span>
+                      <span className="run-meta">
+                        {topic.sourceCount} 条来源 · {topic.mapNodeCount} 个主题 · {topic.runs.length} 次研究
+                      </span>
+                      <span className="run-time">{formatTime(topic.updatedAt)}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <p className="hint">点一下填回查询框。同一话题再次研究时会复用这些资料，只补新增的部分。</p>
+            </section>
+          )}
 
           <section className="panel grow">
             <h2 className="panel-title">

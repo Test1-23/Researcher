@@ -56,6 +56,11 @@ class AllRolesLlm implements LlmProvider {
     return true
   }
 
+  /** 复位轮次计数：同一个假模型实例被两次运行复用时需要它。 */
+  reset(): void {
+    this.integrateRound = 0
+  }
+
   async complete(request: CompleteRequest): Promise<CompleteResult> {
     this.calls.push(request)
     const system = request.messages.find((message) => message.role === 'system')?.content ?? ''
@@ -294,6 +299,63 @@ describe('代理式主流程端到端', () => {
 
     expect(search.queries.length).toBeLessThan(5)
     expect(outcome.report.provenance.agentic?.outcome).toBe('converged')
+  })
+
+  it('同一话题第二次研究时复用缓存，并如实记录复用了什么', async () => {
+    const dataRoot = await makeRoot()
+    const llm = new AllRolesLlm()
+    const search = new GrowingSearch()
+    const { kernel, bus } = buildKernel({
+      dataRoot,
+      llm,
+      search,
+      fetch: articleFetch(),
+      overrides: {
+        search: { id: 'growing', fallback: 'growing', maxSources: 20, maxFetch: 20 },
+        agentic: { minSupport: 1, queryFanout: 2, candidatesPerQuery: 6, reuseTopicMaps: true },
+      },
+    })
+
+    // 第一次：什么都没有，全量采集
+    const first = await kernel.run({ query: 'WebGPU 支持现状' }, bus)
+    const firstRounds = first.report.provenance.agentic?.searchRounds ?? 0
+    expect(first.report.provenance.agentic?.reused).toBeUndefined()
+    expect(firstRounds).toBeGreaterThan(0)
+
+    // 第二次：同一话题，应当读回语料与地图
+    llm.reset()
+    const second = await kernel.run({ query: 'WebGPU 支持现状' }, bus)
+    const reused = second.report.provenance.agentic?.reused
+    expect(reused).toBeDefined()
+    expect(reused?.sources).toBeGreaterThan(0)
+    expect(reused?.mapNodes).toBeGreaterThan(0)
+    // 地图已经填好，搜索更快饱和 —— 复用走的就是原本那套饱和机制
+    expect(second.report.provenance.agentic?.searchRounds ?? 0).toBeLessThanOrEqual(firstRounds)
+    // 复用的来源仍然出现在报告里
+    expect(second.report.sources.length).toBeGreaterThan(0)
+  })
+
+  it('关掉复用时每次都是全新采集', async () => {
+    const dataRoot = await makeRoot()
+    const llm = new AllRolesLlm()
+    const search = new GrowingSearch()
+    const { kernel, bus } = buildKernel({
+      dataRoot,
+      llm,
+      search,
+      fetch: articleFetch(),
+      overrides: {
+        search: { id: 'growing', fallback: 'growing', maxSources: 20, maxFetch: 20 },
+        agentic: { minSupport: 1, queryFanout: 2, candidatesPerQuery: 6, reuseTopicMaps: false },
+      },
+    })
+
+    await kernel.run({ query: '同一话题' }, bus)
+    llm.reset()
+    const second = await kernel.run({ query: '同一话题' }, bus)
+    expect(second.report.provenance.agentic?.reused).toBeUndefined()
+    // 关掉复用后第二次仍然是全新采集：地图重新从零建起来
+    expect(second.report.provenance.agentic?.mapNodes).toBeGreaterThan(0)
   })
 
   it('没有大模型时自动降到备用主流程，零 key 路径不破', async () => {

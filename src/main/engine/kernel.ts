@@ -164,6 +164,7 @@ export class Kernel {
     const log = createLogger(bus, '[probe] ', collectSecrets(this.config.plugins), false)
     return {
       runId: 'probe',
+      dataRoot: this.dataRoot,
       config: createPluginConfigView(this.config),
       store,
       events: bus,
@@ -323,6 +324,7 @@ export class Kernel {
 
     const ctx: PluginContext = {
       runId,
+      dataRoot: this.dataRoot,
       config: createPluginConfigView(this.config),
       store,
       events: bus,
