@@ -39,6 +39,13 @@ export const DEFAULT_CONFIG: AppConfig = {
     maxTextChars: 20_000,
     // 出口代理/网络偶发抖动不该让整轮研究失败：默认重试 2 次。
     maxRetries: 2,
+    extractor: {
+      // 实测：Readability 在多数页面最好，但重前端框架的页面会只取到页脚，
+      // 因此用比例闸门识别这种情况并回退到整页纯文本。
+      mode: 'auto',
+      minChars: 400,
+      minRatio: 0.2,
+    },
     userAgent: `Researcher/${ENGINE_VERSION} (+local desktop research tool)`,
   },
   plugins: {
@@ -124,6 +131,14 @@ export function assertValidConfig(config: AppConfig): void {
   }
   if (typeof config.fetch?.userAgent !== 'string' || config.fetch.userAgent.length === 0) {
     fail('fetch.userAgent 必须是非空字符串')
+  }
+  const extractor = config.fetch?.extractor
+  if (extractor === undefined || !['auto', 'readability', 'plain-text'].includes(extractor.mode)) {
+    fail('fetch.extractor.mode 必须是 auto / readability / plain-text 之一')
+  }
+  positiveInt(extractor.minChars, 'fetch.extractor.minChars')
+  if (typeof extractor.minRatio !== 'number' || !(extractor.minRatio >= 0 && extractor.minRatio <= 1)) {
+    fail('fetch.extractor.minRatio 必须是 0–1 之间的数')
   }
 
   if (!Array.isArray(config.output?.ids) || config.output.ids.length === 0) {

@@ -6,7 +6,7 @@
  */
 
 import { cancelled, FetchError, isAbortError, ResearcherError, throwIfAborted } from './errors.ts'
-import { extractText } from './html.ts'
+import { extractContent, type ExtractorOptions, DEFAULT_EXTRACTOR_OPTIONS } from './extract.ts'
 import type { FetchedDocument, FetchService, RawResponse } from './types.ts'
 
 /** 可以当作文本处理的内容类型。 */
@@ -39,6 +39,8 @@ export interface HttpFetchOptions {
   readonly fetchImpl?: typeof fetch
   /** 发生重试时回调，用于写日志。 */
   readonly onRetry?: (info: FetchRetryInfo) => void
+  /** 正文抽取配置。 */
+  readonly extractor?: ExtractorOptions
 }
 
 /**
@@ -56,6 +58,7 @@ export class HttpFetchService implements FetchService {
   private readonly retryBaseDelayMs: number
   private readonly fetchImpl: typeof fetch
   private readonly onRetry: ((info: FetchRetryInfo) => void) | undefined
+  private readonly extractorOptions: ExtractorOptions
 
   constructor(options: HttpFetchOptions) {
     this.userAgent = options.userAgent
@@ -66,6 +69,7 @@ export class HttpFetchService implements FetchService {
     this.retryBaseDelayMs = Math.max(1, options.retryBaseDelayMs ?? 600)
     this.fetchImpl = options.fetchImpl ?? fetch
     this.onRetry = options.onRetry
+    this.extractorOptions = options.extractor ?? DEFAULT_EXTRACTOR_OPTIONS
   }
 
   /**
@@ -169,14 +173,16 @@ export class HttpFetchService implements FetchService {
       }
     }
 
-    const extracted = extractText(raw.body)
+    const extracted = extractContent(raw.body, this.extractorOptions)
     const clipped = extracted.text.length > this.maxTextChars
     return {
       url: raw.url,
       status: raw.status,
       ...(extracted.title === undefined ? {} : { title: extracted.title }),
       text: clipped ? extracted.text.slice(0, this.maxTextChars) : extracted.text,
-      truncated: raw.truncated || clipped,
+      truncated: raw.truncated || extracted.truncated || clipped,
+      extraction: extracted.method,
+      ...(extracted.fallbackReason === undefined ? {} : { extractionFallbackReason: extracted.fallbackReason }),
     }
   }
 }

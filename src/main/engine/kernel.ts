@@ -91,6 +91,12 @@ export class Kernel {
       maxTextChars: config.fetch.maxTextChars,
       maxRetries: config.fetch.maxRetries,
       userAgent: config.fetch.userAgent,
+      extractor: {
+        mode: config.fetch.extractor.mode,
+        maxTextChars: config.fetch.maxTextChars,
+        minChars: config.fetch.extractor.minChars,
+        minRatio: config.fetch.extractor.minRatio,
+      },
       onRetry: (info) => {
         this.activeLogger?.warn(
           `抓取重试 ${info.attempt}/${info.maxAttempts}：${info.url}（${info.reason}），${info.delayMs}ms 后再试`,

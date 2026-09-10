@@ -18,6 +18,8 @@
     "scan:secrets": "node --no-warnings scripts/scan-secrets.ts --history"
   },
   "dependencies": {
+    "@mozilla/readability": "^0.6.0",
+    "linkedom": "^0.18.13",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

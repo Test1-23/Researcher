@@ -55,6 +55,8 @@ export class FakeFetch implements FetchService {
       ...(extracted.title === undefined ? {} : { title: extracted.title }),
       text: extracted.text,
       truncated: raw.truncated,
+      // 测试替身固定走结构式，保证用例不依赖 Readability 的具体行为
+      extraction: 'plain-text',
     }
   }
 }

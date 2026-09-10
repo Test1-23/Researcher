@@ -128,6 +128,10 @@ export interface FetchedDocument {
   /** 抽取出的纯文本正文（可能被截断）。 */
   readonly text: string
   readonly truncated: boolean
+  /** 实际使用的抽取实现，进入 provenance 供读者判断可信度。 */
+  readonly extraction?: 'readability' | 'plain-text'
+  /** 为什么没用首选的抽取实现。 */
+  readonly extractionFallbackReason?: string
 }
 
 /** 一次抓取失败。失败不致命，会被记录并交给整理阶段参考。 */
@@ -385,6 +389,15 @@ export interface AppConfig {
     readonly maxTextChars: number
     /** 瞬时网络故障（连接被重置、TLS 握手被丢、超时、429、5xx）的重试次数，不含首次。 */
     readonly maxRetries: number
+    /** 正文抽取策略。 */
+    readonly extractor: {
+      /** `auto` 走「Readability → 纯文本」的升级—回退链。 */
+      readonly mode: 'auto' | 'readability' | 'plain-text'
+      /** 质量闸门：Readability 结果的绝对下限（字符）。 */
+      readonly minChars: number
+      /** 质量闸门：Readability 结果 / 整页纯文本 的最低比例。 */
+      readonly minRatio: number
+    }
     readonly userAgent: string
   }
   readonly plugins: Readonly<Record<string, Readonly<Record<string, unknown>>>>
