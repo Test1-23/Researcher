@@ -1,7 +1,7 @@
 # 关于「演示：Alpha 与 Beta 是什么关系」的资料汇编
 
 > **查询**：演示：Alpha 与 Beta 是什么关系
-> **生成时间**：2026-09-10T08:53:46.811Z（用时 7 ms）
+> **生成时间**：2026-09-10T09:34:25.801Z（用时 29 ms）
 > **整理方式**：organize-extractive
 > **搜索方式**：search-duckduckgo（主搜索插件不可用，已降级）
 > **降级说明**：配置的整理插件 organize-llm 不可用，本次改用 organize-extractive
@@ -24,8 +24,8 @@ Beta 的入门指南介绍了安装步骤与常见问题，适合第一次接触
 
 ## 来源
 
-1. [Alpha 官方文档](https://example.com/alpha) — 已抓取正文 86 字
-2. [Beta 入门指南](https://example.com/beta) — 已抓取正文 61 字
+1. [Alpha 官方文档](https://example.com/alpha) — 已抓取正文 86 字 · Readability
+2. [Beta 入门指南](https://example.com/beta) — 已抓取正文 61 字 · Readability
 
 ## 运行信息
 
@@ -34,7 +34,7 @@ Beta 的入门指南介绍了安装步骤与常见问题，适合第一次接触
 - 搜索插件：search-duckduckgo
 - 大模型插件：provider-openai
 - 整理插件：organize-extractive
-- 输出插件：output-markdown、output-html
-- run id：2026-09-10T08-53-46-810Z-l2s0xz
+- 输出插件：output-markdown、output-html、output-materials
+- run id：2026-09-10T09-34-25-799Z-fo6w8b
 
 > 本报告的正文由上述整理插件生成。引用编号对应「来源」列表；大模型整理可能概括失准，关键结论请点开来源原文核对。

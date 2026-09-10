@@ -7,8 +7,9 @@
   "organize": "organize-extractive",
   "outputs": [
     "output-markdown",
-    "output-html"
+    "output-html",
+    "output-materials"
   ],
   "degraded": "配置的整理插件 organize-llm 不可用，本次改用 organize-extractive",
-  "generatedAt": "2026-09-10T08:53:46.818Z"
+  "generatedAt": "2026-09-10T09:34:25.830Z"
 }

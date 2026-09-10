@@ -217,10 +217,12 @@ try {
       ['report.md', 'example-report.md'],
       ['report.html', 'example-report.html'],
       ['provenance.json', 'example-provenance.json'],
+      ['materials.md', 'example-materials.md'],
+      ['materials.json', 'example-materials.json'],
     ] as const) {
       await copyFile(join(outcome.runDir, from), join(exampleDir, to))
     }
-    console.log('  已写出示例：examples/example-report.md、example-report.html、example-provenance.json')
+    console.log('  已写出示例：examples/ 下的 report / provenance / materials')
   }
 } catch (error) {
   console.error('')

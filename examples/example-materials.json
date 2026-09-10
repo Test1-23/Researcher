@@ -1,0 +1,36 @@
+{
+  "query": "演示：Alpha 与 Beta 是什么关系",
+  "generatedAt": "2026-09-10T09:34:25.830Z",
+  "runId": "2026-09-10T09-34-25-799Z-fo6w8b",
+  "pipeline": "pipeline-default",
+  "overview": {
+    "sourceCount": 2,
+    "fullTextCount": 2,
+    "themeCount": 0,
+    "gapCount": 0,
+    "conflictCount": 0
+  },
+  "themes": [],
+  "gaps": [],
+  "conflicts": [],
+  "sources": [
+    {
+      "id": "s001",
+      "url": "https://example.com/alpha",
+      "title": "Alpha 官方文档",
+      "relevance": "kept",
+      "status": "full",
+      "extraction": "readability",
+      "citedByThemes": []
+    },
+    {
+      "id": "s002",
+      "url": "https://example.com/beta",
+      "title": "Beta 入门指南",
+      "relevance": "kept",
+      "status": "full",
+      "extraction": "readability",
+      "citedByThemes": []
+    }
+  ]
+}
