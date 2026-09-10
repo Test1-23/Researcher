@@ -8,6 +8,8 @@
  */
 
 import { spawn, type ChildProcess } from 'node:child_process'
+import { readFile, rm, writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
 import electronPath from 'electron'
 
 /** 用一个随机端口，避免上一次运行留下的 TIME_WAIT 干扰。 */
@@ -143,6 +145,59 @@ async function waitForReady(client: DevtoolsClient): Promise<void> {
   throw new Error('界面在超时前没有渲染出顶栏')
 }
 
+/** 冒烟测试用的密钥：明显是假的，且用完即清。 */
+const SMOKE_KEY = 'sk-smoke-test-key-must-never-touch-disk-0123456789'
+
+/**
+ * 验证密钥真的被加密落盘。
+ *
+ * 这是唯一能验证真实 safeStorage（Windows DPAPI）的地方——单元测试只能覆盖假的编解码器。
+ * 测试会先备份用户的 config.json，结束后按字节还原，绝不覆盖用户已保存的密钥。
+ *
+ * @returns 发现的问题列表（空数组表示通过）
+ */
+async function verifyKeyEncryption(client: DevtoolsClient, dataRoot: string): Promise<string[]> {
+  const configPath = join(dataRoot, 'config.json')
+  const previous = await readFile(configPath, 'utf8').catch(() => undefined)
+
+  try {
+    const capability = JSON.parse(String(await client.evaluate(
+      'window.researcher.getConfig().then(s => JSON.stringify(s.storage))',
+    ))) as { canPersist: boolean; plaintext: boolean; reason?: string }
+
+    if (!capability.canPersist) {
+      // 平台没有可用密钥库（例如无 keyring 的 Linux）：这里无法验证，如实跳过
+      console.log(`  密钥加密      跳过（平台不支持：${capability.reason ?? '未知原因'}）`)
+      return []
+    }
+
+    const result = JSON.parse(String(await client.evaluate(`(async () => {
+      const snap = await window.researcher.getConfig();
+      const next = await window.researcher.setConfig({
+        config: snap.config,
+        secrets: { 'provider-openai': ${JSON.stringify(SMOKE_KEY)} },
+      });
+      return JSON.stringify({ source: next.secrets['provider-openai'].source });
+    })()`))) as { source: string }
+
+    const onDisk = await readFile(configPath, 'utf8').catch(() => '')
+    const leaksPlaintext = onDisk.includes(SMOKE_KEY)
+    const hasCiphertext = onDisk.includes('apiKeyEncrypted')
+
+    console.log(`  密钥加密      ${result.source} · 磁盘含密文 ${hasCiphertext ? '是' : '否'} · 磁盘含明文 ${leaksPlaintext ? '是' : '否'}`)
+
+    const found: string[] = []
+    if (result.source !== 'encrypted') found.push(`密钥状态应为 encrypted，实际为 ${result.source}`)
+    if (leaksPlaintext) found.push('明文密钥出现在了磁盘上的 config.json 里')
+    if (!hasCiphertext) found.push('config.json 里没有找到 apiKeyEncrypted 字段')
+    return found
+  } finally {
+    // 按字节还原用户原本的配置；原本没有就删掉
+    if (previous === undefined) await rm(configPath, { force: true })
+    else await writeFile(configPath, previous, 'utf8')
+  }
+}
+
 const app = launch()
 let exitCode = 0
 let client: DevtoolsClient | undefined
@@ -197,6 +252,9 @@ try {
   const runsCount = Number(await client.evaluate('window.researcher.listRuns().then(r => String(r.length))'))
   console.log(`  IPC 历史运行  ${runsCount}`)
   if (!Number.isFinite(runsCount)) problems.push('runs:list IPC 失败')
+
+  // ── 真实 safeStorage 加密：只有在真窗口里才能验证 ──
+  problems.push(...(await verifyKeyEncryption(client, String(info['dataRoot']))))
 
   console.log('')
   if (problems.length > 0) {

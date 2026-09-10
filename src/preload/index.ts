@@ -6,12 +6,23 @@
  */
 
 import { contextBridge, ipcRenderer } from 'electron'
-import { IPC, type AppInfo, type ProbeResult, type ResearcherApi, type RunDetail, type RunRequest, type RunSummary, type RunStarted } from '../shared/ipc.ts'
-import type { AppConfig, PluginInfo, PluginKind, RunEvent } from '../main/engine/types.ts'
+import {
+  IPC,
+  type AppInfo,
+  type ConfigSnapshot,
+  type ConfigUpdate,
+  type ProbeResult,
+  type ResearcherApi,
+  type RunDetail,
+  type RunRequest,
+  type RunSummary,
+  type RunStarted,
+} from '../shared/ipc.ts'
+import type { PluginInfo, PluginKind, RunEvent } from '../main/engine/types.ts'
 
 const api: ResearcherApi = {
-  getConfig: () => ipcRenderer.invoke(IPC.configGet) as Promise<AppConfig>,
-  setConfig: (config) => ipcRenderer.invoke(IPC.configSet, config) as Promise<AppConfig>,
+  getConfig: () => ipcRenderer.invoke(IPC.configGet) as Promise<ConfigSnapshot>,
+  setConfig: (update: ConfigUpdate) => ipcRenderer.invoke(IPC.configSet, update) as Promise<ConfigSnapshot>,
   listPlugins: () => ipcRenderer.invoke(IPC.pluginsList) as Promise<readonly PluginInfo[]>,
   testPlugin: (kind: PluginKind, id: string) =>
     ipcRenderer.invoke(IPC.pluginTest, kind, id) as Promise<ProbeResult>,

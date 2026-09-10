@@ -15,7 +15,7 @@
 
 import { copyFile, mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
-import { loadConfigResilient } from '../src/main/engine/config.ts'
+import { loadConfigResilient, envNameOf, secretSourceOf } from '../src/main/engine/config.ts'
 import { FetchError } from '../src/main/engine/errors.ts'
 import { SimpleEventBus } from '../src/main/engine/events.ts'
 import { extractText } from '../src/main/engine/html.ts'
@@ -57,8 +57,18 @@ function offlineFetch(): FetchService {
 
 const dataRoot = join(process.cwd(), '.researcher')
 await mkdir(dataRoot, { recursive: true })
+// 不传编解码器：命令行没有 safeStorage，桌面应用加密的密钥在这里解不开。
 const { config, warning } = await loadConfigResilient(dataRoot)
 if (warning !== undefined) console.warn(`[config] ${warning}`)
+
+for (const [pluginId, section] of Object.entries(config.plugins)) {
+  if (secretSourceOf(section, 'DEEPSEEK_API_KEY') === 'undecryptable') {
+    console.warn(
+      `[secrets] 插件 ${pluginId} 的密钥由桌面应用加密，命令行无法解密；`
+      + `请改用 ${envNameOf(section, 'DEEPSEEK_API_KEY')} 环境变量。`,
+    )
+  }
+}
 
 const kernel = new Kernel({
   registry: createRegistry(),

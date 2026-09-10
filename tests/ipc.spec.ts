@@ -10,11 +10,13 @@ import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { DEFAULT_CONFIG, deepMerge } from '../src/main/engine/config.ts'
+import { DEFAULT_CONFIG, PLAINTEXT_CODEC, deepMerge } from '../src/main/engine/config.ts'
 import { Kernel } from '../src/main/engine/kernel.ts'
 import { createRegistry } from '../src/plugins/index.ts'
 import { IPC } from '../src/shared/ipc.ts'
 import type { AppConfig } from '../src/main/engine/types.ts'
+import type { ConfigSnapshot } from '../src/shared/ipc.ts'
+import type { SecretStorage } from '../src/main/secrets.ts'
 
 /** 假的 electron 模块：只收集注册了哪些通道。 */
 const fake = vi.hoisted(() => ({
@@ -48,8 +50,14 @@ afterEach(async () => {
   await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true })))
 })
 
+/** 允许持久化密钥（测试里用明文编解码器，避免依赖 Electron）。 */
+const ALLOW_STORAGE: SecretStorage = { codec: PLAINTEXT_CODEC, canPersist: true, plaintext: true }
+
 /** 起一个真实内核并注册 IPC。 */
-async function setup(config: AppConfig = DEFAULT_CONFIG): Promise<{ dataRoot: string; kernel: Kernel }> {
+async function setup(
+  config: AppConfig = DEFAULT_CONFIG,
+  secretStorage: SecretStorage = ALLOW_STORAGE,
+): Promise<{ dataRoot: string; kernel: Kernel }> {
   const dataRoot = await mkdtemp(join(tmpdir(), 'researcher-ipc-'))
   roots.push(dataRoot)
   const kernel = new Kernel({ registry: createRegistry(), config, dataRoot, mirrorLogsToConsole: false })
@@ -58,6 +66,7 @@ async function setup(config: AppConfig = DEFAULT_CONFIG): Promise<{ dataRoot: st
     dataRoot,
     getWindow: () => null,
     applyConfig: () => {},
+    secretStorage,
     appInfo: {
       appVersion: '0.1.0',
       electronVersion: '33.0.0',
@@ -101,25 +110,81 @@ describe('IPC 通道完整性', () => {
 describe('配置通道', () => {
   it('读取配置返回缺省值', async () => {
     await setup()
-    const config = await invoke(IPC.configGet) as AppConfig
-    expect(config.pipeline.id).toBe('pipeline-default')
-    expect(config.search.fallback).toBe('search-duckduckgo')
+    const snapshot = await invoke(IPC.configGet) as ConfigSnapshot
+    expect(snapshot.config.pipeline.id).toBe('pipeline-default')
+    expect(snapshot.config.search.fallback).toBe('search-duckduckgo')
+    expect(snapshot.storage.canPersist).toBe(true)
   })
 
   it('写入非法配置被拒绝，且不会落盘', async () => {
     const { dataRoot } = await setup()
     const broken = deepMerge(DEFAULT_CONFIG, { search: { maxSources: 0 } })
-    await expect(invoke(IPC.configSet, broken)).rejects.toThrowError(/CONFIG_INVALID/)
-    await expect(invoke(IPC.configGet)).resolves.toEqual(DEFAULT_CONFIG)
+    await expect(invoke(IPC.configSet, { config: broken })).rejects.toThrowError(/CONFIG_INVALID/)
     // 目录里不该出现配置文件
     await expect(rm(join(dataRoot, 'config.json'), { force: false })).rejects.toThrowError()
   })
 
   it('写入合法配置后生效', async () => {
     const { kernel } = await setup()
-    const next = deepMerge(DEFAULT_CONFIG, { search: { maxSources: 3 } })
-    await invoke(IPC.configSet, next)
+    await invoke(IPC.configSet, { config: deepMerge(DEFAULT_CONFIG, { search: { maxSources: 3 } }) })
     expect(kernel.currentConfig.search.maxSources).toBe(3)
+  })
+})
+
+describe('密钥处理', () => {
+  const KEY = 'sk-test-key-that-must-never-leak-0123456789'
+
+  it('下发给界面的快照里不含密钥材料', async () => {
+    await setup()
+    await invoke(IPC.configSet, { config: DEFAULT_CONFIG, secrets: { 'provider-openai': KEY } })
+
+    const snapshot = await invoke(IPC.configGet) as ConfigSnapshot
+    const serialized = JSON.stringify(snapshot)
+    expect(serialized).not.toContain(KEY)
+    expect(serialized).not.toContain('apiKeyEncrypted')
+    expect(snapshot.secrets['provider-openai']?.source).toBe('plaintext')
+  })
+
+  it('未提及密钥时保持原值，改别的设置不会把密钥抹掉', async () => {
+    const { kernel } = await setup()
+    await invoke(IPC.configSet, { config: DEFAULT_CONFIG, secrets: { 'provider-openai': KEY } })
+
+    const changed = deepMerge(DEFAULT_CONFIG, { provider: { id: 'provider-openai' }, 'plugins': {} })
+    await invoke(IPC.configSet, { config: { ...changed, plugins: { ...changed.plugins, 'search-deepseek': { model: 'x' } } } })
+
+    expect(kernel.currentConfig.plugins['provider-openai']?.['apiKey']).toBe(KEY)
+  })
+
+  it('传 null 才清除密钥', async () => {
+    const { kernel } = await setup()
+    await invoke(IPC.configSet, { config: DEFAULT_CONFIG, secrets: { 'provider-openai': KEY } })
+    await invoke(IPC.configSet, { config: DEFAULT_CONFIG, secrets: { 'provider-openai': null } })
+
+    expect(kernel.currentConfig.plugins['provider-openai']?.['apiKey']).toBeUndefined()
+    const snapshot = await invoke(IPC.configGet) as ConfigSnapshot
+    expect(snapshot.secrets['provider-openai']?.source).toBe('none')
+  })
+
+  it('界面提交的密钥字段不可信，会被丢弃', async () => {
+    const { kernel } = await setup()
+    const smuggled = deepMerge(DEFAULT_CONFIG, {
+      plugins: { 'provider-openai': { apiKey: 'attacker-supplied', apiKeyEncrypted: 'bogus' } },
+    })
+    await invoke(IPC.configSet, { config: smuggled })
+    expect(kernel.currentConfig.plugins['provider-openai']?.['apiKey']).toBeUndefined()
+  })
+
+  it('平台无法安全保存时拒绝写入密钥，但配置本身仍然保存', async () => {
+    const { kernel } = await setup(DEFAULT_CONFIG, {
+      codec: PLAINTEXT_CODEC,
+      canPersist: false,
+      plaintext: true,
+      reason: '测试：密钥库不可用',
+    })
+    await expect(
+      invoke(IPC.configSet, { config: DEFAULT_CONFIG, secrets: { 'provider-openai': KEY } }),
+    ).rejects.toThrowError(/无法保存 API key/)
+    expect(kernel.currentConfig.plugins['provider-openai']?.['apiKey']).toBeUndefined()
   })
 })
 

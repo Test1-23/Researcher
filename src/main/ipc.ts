@@ -8,13 +8,28 @@
 import { ipcMain, shell, type BrowserWindow } from 'electron'
 import { readFile, readdir } from 'node:fs/promises'
 import { join, resolve, sep } from 'node:path'
-import { ENGINE_VERSION, assertValidConfig, saveConfig } from './engine/config.ts'
+import { ENGINE_VERSION, assertValidConfig, redactSecrets, saveConfig, secretSourceOf, envNameOf, DEFAULT_CONFIG } from './engine/config.ts'
+import type { SecretCodec } from './engine/config.ts'
 import { FileRunStore } from './engine/run-store.ts'
 import { ResearcherError, toResearcherError } from './engine/errors.ts'
 import { SimpleEventBus } from './engine/events.ts'
 import type { Kernel } from './engine/kernel.ts'
 import type { AppConfig, PluginKind, Report, RunEvent } from './engine/types.ts'
-import { IPC, type AppInfo, type ProbeResult, type RunDetail, type RunRequest, type RunSummary } from '../shared/ipc.ts'
+import type { SecretStorage } from './secrets.ts'
+import {
+  IPC,
+  type AppInfo,
+  type ConfigSnapshot,
+  type ConfigUpdate,
+  type ProbeResult,
+  type RunDetail,
+  type RunRequest,
+  type RunSummary,
+  type SecretStatus,
+} from '../shared/ipc.ts'
+
+/** 配置密钥时使用的默认环境变量名。 */
+const DEFAULT_KEY_ENV = 'DEEPSEEK_API_KEY'
 
 /** 注册 IPC 所需的依赖。 */
 export interface IpcContext {
@@ -23,6 +38,8 @@ export interface IpcContext {
   readonly getWindow: () => BrowserWindow | null
   readonly applyConfig: (config: AppConfig) => void
   readonly appInfo: Omit<AppInfo, 'engineVersion' | 'dataRoot' | 'runsRoot'>
+  /** 当前平台的密钥存储能力。 */
+  readonly secretStorage: SecretStorage
 }
 
 /** 当前正在运行的 run（同一时刻只允许一个）。 */
@@ -44,16 +61,20 @@ export function registerIpc(context: IpcContext): void {
     if (event.type === 'run:done' || event.type === 'run:error') active = null
   }
 
-  handle(IPC.configGet, async () => kernel.currentConfig)
+  handle(IPC.configGet, async (): Promise<ConfigSnapshot> => snapshotOf(kernel.currentConfig, context.secretStorage))
 
-  handle(IPC.configSet, async (_event, config: AppConfig) => {
+  handle(IPC.configSet, async (_event, update: ConfigUpdate): Promise<ConfigSnapshot> => {
+    const storage = context.secretStorage
+    // 以内存中的配置（含已解密的密钥）为基准合并，界面提交的 config 里没有密钥材料。
+    const merged = mergeSecretUpdates(kernel.currentConfig, update, storage)
+
     // 先校验再落盘：写坏配置会让应用下次启动直接失败。
-    assertValidConfig(config)
-    await saveConfig(dataRoot, config)
+    assertValidConfig(merged)
+    await saveConfig(dataRoot, merged, storage.codec)
     // 内核自己更新，不依赖调用方记得接线——否则磁盘上是新配置、内核还是旧配置。
-    kernel.setConfig(config)
-    applyConfig(config)
-    return kernel.currentConfig
+    kernel.setConfig(merged)
+    applyConfig(merged)
+    return snapshotOf(merged, storage)
   })
 
   handle(IPC.pluginsList, async () => kernel.pluginInfos())
@@ -162,9 +183,82 @@ function handle<Args extends unknown[], Result>(
   })
 }
 
+/** 构造下发给渲染进程的快照：配置里的密钥材料被全部抹掉。 */
+function snapshotOf(config: AppConfig, storage: SecretStorage): ConfigSnapshot {
+  const secrets: Record<string, SecretStatus> = {}
+  for (const [pluginId, section] of Object.entries(config.plugins)) {
+    secrets[pluginId] = {
+      source: secretSourceOf(section, DEFAULT_KEY_ENV),
+      envName: envNameOf(section, DEFAULT_KEY_ENV),
+    }
+  }
+  return {
+    config: redactSecrets(config),
+    secrets,
+    storage: {
+      canPersist: storage.canPersist,
+      plaintext: storage.plaintext,
+      ...(storage.reason === undefined ? {} : { reason: storage.reason }),
+    },
+  }
+}
+
+/**
+ * 把界面提交的配置与密钥更新合并到内存配置上。
+ *
+ * 界面拿不到密钥，因此「没提到某个插件」必须解释为**保持原样**，
+ * 否则每次改个 model 都会把已保存的密钥抹掉。
+ */
+function mergeSecretUpdates(current: AppConfig, update: ConfigUpdate, storage: SecretStorage): AppConfig {
+  const incoming = update.config ?? DEFAULT_CONFIG
+  const requested = update.secrets ?? {}
+  const plugins: Record<string, Record<string, unknown>> = {}
+  // 内存中的存储标记必须和 encodeSecrets 落盘时写的一致，
+  // 否则界面会把「已加密保存」错报成「明文保存」。
+  const storageLabel = storage.codec.kind === 'safeStorage' ? 'safeStorage' : 'plaintext'
+
+  // 以界面提交的结构为准（它改的是 baseUrl/model 这些非敏感项）
+  for (const [pluginId, section] of Object.entries(incoming.plugins)) {
+    const next: Record<string, unknown> = { ...section }
+    // 界面提交的密钥字段一律不可信，先丢弃
+    delete next['apiKey']
+    delete next['apiKeyEncrypted']
+    delete next['apiKeyStorage']
+
+    const existing = current.plugins[pluginId]?.['apiKey']
+    const hasExisting = typeof existing === 'string' && existing.length > 0
+
+    let desired: string | null | undefined
+    if (Object.prototype.hasOwnProperty.call(requested, pluginId)) {
+      desired = requested[pluginId]
+    }
+
+    if (desired === null) {
+      // 显式清除
+    } else if (typeof desired === 'string' && desired.trim().length > 0) {
+      if (!storage.canPersist) {
+        throw new ResearcherError(
+          `无法保存 API key：${storage.reason ?? '当前平台不支持安全的密钥存储'}`,
+          'CONFIG_INVALID',
+        )
+      }
+      next['apiKey'] = desired.trim()
+      next['apiKeyStorage'] = storageLabel
+    } else if (hasExisting) {
+      // 未提及 → 保持原有密钥
+      next['apiKey'] = existing
+      const previousLabel = current.plugins[pluginId]?.['apiKeyStorage']
+      next['apiKeyStorage'] = typeof previousLabel === 'string' ? previousLabel : storageLabel
+    }
+
+    plugins[pluginId] = next
+  }
+
+  return { ...incoming, plugins }
+}
+
 /** 只允许访问 runs 根目录下的直接子目录，防止 `../` 越界。 */
-function safeRunDir(dataRoot: string, runId: string): string {
-  if (typeof runId !== 'string' || !/^[A-Za-z0-9._-]+$/.test(runId) || runId === '.' || runId === '..') {
+function safeRunDir(dataRoot: string, runId: string): string {  if (typeof runId !== 'string' || !/^[A-Za-z0-9._-]+$/.test(runId) || runId === '.' || runId === '..') {
     throw new ResearcherError(`非法的 run id：${String(runId)}`, 'INVALID_INPUT')
   }
   return join(dataRoot, 'runs', runId)

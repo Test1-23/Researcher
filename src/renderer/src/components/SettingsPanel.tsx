@@ -7,14 +7,31 @@
 
 import { useState } from 'react'
 import type { AppConfig, PluginInfo, PluginKind } from '../../../main/engine/types.ts'
+import type { ConfigSnapshot, SecretStatus } from '../../../shared/ipc.ts'
 import { parseIpcError, requireApi } from '../api.ts'
 
 /** 设置面板属性。 */
 export interface SettingsPanelProps {
-  readonly config: AppConfig
+  readonly snapshot: ConfigSnapshot
   readonly plugins: readonly PluginInfo[]
-  readonly onSaved: (config: AppConfig) => void
+  readonly onSaved: (snapshot: ConfigSnapshot) => void
   readonly onClose: () => void
+}
+
+/** 密钥状态徽章文案。 */
+function secretBadge(status: SecretStatus | undefined): { text: string; tone: string } {
+  switch (status?.source) {
+    case 'encrypted':
+      return { text: '已加密保存', tone: 'ok' }
+    case 'env':
+      return { text: `来自环境变量 ${status.envName}`, tone: 'ok' }
+    case 'plaintext':
+      return { text: '明文保存（有风险）', tone: 'warn' }
+    case 'undecryptable':
+      return { text: '无法解密，请重新填写', tone: 'warn' }
+    default:
+      return { text: '未设置', tone: '' }
+  }
 }
 
 /** 深拷贝，让表单可以自由编辑而不改动父组件的状态。 */
@@ -45,8 +62,11 @@ function setPluginField(config: AppConfig, pluginId: string, key: string, value:
   }
 }
 
-export function SettingsPanel({ config, plugins, onSaved, onClose }: SettingsPanelProps): React.JSX.Element {
-  const [draft, setDraft] = useState<AppConfig>(() => clone(config))
+export function SettingsPanel({ snapshot, plugins, onSaved, onClose }: SettingsPanelProps): React.JSX.Element {
+  const [draft, setDraft] = useState<AppConfig>(() => clone(snapshot.config))
+  // 密钥由主进程保管：这里只持有「用户这次新输入的」（空 = 不修改）与「是否要清除」。
+  const [keyInput, setKeyInput] = useState('')
+  const [clearKey, setClearKey] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -54,14 +74,26 @@ export function SettingsPanel({ config, plugins, onSaved, onClose }: SettingsPan
   const searchSection = draft.plugins['search-deepseek']
   const organizeSection = draft.plugins['organize-llm']
 
+  const storage = snapshot.storage
+  const providerSecret = snapshot.secrets['provider-openai']
+  const badge = secretBadge(providerSecret)
+  const hasStoredKey = providerSecret !== undefined
+    && providerSecret.source !== 'none'
+    && providerSecret.source !== 'env'
+  const canEditKey = storage.canPersist
+
   const byKind = (kind: PluginKind): readonly PluginInfo[] => plugins.filter((plugin) => plugin.kind === kind)
 
-  /** 保存：主进程会先校验再落盘。 */
+  /** 保存：主进程会先校验再落盘，并按平台能力加密密钥。 */
   const save = async (): Promise<void> => {
     setSaving(true)
     setError(null)
     try {
-      onSaved(await requireApi().setConfig(draft))
+      const secrets: Record<string, string | null> = {}
+      if (clearKey) secrets['provider-openai'] = null
+      else if (keyInput.trim().length > 0) secrets['provider-openai'] = keyInput.trim()
+
+      onSaved(await requireApi().setConfig({ config: draft, secrets }))
     } catch (err) {
       setError(parseIpcError(err).message)
     } finally {
@@ -122,12 +154,25 @@ export function SettingsPanel({ config, plugins, onSaved, onClose }: SettingsPan
             </label>
             <div className="field-row">
               <label className="field">
-                <span>API Key</span>
+                <span>
+                  API Key
+                  <span className={badge.tone === '' ? 'badge' : `badge ${badge.tone}`}>{badge.text}</span>
+                </span>
                 <input
                   type="password"
-                  value={readString(providerSection, 'apiKey')}
-                  placeholder="留空则读环境变量"
-                  onChange={(event) => setDraft(setPluginField(draft, 'provider-openai', 'apiKey', event.target.value))}
+                  value={keyInput}
+                  disabled={!canEditKey}
+                  placeholder={
+                    !canEditKey
+                      ? '当前平台无法安全保存，请用环境变量'
+                      : hasStoredKey
+                        ? '已保存，留空表示不修改'
+                        : '粘贴你的 API key'
+                  }
+                  onChange={(event) => {
+                    setKeyInput(event.target.value)
+                    if (event.target.value.length > 0) setClearKey(false)
+                  }}
                 />
               </label>
               <label className="field">
@@ -139,6 +184,21 @@ export function SettingsPanel({ config, plugins, onSaved, onClose }: SettingsPan
                 />
               </label>
             </div>
+            {hasStoredKey ? (
+              <div className="row">
+                <button
+                  type="button"
+                  className="btn tiny ghost"
+                  disabled={!canEditKey}
+                  onClick={() => {
+                    setClearKey(true)
+                    setKeyInput('')
+                  }}
+                >
+                  {clearKey ? '将清除（保存后生效）' : '清除已保存的密钥'}
+                </button>
+              </div>
+            ) : null}
             <div className="field-row">
               <label className="field">
                 <span>temperature</span>
@@ -162,8 +222,15 @@ export function SettingsPanel({ config, plugins, onSaved, onClose }: SettingsPan
               </label>
             </div>
             <p className="hint">
-              API Key 以明文保存在应用数据目录的 config.json 里。若不想落盘，请留空并改用环境变量
-              （启动应用前设置 <code>DEEPSEEK_API_KEY</code>）。
+              密钥由系统密钥库加密后保存在应用数据目录；<strong>明文既不写入配置文件，也不下发到界面</strong>。
+              留空即保持原值；想改用环境变量就在上面填变量名并留空此处。
+            </p>
+            {storage.reason === undefined ? null : <p className="hint warn-text">{storage.reason}</p>}
+            {storage.plaintext && storage.canPersist ? (
+              <p className="hint warn-text">当前为明文存储，任何能读取配置文件的程序都能拿到密钥。</p>
+            ) : null}
+            <p className="hint">
+              环境变量入口：启动应用前设置 <code>DEEPSEEK_API_KEY</code>。
             </p>
           </section>
 

@@ -134,8 +134,13 @@ export function assertValidConfig(config: AppConfig): void {
   if (!isPlainObject(config.plugins)) fail('plugins 必须是对象')
 }
 
-/** 读取配置并与缺省值合并。文件缺失时返回缺省值，文件损坏时抛 CONFIG_INVALID。 */
-export async function loadConfig(dataRoot: string): Promise<AppConfig> {
+/**
+ * 读取配置并与缺省值合并，再用 `codec` 解密其中的密钥。
+ *
+ * 不传 codec 时（命令行场景）密文保持不可解，该插件会被视为没有密钥——
+ * 绝不会把密文当成密钥发出去。
+ */
+export async function loadConfig(dataRoot: string, codec?: SecretCodec): Promise<AppConfig> {
   let raw: string
   try {
     raw = await readFile(configFilePath(dataRoot), 'utf8')
@@ -153,16 +158,19 @@ export async function loadConfig(dataRoot: string): Promise<AppConfig> {
 
   const merged = deepMerge(DEFAULT_CONFIG, parsed)
   assertValidConfig(merged)
-  return merged
+  return decodeSecrets(merged, codec)
 }
 
 /**
  * 容错加载：配置损坏时把坏文件备份为 `config.json.bad` 并回退到缺省配置，
  * 避免一个手改坏的 JSON 让整个应用起不来。
  */
-export async function loadConfigResilient(dataRoot: string): Promise<{ config: AppConfig; warning?: string }> {
+export async function loadConfigResilient(
+  dataRoot: string,
+  codec?: SecretCodec,
+): Promise<{ config: AppConfig; warning?: string }> {
   try {
-    return { config: await loadConfig(dataRoot) }
+    return { config: await loadConfig(dataRoot, codec) }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     const backup = `${configFilePath(dataRoot)}.bad`
@@ -175,12 +183,17 @@ export async function loadConfigResilient(dataRoot: string): Promise<{ config: A
   }
 }
 
-/** 写入配置。 */
-export async function saveConfig(dataRoot: string, config: AppConfig): Promise<void> {
+/**
+ * 写入配置：密钥按 `codec` 加密后落盘，明文永不写入文件。
+ *
+ * 调用方必须先完成「保留还是替换密钥」的决策——本函数只负责存储形态。
+ */
+export async function saveConfig(dataRoot: string, config: AppConfig, codec: SecretCodec): Promise<void> {
   assertValidConfig(config)
   const path = configFilePath(dataRoot)
+  const onDisk = encodeSecrets(config, codec)
   await mkdir(dirname(path), { recursive: true })
-  await writeFile(path, `${JSON.stringify(config, null, 2)}\n`, 'utf8')
+  await writeFile(path, `${JSON.stringify(onDisk, null, 2)}\n`, 'utf8')
 }
 
 /** 构造插件读取自己配置段的视图。 */
@@ -210,6 +223,137 @@ export function resolveApiKey(section: Record<string, unknown>, defaultEnvName: 
   const fromEnv = process.env[envName]
   if (typeof fromEnv === 'string' && fromEnv.trim().length > 0) return fromEnv.trim()
   return undefined
+}
+
+/**
+ * 密钥来源。
+ *
+ * 界面只能看到这个枚举，永远拿不到密钥本身。
+ */
+export type SecretSource =
+  /** 没有配置，也没有环境变量。 */
+  | 'none'
+  /** 来自环境变量。 */
+  | 'env'
+  /** 已用 safeStorage 加密保存并成功解密。 */
+  | 'encrypted'
+  /** 明文保存（用户显式允许，或平台不支持加密）。 */
+  | 'plaintext'
+  /** 磁盘上是密文，但本次运行解不开（换了机器/系统用户，或是命令行读桌面应用的配置）。 */
+  | 'undecryptable'
+
+/**
+ * 加解密接缝。
+ *
+ * 内核不认识 Electron：桌面应用注入 safeStorage 实现，命令行与测试注入明文实现，
+ * 引擎代码一行都不用改。
+ */
+export interface SecretCodec {
+  readonly kind: 'safeStorage' | 'plaintext'
+  /** 是否提供真实保护（Linux 的 basic_text 后端返回 false）。 */
+  readonly secure: boolean
+  encrypt(plaintext: string): string
+  decrypt(ciphertext: string): string
+}
+
+/** 明文编解码器：仅用于命令行/测试，或用户显式接受明文存储时。 */
+export const PLAINTEXT_CODEC: SecretCodec = {
+  kind: 'plaintext',
+  secure: false,
+  encrypt: (plaintext) => plaintext,
+  decrypt: (ciphertext) => ciphertext,
+}
+
+/** 落盘时使用的字段名。 */
+const ENCRYPTED_FIELD = 'apiKeyEncrypted'
+const STORAGE_FIELD = 'apiKeyStorage'
+
+/** 把内存配置转成落盘形态：密钥加密，明文永不落盘。 */
+export function encodeSecrets(config: AppConfig, codec: SecretCodec): AppConfig {
+  const plugins: Record<string, Record<string, unknown>> = {}
+  for (const [pluginId, section] of Object.entries(config.plugins)) {
+    const next: Record<string, unknown> = { ...section }
+    delete next['apiKey']
+    delete next[ENCRYPTED_FIELD]
+    delete next[STORAGE_FIELD]
+
+    const apiKey = section['apiKey']
+    if (typeof apiKey === 'string' && apiKey.trim().length > 0) {
+      if (codec.kind === 'safeStorage') {
+        next[ENCRYPTED_FIELD] = codec.encrypt(apiKey.trim())
+        next[STORAGE_FIELD] = 'safeStorage'
+      } else {
+        // 显式选择明文时才写回 apiKey，并且打上标记让界面能持续警告
+        next['apiKey'] = apiKey.trim()
+        next[STORAGE_FIELD] = 'plaintext'
+      }
+    }
+    plugins[pluginId] = next
+  }
+  return { ...config, plugins }
+}
+
+/**
+ * 把落盘形态转回内存配置：解密密钥。
+ *
+ * 解密失败**不是**致命错误：配置可能来自另一台机器或另一个系统用户。
+ * 此时该插件视为没有密钥，由界面提示重新填写。
+ */
+export function decodeSecrets(config: AppConfig, codec?: SecretCodec): AppConfig {
+  const plugins: Record<string, Record<string, unknown>> = {}
+  for (const [pluginId, section] of Object.entries(config.plugins)) {
+    const next: Record<string, unknown> = { ...section }
+    const ciphertext = section[ENCRYPTED_FIELD]
+    if (typeof ciphertext === 'string' && ciphertext.length > 0 && codec !== undefined && codec.kind === 'safeStorage') {
+      try {
+        next['apiKey'] = codec.decrypt(ciphertext)
+      } catch {
+        delete next['apiKey']
+      }
+    }
+    plugins[pluginId] = next
+  }
+  return { ...config, plugins }
+}
+
+/** 抹掉全部密钥材料（明文与密文），用于下发给渲染进程。 */
+export function redactSecrets(config: AppConfig): AppConfig {
+  const plugins: Record<string, Record<string, unknown>> = {}
+  for (const [pluginId, section] of Object.entries(config.plugins)) {
+    const next: Record<string, unknown> = { ...section }
+    delete next['apiKey']
+    delete next[ENCRYPTED_FIELD]
+    plugins[pluginId] = next
+  }
+  return { ...config, plugins }
+}
+
+/** 是否还有明文密钥需要迁移（启动时用）。 */
+export function hasPlaintextSecrets(config: AppConfig): boolean {
+  return Object.values(config.plugins).some(
+    (section) => typeof section['apiKey'] === 'string' && section['apiKey'].length > 0
+      && section[STORAGE_FIELD] !== 'safeStorage',
+  )
+}
+
+/** 取某个插件配置段使用的环境变量名。 */
+export function envNameOf(section: Record<string, unknown>, defaultEnvName: string): string {
+  const configured = section['apiKeyEnv']
+  return typeof configured === 'string' && configured.length > 0 ? configured : defaultEnvName
+}
+
+/** 判断一个插件当前的密钥来源——只看本地状态，不发网络请求。 */
+export function secretSourceOf(section: Record<string, unknown>, defaultEnvName: string): SecretSource {
+  const literal = section['apiKey']
+  if (typeof literal === 'string' && literal.length > 0) {
+    return section[STORAGE_FIELD] === 'safeStorage' ? 'encrypted' : 'plaintext'
+  }
+  // 有密文却没有明文，说明这次没能解开
+  const ciphertext = section[ENCRYPTED_FIELD]
+  if (typeof ciphertext === 'string' && ciphertext.length > 0) return 'undecryptable'
+  const fromEnv = process.env[envNameOf(section, defaultEnvName)]
+  if (typeof fromEnv === 'string' && fromEnv.trim().length > 0) return 'env'
+  return 'none'
 }
 
 /** 读取一个字符串配置项，缺省时返回 fallback。 */

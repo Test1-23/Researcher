@@ -4,7 +4,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import type { AppConfig, PluginInfo } from '../../main/engine/types.ts'
-import type { AppInfo, RunSummary } from '../../shared/ipc.ts'
+import type { AppInfo, ConfigSnapshot, RunSummary } from '../../shared/ipc.ts'
 import { parseIpcError, requireApi } from './api.ts'
 import { IDLE_PROGRESS, reduceRunEvent, type RunProgress } from './state.ts'
 import { PluginsPanel } from './components/PluginsPanel.tsx'
@@ -15,7 +15,7 @@ import { SettingsPanel } from './components/SettingsPanel.tsx'
 /** 顶栏高度等布局常量在 CSS 里定义，这里只关心结构。 */
 export function App(): React.JSX.Element {
   const [info, setInfo] = useState<AppInfo | null>(null)
-  const [config, setConfig] = useState<AppConfig | null>(null)
+  const [snapshot, setSnapshot] = useState<ConfigSnapshot | null>(null)
   const [plugins, setPlugins] = useState<readonly PluginInfo[]>([])
   const [runs, setRuns] = useState<readonly RunSummary[]>([])
   const [progress, setProgress] = useState<RunProgress>(IDLE_PROGRESS)
@@ -28,14 +28,14 @@ export function App(): React.JSX.Element {
   const refresh = useCallback(async (): Promise<void> => {
     const api = requireApi()
     try {
-      const [nextInfo, nextConfig, nextPlugins, nextRuns] = await Promise.all([
+      const [nextInfo, nextSnapshot, nextPlugins, nextRuns] = await Promise.all([
         api.appInfo(),
         api.getConfig(),
         api.listPlugins(),
         api.listRuns(),
       ])
       setInfo(nextInfo)
-      setConfig(nextConfig)
+      setSnapshot(nextSnapshot)
       setPlugins(nextPlugins)
       setRuns(nextRuns)
     } catch (error) {
@@ -247,12 +247,12 @@ export function App(): React.JSX.Element {
         </main>
       </div>
 
-      {dialog === 'settings' && config !== null ? (
+      {dialog === 'settings' && snapshot !== null ? (
         <SettingsPanel
-          config={config}
+          snapshot={snapshot}
           plugins={plugins}
           onSaved={(next) => {
-            setConfig(next)
+            setSnapshot(next)
             setPlugins([])
             void refresh()
             setDialog('none')

@@ -7,9 +7,10 @@
 
 import { app, BrowserWindow, shell } from 'electron'
 import { join } from 'node:path'
-import { loadConfigResilient, saveConfig } from './engine/config.ts'
+import { hasPlaintextSecrets, loadConfigResilient, saveConfig } from './engine/config.ts'
 import { Kernel } from './engine/kernel.ts'
 import { createRegistry } from '../plugins/index.ts'
+import { detectSecretStorage } from './secrets.ts'
 import { registerIpc } from './ipc.ts'
 import type { AppConfig } from './engine/types.ts'
 
@@ -58,7 +59,13 @@ function createWindow(): BrowserWindow {
 
 /** 装配内核：读配置（容错）→ 建注册表 → 建内核。 */
 async function bootstrap(): Promise<Kernel> {
-  const { config, warning } = await loadConfigResilient(dataRoot)
+  // safeStorage 只能在 app ready 之后使用，因此在这里探测而不是模块顶层。
+  const secretStorage = detectSecretStorage()
+  if (secretStorage.reason !== undefined) {
+    console.warn(`[secrets] ${secretStorage.reason}`)
+  }
+
+  const { config, warning } = await loadConfigResilient(dataRoot, secretStorage.codec)
   if (warning !== undefined) {
     console.warn(`[config] ${warning}`)
   }
@@ -79,6 +86,7 @@ async function bootstrap(): Promise<Kernel> {
     applyConfig: (next) => {
       current = next
     },
+    secretStorage,
     appInfo: {
       appVersion: app.getVersion(),
       electronVersion: process.versions.electron ?? 'unknown',
@@ -90,9 +98,19 @@ async function bootstrap(): Promise<Kernel> {
 
   // 配置损坏时把回退后的缺省配置写回磁盘，让用户看到一份可编辑的文件
   if (warning !== undefined) {
-    await saveConfig(dataRoot, current).catch(() => {
+    await saveConfig(dataRoot, current, secretStorage.codec).catch(() => {
       /* 写回失败不影响使用 */
     })
+  }
+
+  // 旧版本把 API key 明文写在配置里：只要能加密，就立刻改写为密文。
+  if (hasPlaintextSecrets(current) && secretStorage.codec.kind === 'safeStorage') {
+    try {
+      await saveConfig(dataRoot, current, secretStorage.codec)
+      console.log('[secrets] 已把配置中的明文 API key 迁移为加密存储')
+    } catch (error) {
+      console.warn(`[secrets] 明文密钥迁移失败：${String(error)}`)
+    }
   }
 
   return kernel
