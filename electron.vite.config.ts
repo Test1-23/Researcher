@@ -14,6 +14,13 @@ export default defineConfig({
     build: {
       rollupOptions: {
         input: resolve(__dirname, 'src/main/index.ts'),
+        // canvas 是 linkedom 的**可选** peer 依赖（真身是需要本地编译的原生模块，我们不装）。
+        // 不声明 external，Vite 会替它造一个「解析不到」的替身模块，而这个替身的行为**随构建
+        // 模式变化**：生产构建给一个空对象（`createCanvas` 变成 undefined，抽到带 <canvas>
+        // 的页面就崩），开发构建直接生成模块级 throw（`pnpm dev` 一启动就弹
+        // 「Could not resolve "canvas" imported by "linkedom"」）。
+        // 声明成 external，运行期 require 失败后由 linkedom 自带的兜底实现接手。
+        external: ['canvas'],
       },
     },
   },
