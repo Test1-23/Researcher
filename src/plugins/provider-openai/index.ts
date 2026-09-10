@@ -10,12 +10,14 @@ import { cancelled, isAbortError, RateLimitError, ResearcherError } from '../../
 import { definePlugin } from '../../main/engine/registry.ts'
 import type {
   AvailabilityContext,
+  ChatMessage,
   CompleteRequest,
   CompleteResult,
   LlmProvider,
   PluginContext,
   PluginManifest,
   TokenUsage,
+  ToolCall,
 } from '../../main/engine/types.ts'
 
 /** 默认端点：DeepSeek 的 OpenAI 兼容接口。 */
@@ -33,7 +35,14 @@ const BASE_BACKOFF_MS = 1200
 interface ChatCompletionResponse {
   readonly model?: string
   readonly choices?: readonly {
-    readonly message?: { readonly content?: string | null }
+    readonly message?: {
+      readonly content?: string | null
+      readonly tool_calls?: readonly {
+        readonly id?: string
+        readonly type?: string
+        readonly function?: { readonly name?: string; readonly arguments?: string }
+      }[]
+    }
     readonly finish_reason?: string
   }[]
   readonly usage?: {
@@ -44,10 +53,58 @@ interface ChatCompletionResponse {
   readonly message?: string
 }
 
+/** 把一条内部消息映射成 OpenAI 兼容的线格式。导出以便测试断言真实实现。 */
+export function toWireMessage(message: ChatMessage): Record<string, unknown> {
+  const wire: Record<string, unknown> = { role: message.role, content: message.content }
+  if (message.toolCalls !== undefined && message.toolCalls.length > 0) {
+    wire['tool_calls'] = message.toolCalls.map((call) => ({
+      id: call.id,
+      type: 'function',
+      function: {
+        name: call.name,
+        arguments: typeof call.rawArguments === 'string'
+          ? call.rawArguments
+          : JSON.stringify(call.arguments ?? {}),
+      },
+    }))
+    // assistant 带工具调用时 content 允许为空
+    if (message.content.length === 0) wire['content'] = null
+  }
+  if (message.toolCallId !== undefined) wire['tool_call_id'] = message.toolCallId
+  return wire
+}
+
+/** 解析模型返回的工具调用；参数 JSON 非法时保留原文而不是丢弃。 */
+export function parseToolCalls(
+  raw: readonly { id?: string; function?: { name?: string; arguments?: string } }[] | undefined,
+): ToolCall[] {
+  if (raw === undefined) return []
+  const calls: ToolCall[] = []
+  for (const [index, item] of raw.entries()) {
+    const name = item.function?.name
+    if (typeof name !== 'string' || name.length === 0) continue
+    const id = typeof item.id === 'string' && item.id.length > 0 ? item.id : `call_${index}`
+    const rawArguments = item.function?.arguments
+    if (typeof rawArguments !== 'string' || rawArguments.trim().length === 0) {
+      calls.push({ id, name })
+      continue
+    }
+    try {
+      calls.push({ id, name, arguments: JSON.parse(rawArguments) as unknown, rawArguments })
+    } catch {
+      // 模型给出非法 JSON：保留原文交给上层决定，绝不静默当成空参数
+      calls.push({ id, name, rawArguments })
+    }
+  }
+  return calls
+}
+
 /** OpenAI 兼容 provider。 */
 export class OpenAiCompatibleProvider implements LlmProvider {
   readonly id = 'provider-openai'
   readonly kind = 'provider' as const
+  /** OpenAI 兼容端点的标准 function calling。 */
+  readonly supportsTools = true
 
   /** 只做本地检查：有 key、端点合法、model 非空即视为可用。 */
   available(ctx: AvailabilityContext): boolean {
@@ -76,11 +133,22 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     const endpoint = `${baseUrl}/chat/completions`
     const body: Record<string, unknown> = {
       model,
-      messages: request.messages.map((message) => ({ role: message.role, content: message.content })),
+      messages: request.messages.map(toWireMessage),
       temperature,
       max_tokens: maxTokens,
     }
     if (request.json === true) body['response_format'] = { type: 'json_object' }
+    if (request.tools !== undefined && request.tools.length > 0) {
+      body['tools'] = request.tools.map((tool) => ({
+        type: 'function',
+        function: {
+          name: tool.name,
+          description: tool.description,
+          parameters: tool.parameters,
+        },
+      }))
+      body['tool_choice'] = request.toolChoice ?? 'auto'
+    }
 
     let lastError: unknown
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
@@ -150,8 +218,12 @@ export class OpenAiCompatibleProvider implements LlmProvider {
     }
 
     const choice = payload.choices?.[0]
-    const text = choice?.message?.content
-    if (typeof text !== 'string' || text.length === 0) {
+    const toolCalls = parseToolCalls(choice?.message?.tool_calls)
+    const rawText = choice?.message?.content
+    const text = typeof rawText === 'string' ? rawText : ''
+
+    // 带工具调用时 content 允许为空；只有当两者都没有时才算失败
+    if (text.length === 0 && toolCalls.length === 0) {
       const reason = choice?.finish_reason
       throw new ResearcherError(
         `大模型没有返回内容${reason !== undefined ? `（finish_reason=${reason}）` : ''}。`
@@ -171,6 +243,7 @@ export class OpenAiCompatibleProvider implements LlmProvider {
       text,
       model: typeof payload.model === 'string' && payload.model.length > 0 ? payload.model : model,
       ...(usage === undefined ? {} : { usage }),
+      ...(toolCalls.length === 0 ? {} : { toolCalls }),
     }
   }
 }

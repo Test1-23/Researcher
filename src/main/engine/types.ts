@@ -79,8 +79,33 @@ export interface SearchProvider {
 
 /** 一条对话消息（OpenAI 兼容形状的子集）。 */
 export interface ChatMessage {
-  readonly role: 'system' | 'user' | 'assistant'
+  readonly role: 'system' | 'user' | 'assistant' | 'tool'
   readonly content: string
+  /** `role='assistant'` 时：模型要求调用的工具。 */
+  readonly toolCalls?: readonly ToolCall[]
+  /** `role='tool'` 时：这条结果对应哪次调用。 */
+  readonly toolCallId?: string
+}
+
+/**
+ * 一个可被模型调用的工具。
+ *
+ * `parameters` 是 JSON Schema——直接透传给 OpenAI 兼容端点，不做任何加工。
+ */
+export interface ToolSpec {
+  readonly name: string
+  readonly description: string
+  readonly parameters: Readonly<Record<string, unknown>>
+}
+
+/** 模型发起的一次工具调用。 */
+export interface ToolCall {
+  readonly id: string
+  readonly name: string
+  /** 已解析的参数；模型给出非法 JSON 时为 undefined。 */
+  readonly arguments?: unknown
+  /** 原始参数串：解析失败时保留下来便于排查。 */
+  readonly rawArguments?: string
 }
 
 /** 一次补全请求。 */
@@ -90,6 +115,10 @@ export interface CompleteRequest {
   readonly json?: boolean
   readonly temperature?: number
   readonly maxTokens?: number
+  /** 本次允许模型调用的工具；为空表示不启用工具调用。 */
+  readonly tools?: readonly ToolSpec[]
+  /** `none` 用于逼模型直接产出内容而不调工具（例如步数将尽时的强制收稿）。 */
+  readonly toolChoice?: 'auto' | 'none'
 }
 
 /** token 用量，用于成本可见性。 */
@@ -104,12 +133,21 @@ export interface CompleteResult {
   /** 实际使用的模型名，写入 provenance。 */
   readonly model: string
   readonly usage?: TokenUsage
+  /** 模型要求调用的工具；非空时 `text` 可能为空串。 */
+  readonly toolCalls?: readonly ToolCall[]
 }
 
 /** 一个大模型后端。OpenAI 兼容适配器即实现本接口。 */
 export interface LlmProvider {
   readonly id: string
   readonly kind: 'provider'
+  /**
+   * 是否支持**原生**工具调用。
+   *
+   * 不做提示词模拟：那正是「不该手写」的同一个错误。不支持时上层降级为
+   * 无工具模式，并如实记录。
+   */
+  readonly supportsTools: boolean
   /** 廉价的本地可用性检查：只看配置，不得发起网络请求。 */
   available(ctx: AvailabilityContext): boolean
   complete(req: CompleteRequest, ctx: PluginContext, signal?: AbortSignal): Promise<CompleteResult>

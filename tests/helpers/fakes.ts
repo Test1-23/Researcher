@@ -23,6 +23,7 @@ import type {
   SearchRequest,
   SearchResult,
   SearchSource,
+  ToolCall,
 } from '../../src/main/engine/types.ts'
 
 /** 可配置的假搜索插件。 */
@@ -56,6 +57,7 @@ export class FakeSearch implements SearchProvider {
 /** 可配置的假大模型插件。 */
 export class FakeLlm implements LlmProvider {
   readonly kind = 'provider' as const
+  readonly supportsTools = true
   readonly calls: CompleteRequest[] = []
 
   constructor(
@@ -63,6 +65,8 @@ export class FakeLlm implements LlmProvider {
     private readonly options: {
       available?: boolean
       reply?: string | ((request: CompleteRequest, index: number) => string)
+      /** 返回工具调用而非文本；与 reply 二选一。 */
+      toolCalls?: (request: CompleteRequest, index: number) => readonly ToolCall[] | undefined
       error?: Error
     } = {},
   ) {}
@@ -75,6 +79,12 @@ export class FakeLlm implements LlmProvider {
     const index = this.calls.length
     this.calls.push(request)
     if (this.options.error !== undefined) throw this.options.error
+
+    const toolCalls = this.options.toolCalls?.(request, index)
+    if (toolCalls !== undefined && toolCalls.length > 0) {
+      return { text: '', model: 'fake-model', toolCalls, usage: { promptTokens: 10, completionTokens: 5 } }
+    }
+
     const reply = this.options.reply ?? '{}'
     return {
       text: typeof reply === 'function' ? reply(request, index) : reply,
