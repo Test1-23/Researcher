@@ -1,0 +1,14 @@
+{
+  "engine": "0.1.0",
+  "pipeline": "pipeline-default",
+  "search": "search-duckduckgo",
+  "searchFallbackUsed": true,
+  "provider": "provider-openai",
+  "organize": "organize-extractive",
+  "outputs": [
+    "output-markdown",
+    "output-html"
+  ],
+  "degraded": "配置的整理插件 organize-llm 不可用，本次改用 organize-extractive",
+  "generatedAt": "2026-09-10T04:18:07.871Z"
+}
