@@ -59,12 +59,15 @@ export class OutlineTask implements AgentTask {
 
   private lastBuiltFromRevision = -1
   private lastCoverage = ''
+  private readonly template: DocumentTemplate
+  private readonly config: OutlineTaskConfig
+  private readonly meter: LlmMeter | undefined
 
-  constructor(
-    private readonly template: DocumentTemplate,
-    private readonly config: OutlineTaskConfig = DEFAULT_OUTLINE_TASK,
-    private readonly meter?: LlmMeter,
-  ) {}
+  constructor(template: DocumentTemplate, config: OutlineTaskConfig = DEFAULT_OUTLINE_TASK, meter?: LlmMeter) {
+    this.template = template
+    this.config = config
+    this.meter = meter
+  }
 
   get templateId(): string {
     return this.template.id

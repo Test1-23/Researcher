@@ -92,6 +92,15 @@ export function renderReportMarkdown(report: Report): string {
     lines.push('')
   }
 
+  if (report.outputFailures !== undefined && report.outputFailures.length > 0) {
+    lines.push('## 未生成的格式', '')
+    lines.push('以下输出格式在渲染时失败，因此本次没有产出对应文件：', '')
+    for (const failure of report.outputFailures) {
+      lines.push(`- ${failure.plugin} — ${failure.reason}`)
+    }
+    lines.push('')
+  }
+
   lines.push('## 运行信息', '')
   lines.push(`- 引擎版本：${report.provenance.engine}`)
   lines.push(`- 主流程：${report.provenance.pipeline}`)

@@ -114,11 +114,13 @@ export class SearchTask implements AgentTask {
   private readonly rounds: ContributionRecord[] = []
   private pendingQueries: string[] = []
   private expanded = false
+  private readonly config: SearchTaskConfig
+  private readonly meter: LlmMeter | undefined
 
-  constructor(
-    private readonly config: SearchTaskConfig = DEFAULT_SEARCH_TASK,
-    private readonly meter?: LlmMeter,
-  ) {}
+  constructor(config: SearchTaskConfig = DEFAULT_SEARCH_TASK, meter?: LlmMeter) {
+    this.config = config
+    this.meter = meter
+  }
 
   /** 本轮观测记录（写进 report / provenance）。 */
   get history(): readonly ContributionRecord[] {

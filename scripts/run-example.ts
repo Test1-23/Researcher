@@ -23,11 +23,64 @@ import type { FetchedDocument, FetchService, RawResponse, RunEvent } from '../sr
 import { createRegistry } from '../src/plugins/index.ts'
 import { DUCKDUCKGO_FIXTURE, DUCKDUCKGO_PAGES } from '../fixtures/duckduckgo.ts'
 
-const args = process.argv.slice(2)
-const offline = args.includes('--offline')
-const saveExample = args.includes('--save-example')
-const query = args.find((argument) => !argument.startsWith('--'))
-  ?? '演示：Alpha 与 Beta 是什么关系'
+/**
+ * 解析命令行。
+ *
+ * 用手写循环而不是 `args.find`：`--format md` 里的 `md` 是**选项的值**，
+ * 不是位置参数；用 find 找位置参数会把它误当成查询词。
+ */
+function parseArgs(argv: readonly string[]): {
+  readonly query: string
+  readonly offline: boolean
+  readonly saveExample: boolean
+  readonly formats: readonly string[] | undefined
+} {
+  /** 常见的简写：命令行的便利，不下沉到引擎（引擎只认插件声明的 format）。 */
+  const aliases: Readonly<Record<string, string>> = { md: 'markdown', htm: 'html', txt: 'markdown' }
+  const parseFormats = (value: string): string[] =>
+    value
+      .split(',')
+      .map((item) => item.trim().toLowerCase())
+      .filter((item) => item.length > 0)
+      .map((item) => aliases[item] ?? item)
+
+  const positionals: string[] = []
+  let offline = false
+  let saveExample = false
+  let formats: readonly string[] | undefined
+
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index] ?? ''
+    if (arg === '--offline') {
+      offline = true
+      continue
+    }
+    if (arg === '--save-example') {
+      saveExample = true
+      continue
+    }
+    if (arg.startsWith('--format=')) {
+      formats = parseFormats(arg.slice('--format='.length))
+      continue
+    }
+    if (arg === '--format') {
+      formats = parseFormats(argv[index + 1] ?? '')
+      index += 1
+      continue
+    }
+    if (arg.startsWith('--')) continue
+    positionals.push(arg)
+  }
+
+  return {
+    query: positionals[0] ?? '演示：Alpha 与 Beta 是什么关系',
+    offline,
+    saveExample,
+    formats,
+  }
+}
+
+const { query, offline, saveExample, formats } = parseArgs(process.argv.slice(2))
 
 /** 只读录制夹具的抓取服务：让整条 pipeline 在无网络环境里也能跑完。 */
 function offlineFetch(): FetchService {
@@ -79,7 +132,7 @@ const kernel = new Kernel({
 })
 
 console.log(`查询：${query}`)
-console.log(`模式：${offline ? '离线（录制夹具，不联网）' : '在线'}`)
+console.log(`模式：${offline ? '离线（录制夹具，不联网）' : '在线'}${formats === undefined ? '' : `　输出格式：${formats.join('、')}`}`)
 console.log('插件状态：')
 for (const info of kernel.pluginInfos()) {
   if (info.kind === 'search' || info.kind === 'organize' || info.kind === 'provider') {
@@ -112,7 +165,10 @@ bus.on((event: RunEvent) => {
 })
 
 try {
-  const outcome = await kernel.run({ query }, bus)
+  const outcome = await kernel.run(
+    { query, ...(formats === undefined ? {} : { formats }) },
+    bus,
+  )
   console.log('')
   console.log(`✔ 运行完成：${outcome.runId}`)
   console.log(`  搜索插件：${outcome.report.provenance.search}${outcome.report.provenance.searchFallbackUsed ? '（已降级）' : ''}`)

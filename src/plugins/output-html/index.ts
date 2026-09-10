@@ -152,6 +152,14 @@ export function renderReportHtml(report: Report): string {
     parts.push('</ul>')
   }
 
+  if (report.outputFailures !== undefined && report.outputFailures.length > 0) {
+    parts.push('<h2>未生成的格式</h2><ul>')
+    for (const failure of report.outputFailures) {
+      parts.push(`<li>${escapeHtml(failure.plugin)} — ${escapeHtml(failure.reason)}</li>`)
+    }
+    parts.push('</ul>')
+  }
+
   parts.push('<h2>运行信息</h2><ul>')
   parts.push(`<li>引擎版本：${escapeHtml(report.provenance.engine)}</li>`)
   parts.push(`<li>主流程：${escapeHtml(report.provenance.pipeline)}</li>`)

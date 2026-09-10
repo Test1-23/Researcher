@@ -125,12 +125,15 @@ export class WritingTask implements AgentTask {
   private readonly attempts = new Map<string, number>()
   /** 每节累计的工具调用次数，用于报告。 */
   private readonly toolCalls = new Map<string, number>()
+  private readonly template: DocumentTemplate
+  private readonly config: WritingTaskConfig
+  private readonly meter: LlmMeter | undefined
 
-  constructor(
-    private readonly template: DocumentTemplate,
-    private readonly config: WritingTaskConfig = DEFAULT_WRITING_TASK,
-    private readonly meter?: LlmMeter,
-  ) {}
+  constructor(template: DocumentTemplate, config: WritingTaskConfig = DEFAULT_WRITING_TASK, meter?: LlmMeter) {
+    this.template = template
+    this.config = config
+    this.meter = meter
+  }
 
   /** 工具调用总数。 */
   get totalToolCalls(): number {

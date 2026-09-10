@@ -294,6 +294,12 @@ export interface AgenticProvenance {
   }[]
 }
 
+/** 一个输出插件渲染失败。 */
+export interface OutputFailure {
+  readonly plugin: string
+  readonly reason: string
+}
+
 /** 一次运行的最终产物。 */
 export interface Report {
   readonly runId: string
@@ -306,6 +312,12 @@ export interface Report {
   readonly failures: readonly FetchFailure[]
   readonly synthesis: OrganizeOutput
   readonly provenance: Provenance
+  /**
+   * 渲染失败的输出插件。
+   *
+   * 单个格式失败不让整轮运行失败——报告已经算完了，不该因为一个渲染器出错就全丢。
+   */
+  readonly outputFailures?: readonly OutputFailure[]
 }
 
 // ─────────────────────────────── 主 pipeline ───────────────────────────────

@@ -65,6 +65,10 @@ export function buildExport(report: Report): unknown {
     sources,
     provenance: report.provenance,
     runId: report.runId,
+    // 没生成出来的格式也要如实交代，否则下游会以为数据完整
+    ...(report.outputFailures === undefined || report.outputFailures.length === 0
+      ? {}
+      : { outputFailures: report.outputFailures }),
   }
 }
 

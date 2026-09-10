@@ -7,6 +7,7 @@
 
 import { ENGINE_VERSION } from '../../main/engine/config.ts'
 import { FetchError, isCancellation, throwIfAborted, toResearcherError } from '../../main/engine/errors.ts'
+import { renderOutputs, selectOutputs } from '../../main/engine/output.ts'
 import { definePlugin } from '../../main/engine/registry.ts'
 import type {
   AvailabilityContext,
@@ -250,16 +251,18 @@ export class DefaultPipeline implements Pipeline {
 
     // ── 输出 ──
     ctx.events.emit({ type: 'stage:start', stage: 'output' })
-    let artifactCount = 0
-    for (const plugin of outputs) {
-      throwIfAborted(signal)
-      const artifacts = await plugin.render(report, ctx, signal)
-      artifactCount += artifacts.length
-      ctx.log.debug(`输出插件 ${plugin.id} 写出 ${artifacts.map((artifact) => artifact.path).join('、')}`)
+    const selection = selectOutputs(outputs, input.formats)
+    if (selection.missing.length > 0) {
+      ctx.log.warn(`要求的格式 ${selection.missing.join('、')} 没有启用对应输出插件，本次不会产出`)
     }
-    ctx.events.emit({ type: 'stage:done', stage: 'output', summary: `写出 ${artifactCount} 个产物` })
+    const rendered = await renderOutputs(report, selection.plugins, ctx, signal)
+    ctx.events.emit({
+      type: 'stage:done',
+      stage: 'output',
+      summary: `写出 ${rendered.artifacts.length} 个产物${rendered.failures.length === 0 ? '' : `，${rendered.failures.length} 个格式失败`}`,
+    })
 
-    return report
+    return rendered.report
   }
 }
 
