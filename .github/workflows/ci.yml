@@ -44,6 +44,11 @@ jobs:
       - name: 构建 main / preload / renderer
         run: pnpm build
 
+      # 类型检查和单元测试都看不见打包产物：这一步专门拦「解析不到依赖时打包器
+      # 塞进产物里的替身模块」（开发构建会直接让 Electron 启动即崩）
+      - name: 打包产物体检
+        run: pnpm check:bundle
+
   secret-scan:
     name: 密钥扫描（工作树 + 全量历史）
     runs-on: ubuntu-latest

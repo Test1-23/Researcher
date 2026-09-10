@@ -14,6 +14,7 @@
     "test:watch": "vitest",
     "example": "node --no-warnings scripts/run-example.ts",
     "example:offline": "node --no-warnings scripts/run-example.ts --offline --save-example",
+    "check:bundle": "node --no-warnings scripts/check-bundle.ts",
     "smoke:ui": "node --no-warnings scripts/smoke-ui.ts",
     "scan:secrets": "node --no-warnings scripts/scan-secrets.ts --history"
   },
