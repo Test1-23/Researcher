@@ -30,6 +30,14 @@ export interface LogLine {
   readonly at: string
 }
 
+/** 一个自主任务的状态。 */
+export interface TaskProgress {
+  readonly task: string
+  readonly satisfied: boolean
+  readonly reason: string
+  readonly steps: number
+}
+
 /** 一次运行的完整界面状态。 */
 export interface RunProgress {
   readonly runId: string | null
@@ -38,6 +46,8 @@ export interface RunProgress {
   readonly sources: readonly SearchSource[]
   readonly fetches: readonly FetchProgress[]
   readonly logs: readonly LogLine[]
+  /** 自主任务的状态：让「为什么停」看得见。 */
+  readonly tasks: readonly TaskProgress[]
   readonly report?: Report
   readonly artifacts: readonly Artifact[]
   readonly error?: { readonly code: string; readonly message: string }
@@ -51,6 +61,7 @@ export const IDLE_PROGRESS: RunProgress = {
   sources: [],
   fetches: [],
   logs: [],
+  tasks: [],
   artifacts: [],
 }
 
@@ -116,10 +127,43 @@ export function reduceRunEvent(state: RunProgress, event: RunEvent): RunProgress
         logs: [...state.logs, { level: event.level, message: event.message, at: event.at }].slice(-MAX_LOGS),
       }
 
+    case 'task:step':
+      return {
+        ...state,
+        tasks: upsertTask(state.tasks, event.task, (current) => ({
+          task: event.task,
+          satisfied: current?.satisfied ?? false,
+          reason: event.message,
+          steps: event.step,
+        })),
+      }
+
+    case 'task:state':
+      return {
+        ...state,
+        tasks: upsertTask(state.tasks, event.task, (current) => ({
+          task: event.task,
+          satisfied: event.satisfied,
+          reason: event.reason,
+          steps: current?.steps ?? 0,
+        })),
+      }
+
     case 'run:done':
       return { ...state, status: 'done', report: event.report, artifacts: [...event.artifacts] }
 
     case 'run:error':
       return { ...state, status: 'error', error: { code: event.code, message: event.message } }
   }
+}
+
+/** 按任务名替换或追加一条任务状态。 */
+function upsertTask(
+  tasks: readonly TaskProgress[],
+  task: string,
+  update: (current: TaskProgress | undefined) => TaskProgress,
+): readonly TaskProgress[] {
+  const existing = tasks.find((item) => item.task === task)
+  const next = update(existing)
+  return existing === undefined ? [...tasks, next] : tasks.map((item) => (item.task === task ? next : item))
 }

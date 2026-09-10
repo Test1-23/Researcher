@@ -57,6 +57,29 @@ export function ProgressPanel({ progress }: ProgressPanelProps): React.JSX.Eleme
         </ol>
       </section>
 
+      {progress.tasks.length === 0 ? null : (
+        <section>
+          <h3 className="section-title">
+            任务
+            <span className="count">每个任务达成自己的条件才算完成</span>
+          </h3>
+          <ul className="stages">
+            {progress.tasks.map((task) => (
+              <li key={task.task} className={`stage ${task.satisfied ? 'done' : ''}`}>
+                <span className="stage-mark">{task.satisfied ? '✓' : '⋯'}</span>
+                <div>
+                  <div className="stage-name">
+                    {task.task}
+                    <span className="count"> · {task.steps} 步</span>
+                  </div>
+                  <div className="stage-summary">{task.reason}</div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
       <section>
         <h3 className="section-title">
           来源

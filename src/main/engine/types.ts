@@ -309,6 +309,10 @@ export type RunEventPayload =
   | { readonly type: 'source:found'; readonly source: SearchSource }
   | { readonly type: 'fetch:done'; readonly url: string; readonly status: number; readonly bytes: number; readonly ok: boolean }
   | { readonly type: 'log'; readonly level: 'debug' | 'info' | 'warn' | 'error'; readonly message: string }
+  /** 自主任务走了一步。 */
+  | { readonly type: 'task:step'; readonly task: string; readonly step: number; readonly message: string }
+  /** 任务的满足状态变化（含为什么不能停）。 */
+  | { readonly type: 'task:state'; readonly task: string; readonly satisfied: boolean; readonly reason: string }
   | { readonly type: 'run:done'; readonly report: Report; readonly artifacts: readonly Artifact[] }
   | { readonly type: 'run:error'; readonly code: string; readonly message: string }
 
