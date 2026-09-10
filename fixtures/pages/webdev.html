@@ -1,0 +1,868 @@
+
+<!doctype html><html
+lang="zh-CN-x-mtfrom-en"
+dir="ltr"><head><meta name="google-signin-client-id" content="157101835696-ooapojlodmuabs2do2vuhhnf90bccmoi.apps.googleusercontent.com"><meta name="google-signin-scope"
+content="profile email"><meta property="og:site_name" content="web.dev for China"><meta property="og:type" content="website"><meta name="googlebot" content="noindex"><meta name="theme-color" content="#3740ff"><meta charset="utf-8"><meta content="IE=Edge" http-equiv="X-UA-Compatible"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="manifest" href="/_pwa/web/manifest.json"
+crossorigin="use-credentials"><link rel="preconnect" href="//www.gstatic.cn" crossorigin><link rel="preconnect" href="//fonts.googleapis.cn" crossorigin><link rel="preconnect" href="//www.google-analytics.com" crossorigin><link rel="stylesheet" href="//fonts.googleapis.cn/css?family=Google+Sans:400,500|Roboto:400,400italic,500,500italic,700,700italic|Roboto+Mono:400,500,700&display=swap"><link rel="stylesheet"
+href="//fonts.googleapis.cn/css2?family=Material+Icons&family=Material+Symbols+Outlined&display=block"><link rel="stylesheet" href="https://www.gstatic.cn/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/web/css/app.css"><link rel="shortcut icon" href="https://www.gstatic.cn/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/web/images/favicon.png"><link rel="apple-touch-icon" href="https://www.gstatic.cn/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/web/images/touchicon-180.png"><link rel="canonical" href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=zh-cn"><link rel="alternate" hreflang="en-cn"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers" /><link rel="alternate" hreflang="x-default" href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers" /><link rel="alternate" hreflang="ar-cn"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=ar" /><link rel="alternate" hreflang="bn-cn"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=bn" /><link rel="alternate" hreflang="zh-Hans-cn"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=zh-cn" /><link rel="alternate" hreflang="zh-Hant-cn"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=zh-tw" /><link rel="alternate" hreflang="fa-cn"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=fa" /><link rel="alternate" hreflang="fr-cn"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=fr" /><link rel="alternate" hreflang="de-cn"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=de" /><link rel="alternate" hreflang="he-cn"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=he" /><link rel="alternate" hreflang="hi-cn"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=hi" /><link rel="alternate" hreflang="id-cn"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=id" /><link rel="alternate" hreflang="it-cn"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=it" /><link rel="alternate" hreflang="ja-cn"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=ja" /><link rel="alternate" hreflang="ko-cn"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=ko" /><link rel="alternate" hreflang="pl-cn"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=pl" /><link rel="alternate" hreflang="pt-BR-cn"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=pt-br" /><link rel="alternate" hreflang="ru-cn"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=ru" /><link rel="alternate" hreflang="es-419-cn"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=es-419" /><link rel="alternate" hreflang="th-cn"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=th" /><link rel="alternate" hreflang="tr-cn"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=tr" /><link rel="alternate" hreflang="vi-cn"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=vi" /><link rel="alternate" hreflang="en"
+href="https://web.dev/blog/webgpu-supported-major-browsers" /><link rel="alternate" hreflang="x-default" href="https://web.dev/blog/webgpu-supported-major-browsers" /><link rel="alternate" hreflang="ar"
+href="https://web.dev/blog/webgpu-supported-major-browsers?hl=ar" /><link rel="alternate" hreflang="bn"
+href="https://web.dev/blog/webgpu-supported-major-browsers?hl=bn" /><link rel="alternate" hreflang="zh-Hans"
+href="https://web.dev/blog/webgpu-supported-major-browsers?hl=zh-cn" /><link rel="alternate" hreflang="zh-Hant"
+href="https://web.dev/blog/webgpu-supported-major-browsers?hl=zh-tw" /><link rel="alternate" hreflang="fa"
+href="https://web.dev/blog/webgpu-supported-major-browsers?hl=fa" /><link rel="alternate" hreflang="fr"
+href="https://web.dev/blog/webgpu-supported-major-browsers?hl=fr" /><link rel="alternate" hreflang="de"
+href="https://web.dev/blog/webgpu-supported-major-browsers?hl=de" /><link rel="alternate" hreflang="he"
+href="https://web.dev/blog/webgpu-supported-major-browsers?hl=he" /><link rel="alternate" hreflang="hi"
+href="https://web.dev/blog/webgpu-supported-major-browsers?hl=hi" /><link rel="alternate" hreflang="id"
+href="https://web.dev/blog/webgpu-supported-major-browsers?hl=id" /><link rel="alternate" hreflang="it"
+href="https://web.dev/blog/webgpu-supported-major-browsers?hl=it" /><link rel="alternate" hreflang="ja"
+href="https://web.dev/blog/webgpu-supported-major-browsers?hl=ja" /><link rel="alternate" hreflang="ko"
+href="https://web.dev/blog/webgpu-supported-major-browsers?hl=ko" /><link rel="alternate" hreflang="pl"
+href="https://web.dev/blog/webgpu-supported-major-browsers?hl=pl" /><link rel="alternate" hreflang="pt-BR"
+href="https://web.dev/blog/webgpu-supported-major-browsers?hl=pt-br" /><link rel="alternate" hreflang="ru"
+href="https://web.dev/blog/webgpu-supported-major-browsers?hl=ru" /><link rel="alternate" hreflang="es-419"
+href="https://web.dev/blog/webgpu-supported-major-browsers?hl=es-419" /><link rel="alternate" hreflang="th"
+href="https://web.dev/blog/webgpu-supported-major-browsers?hl=th" /><link rel="alternate" hreflang="tr"
+href="https://web.dev/blog/webgpu-supported-major-browsers?hl=tr" /><link rel="alternate" hreflang="vi"
+href="https://web.dev/blog/webgpu-supported-major-browsers?hl=vi" /><title>主流浏览器现已支持 WebGPU &nbsp;|&nbsp; Blog &nbsp;|&nbsp; web.dev for China</title><meta property="og:title" content="主流浏览器现已支持 WebGPU &nbsp;|&nbsp; Blog &nbsp;|&nbsp; web.dev for China"><meta name="description" content="了解自 WebGL 以来规模最大的 Web 图形发布。WebGPU 受主流浏览器支持，可为 Web 带来无与伦比的性能。"><meta property="og:description" content="了解自 WebGL 以来规模最大的 Web 图形发布。WebGPU 受主流浏览器支持，可为 Web 带来无与伦比的性能。"><meta property="og:url" content="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=zh-cn"><meta property="og:image" content="https://web.developers.google.cn/static/blog/webgpu-supported-major-browsers/image/hero.jpg?hl=zh-cn"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="675"><meta property="og:locale" content="zh_cn"><meta name="twitter:card" content="summary_large_image"><script type="application/ld+json">
+{
+"@context": "https://schema.org",
+"@type": "BreadcrumbList",
+"itemListElement": [{
+"@type": "ListItem",
+"position": 1,
+"name": "Blog",
+"item": "https://web.developers.google.cn/blog"
+},{
+"@type": "ListItem",
+"position": 2,
+"name": "主流浏览器现已支持 WebGPU",
+"item": "https://web.developers.google.cn/blog/webgpu-supported-major-browsers"
+}]
+}
+</script><link rel="alternate machine-translated-from" hreflang="en"
+href="https://web.developers.google.cn/blog/webgpu-supported-major-browsers?hl=en"></head><body class="color-scheme--light"
+template="page"
+theme="web-theme"
+type="blog"
+layout="docs"
+block-apix
+display-toc
+pending><devsite-progress type="indeterminate" id="app-progress"></devsite-progress><a href="#main-content" class="skip-link button">
+跳至主要内容
+</a><section class="devsite-wrapper"><devsite-cookie-notification-bar></devsite-cookie-notification-bar><devsite-header role="banner"><div class="devsite-header--inner" data-nosnippet><div class="devsite-top-logo-row-wrapper-wrapper"><div class="devsite-top-logo-row-wrapper"><div class="devsite-top-logo-row"><button type="button" id="devsite-hamburger-menu"
+class="devsite-header-icon-button button-flat material-icons gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Navigation menu button"
+visually-hidden
+aria-label="打开菜单"></button><div class="devsite-product-name-wrapper"><a href="/" class="devsite-site-logo-link gc-analytics-event"
+data-category="Site-Wide Custom Events" data-label="Site logo" track-type="globalNav"
+track-name="webDevForChina" track-metadata-position="nav"
+track-metadata-eventDetail="nav"><picture><img src="https://www.gstatic.cn/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/web/images/lockup.svg" class="devsite-site-logo" alt="web.dev for China"></picture></a></div><div class="devsite-top-logo-row-middle"><div class="devsite-header-upper-tabs"><devsite-tabs class="upper-tabs"><nav class="devsite-tabs-wrapper" aria-label="上面的标签页"><tab class="devsite-dropdown
+devsite-dropdown-full
+"><button
+class="devsite-tabs-content devsite-tabs-dropdown-only gc-analytics-event devsite-icon devsite-icon-arrow-drop-down"
+track-type="nav"
+track-metadata-position="nav - 资源"
+track-metadata-module="primary nav"
+data-category="Site-Wide Custom Events"
+data-label="Tab: 资源"
+track-name="资源"
+>
+资源
+</button><div class="devsite-tabs-dropdown" role="menu" aria-label="submenu" hidden><div class="devsite-tabs-dropdown-content"><div class="devsite-tabs-dropdown-column
+"><ul class="devsite-tabs-dropdown-section
+build-icon web-dev-subnav"><li class="devsite-nav-title" role="heading" tooltip>网络平台</li><li class="devsite-nav-description">您可以按照自己的节奏深入了解 Web 平台。
+</li><li class="devsite-nav-item"><a href="https://web.developers.google.cn/html?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://web.developers.google.cn/html?hl=zh-cn"
+track-metadata-position="nav - 资源"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="网络平台"
+tooltip
+><div class="devsite-nav-item-title">
+HTML
+</div></a></li><li class="devsite-nav-item"><a href="https://web.developers.google.cn/css?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://web.developers.google.cn/css?hl=zh-cn"
+track-metadata-position="nav - 资源"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="网络平台"
+tooltip
+><div class="devsite-nav-item-title">
+CSS
+</div></a></li><li class="devsite-nav-item"><a href="https://web.developers.google.cn/javascript?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://web.developers.google.cn/javascript?hl=zh-cn"
+track-metadata-position="nav - 资源"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="网络平台"
+tooltip
+><div class="devsite-nav-item-title">
+JavaScript
+</div></a></li></ul></div><div class="devsite-tabs-dropdown-column
+"><ul class="devsite-tabs-dropdown-section
+build-icon web-dev-subnav"><li class="devsite-nav-title" role="heading" tooltip>用户体验</li><li class="devsite-nav-description">了解如何打造更好的用户体验。
+</li><li class="devsite-nav-item"><a href="https://web.developers.google.cn/performance?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://web.developers.google.cn/performance?hl=zh-cn"
+track-metadata-position="nav - 资源"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="用户体验"
+tooltip
+><div class="devsite-nav-item-title">
+性能
+</div></a></li><li class="devsite-nav-item"><a href="https://web.developers.google.cn/accessibility?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://web.developers.google.cn/accessibility?hl=zh-cn"
+track-metadata-position="nav - 资源"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="用户体验"
+tooltip
+><div class="devsite-nav-item-title">
+无障碍
+</div></a></li><li class="devsite-nav-item"><a href="https://web.developers.google.cn/identity?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://web.developers.google.cn/identity?hl=zh-cn"
+track-metadata-position="nav - 资源"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="用户体验"
+tooltip
+><div class="devsite-nav-item-title">
+身份
+</div></a></li></ul></div><div class="devsite-tabs-dropdown-column
+"><ul class="devsite-tabs-dropdown-section
+productivity-icon web-dev-subnav"><li class="devsite-nav-title" role="heading" tooltip>学习</li><li class="devsite-nav-description">快速了解 Web 开发。</li><li class="devsite-nav-item"><a href="https://web.developers.google.cn/learn/html?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://web.developers.google.cn/learn/html?hl=zh-cn"
+track-metadata-position="nav - 资源"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="学习"
+tooltip
+><div class="devsite-nav-item-title">
+学习 HTML
+</div></a></li><li class="devsite-nav-item"><a href="https://web.developers.google.cn/learn/css?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://web.developers.google.cn/learn/css?hl=zh-cn"
+track-metadata-position="nav - 资源"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="学习"
+tooltip
+><div class="devsite-nav-item-title">
+学习 CSS
+</div></a></li><li class="devsite-nav-item"><a href="https://web.developers.google.cn/learn/javascript?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://web.developers.google.cn/learn/javascript?hl=zh-cn"
+track-metadata-position="nav - 资源"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="学习"
+tooltip
+><div class="devsite-nav-item-title">
+了解 JavaScript
+</div></a></li><li class="devsite-nav-item"><a href="https://web.developers.google.cn/learn/ai?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://web.developers.google.cn/learn/ai?hl=zh-cn"
+track-metadata-position="nav - 资源"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="学习"
+tooltip
+><div class="devsite-nav-item-title">
+学习 AI
+</div></a></li><li class="devsite-nav-item"><a href="https://web.developers.google.cn/learn/performance?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://web.developers.google.cn/learn/performance?hl=zh-cn"
+track-metadata-position="nav - 资源"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="学习"
+tooltip
+><div class="devsite-nav-item-title">
+了解效果
+</div></a></li><li class="devsite-nav-item"><a href="https://web.developers.google.cn/learn/accessibility?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://web.developers.google.cn/learn/accessibility?hl=zh-cn"
+track-metadata-position="nav - 资源"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="学习"
+tooltip
+><div class="devsite-nav-item-title">
+了解无障碍功能
+</div></a></li><li class="devsite-nav-item"><a href="https://web.developers.google.cn/learn?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://web.developers.google.cn/learn?hl=zh-cn"
+track-metadata-position="nav - 资源"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="学习"
+tooltip
+><div class="devsite-nav-item-title">
+更多课程
+</div></a></li></ul></div><div class="devsite-tabs-dropdown-column
+"><ul class="devsite-tabs-dropdown-section
+experience-icon web-dev-subnav"><li class="devsite-nav-title" role="heading" tooltip>其他资源</li><li class="devsite-nav-description">探索内容集、图案等。</li><li class="devsite-nav-item"><a href="https://web.developers.google.cn/explore/ai?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://web.developers.google.cn/explore/ai?hl=zh-cn"
+track-metadata-position="nav - 资源"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="其他资源"
+tooltip
+><div class="devsite-nav-item-title">
+AI 和 Web
+</div></a></li><li class="devsite-nav-item"><a href="https://web.developers.google.cn/explore?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://web.developers.google.cn/explore?hl=zh-cn"
+track-metadata-position="nav - 资源"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="其他资源"
+tooltip
+><div class="devsite-nav-item-title">
+探索
+</div></a></li><li class="devsite-nav-item"><a href="https://pagespeed.web.dev/?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://pagespeed.web.dev/?hl=zh-cn"
+track-metadata-position="nav - 资源"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="其他资源"
+tooltip
+><div class="devsite-nav-item-title">
+PageSpeed Insights
+</div></a></li><li class="devsite-nav-item"><a href="https://web.developers.google.cn/shows?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://web.developers.google.cn/shows?hl=zh-cn"
+track-metadata-position="nav - 资源"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="其他资源"
+tooltip
+><div class="devsite-nav-item-title">
+播客和节目
+</div></a></li><li class="devsite-nav-item"><a href="https://web.developers.google.cn/newsletter?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://web.developers.google.cn/newsletter?hl=zh-cn"
+track-metadata-position="nav - 资源"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="其他资源"
+tooltip
+><div class="devsite-nav-item-title">
+开发者简报
+</div></a></li><li class="devsite-nav-item"><a href="https://web.developers.google.cn/about?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://web.developers.google.cn/about?hl=zh-cn"
+track-metadata-position="nav - 资源"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="其他资源"
+tooltip
+><div class="devsite-nav-item-title">
+关于 web.dev
+</div></a></li></ul></div></div></div></tab><tab ><a href="https://web.developers.google.cn/discover?hl=zh-cn"
+class="devsite-tabs-content gc-analytics-event "
+track-metadata-eventdetail="https://web.developers.google.cn/discover?hl=zh-cn"
+track-type="nav"
+track-metadata-position="nav - discover"
+track-metadata-module="primary nav"
+data-category="Site-Wide Custom Events"
+data-label="Tab: Discover"
+track-name="discover"
+>
+Discover
+</a></tab><tab ><a href="https://web.developers.google.cn/baseline?hl=zh-cn"
+class="devsite-tabs-content gc-analytics-event "
+track-metadata-eventdetail="https://web.developers.google.cn/baseline?hl=zh-cn"
+track-type="nav"
+track-metadata-position="nav - 基准"
+track-metadata-module="primary nav"
+data-category="Site-Wide Custom Events"
+data-label="Tab: 基准"
+track-name="基准"
+>
+基准
+</a></tab><tab ><a href="https://web.developers.google.cn/how-to-use-baseline?hl=zh-cn"
+class="devsite-tabs-content gc-analytics-event "
+track-metadata-eventdetail="https://web.developers.google.cn/how-to-use-baseline?hl=zh-cn"
+track-type="nav"
+track-metadata-position="nav - 如何使用 baseline"
+track-metadata-module="primary nav"
+data-category="Site-Wide Custom Events"
+data-label="Tab: 如何使用 Baseline"
+track-name="如何使用 baseline"
+>
+如何使用 Baseline
+</a></tab><tab ><a href="https://web.developers.google.cn/blog?hl=zh-cn"
+class="devsite-tabs-content gc-analytics-event "
+track-metadata-eventdetail="https://web.developers.google.cn/blog?hl=zh-cn"
+track-type="nav"
+track-metadata-position="nav - 博客"
+track-metadata-module="primary nav"
+data-category="Site-Wide Custom Events"
+data-label="Tab: 博客"
+track-name="博客"
+>
+博客
+</a></tab><tab ><a href="https://web.developers.google.cn/case-studies?hl=zh-cn"
+class="devsite-tabs-content gc-analytics-event "
+track-metadata-eventdetail="https://web.developers.google.cn/case-studies?hl=zh-cn"
+track-type="nav"
+track-metadata-position="nav - 案例研究"
+track-metadata-module="primary nav"
+data-category="Site-Wide Custom Events"
+data-label="Tab: 案例研究"
+track-name="案例研究"
+>
+案例研究
+</a></tab></nav></devsite-tabs></div><devsite-search
+enable-suggestions
+enable-search-summaries
+project-name="Blog"
+tenant-name="web.dev for China"
+><form class="devsite-search-form" action="https://web.developers.google.cn/s/results?hl=zh-cn" method="GET"><div class="devsite-search-container"><button type="button"
+search-open
+class="devsite-search-button devsite-header-icon-button button-flat material-icons"
+aria-label="打开搜索框"></button><div class="devsite-searchbox"><input
+aria-activedescendant=""
+aria-autocomplete="list"
+aria-label="搜索"
+aria-expanded="false"
+aria-haspopup="listbox"
+autocomplete="off"
+class="devsite-search-field devsite-search-query"
+name="q"
+placeholder="搜索"
+role="combobox"
+type="text"
+value=""
+><div class="devsite-search-image material-icons" aria-hidden="true"><svg class="devsite-search-ai-image" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_6641_386)"><path d="M19.6 21L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16C7.68333 16 6.14167 15.375 4.875 14.125C3.625 12.8583 3 11.3167 3 9.5C3 7.68333 3.625 6.15 4.875 4.9C6.14167 3.63333 7.68333 3 9.5 3C10.0167 3 10.5167 3.05833 11 3.175C11.4833 3.275 11.9417 3.43333 12.375 3.65L10.825 5.2C10.6083 5.13333 10.3917 5.08333 10.175 5.05C9.95833 5.01667 9.73333 5 9.5 5C8.25 5 7.18333 5.44167 6.3 6.325C5.43333 7.19167 5 8.25 5 9.5C5 10.75 5.43333 11.8167 6.3 12.7C7.18333 13.5667 8.25 14 9.5 14C10.6667 14 11.6667 13.625 12.5 12.875C13.35 12.1083 13.8417 11.15 13.975 10H15.975C15.925 10.6333 15.7833 11.2333 15.55 11.8C15.3333 12.3667 15.05 12.8667 14.7 13.3L21 19.6L19.6 21ZM17.5 12C17.5 10.4667 16.9667 9.16667 15.9 8.1C14.8333 7.03333 13.5333 6.5 12 6.5C13.5333 6.5 14.8333 5.96667 15.9 4.9C16.9667 3.83333 17.5 2.53333 17.5 0.999999C17.5 2.53333 18.0333 3.83333 19.1 4.9C20.1667 5.96667 21.4667 6.5 23 6.5C21.4667 6.5 20.1667 7.03333 19.1 8.1C18.0333 9.16667 17.5 10.4667 17.5 12Z" fill="#5F6368"/></g><defs><clipPath id="clip0_6641_386"><rect width="24" height="24" fill="white"/></clipPath></defs></svg></div><div class="devsite-search-shortcut-icon-container" aria-hidden="true"><kbd class="devsite-search-shortcut-icon">/</kbd></div></div></div></form><button type="button"
+search-close
+class="devsite-search-button devsite-header-icon-button button-flat material-icons"
+aria-label="关闭搜索框"></button></devsite-search></div><devsite-language-selector><ul role="presentation"><li role="presentation"><a role="menuitem" lang="en"
+>English</a></li><li role="presentation"><a role="menuitem" lang="de"
+>Deutsch</a></li><li role="presentation"><a role="menuitem" lang="es_419"
+>Español – América Latina</a></li><li role="presentation"><a role="menuitem" lang="fr"
+>Français</a></li><li role="presentation"><a role="menuitem" lang="id"
+>Indonesia</a></li><li role="presentation"><a role="menuitem" lang="it"
+>Italiano</a></li><li role="presentation"><a role="menuitem" lang="pl"
+>Polski</a></li><li role="presentation"><a role="menuitem" lang="pt_br"
+>Português – Brasil</a></li><li role="presentation"><a role="menuitem" lang="vi"
+>Tiếng Việt</a></li><li role="presentation"><a role="menuitem" lang="tr"
+>Türkçe</a></li><li role="presentation"><a role="menuitem" lang="ru"
+>Русский</a></li><li role="presentation"><a role="menuitem" lang="he"
+>עברית</a></li><li role="presentation"><a role="menuitem" lang="ar"
+>العربيّة</a></li><li role="presentation"><a role="menuitem" lang="fa"
+>فارسی</a></li><li role="presentation"><a role="menuitem" lang="hi"
+>हिंदी</a></li><li role="presentation"><a role="menuitem" lang="bn"
+>বাংলা</a></li><li role="presentation"><a role="menuitem" lang="th"
+>ภาษาไทย</a></li><li role="presentation"><a role="menuitem" lang="zh_cn"
+>中文 – 简体</a></li><li role="presentation"><a role="menuitem" lang="zh_tw"
+>中文 – 繁體</a></li><li role="presentation"><a role="menuitem" lang="ja"
+>日本語</a></li><li role="presentation"><a role="menuitem" lang="ko"
+>한국어</a></li></ul></devsite-language-selector><devsite-openid-user id="devsite-user"></devsite-openid-user></div></div></div><div class="devsite-collapsible-section
+devsite-header-no-lower-tabs
+"><div class="devsite-header-background"><div class="devsite-product-id-row"
+><div class="devsite-product-description-row"><div class="devsite-product-id"><ul class="devsite-breadcrumb-list"
+><li class="devsite-breadcrumb-item
+"><a href="https://web.developers.google.cn/blog?hl=zh-cn"
+class="devsite-breadcrumb-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Lower Header"
+data-value="1"
+track-type="globalNav"
+track-name="breadcrumb"
+track-metadata-position="1"
+track-metadata-eventdetail="Blog"
+>
+Blog
+</a></li></ul></div></div></div></div></div></div></devsite-header><devsite-book-nav scrollbars hidden><div class="devsite-book-nav-filter"
+hidden><span class="filter-list-icon material-icons" aria-hidden="true"></span><input type="text"
+placeholder="过滤条件"
+aria-label="输入文本以进行过滤"
+role="searchbox"><span class="filter-clear-button hidden"
+data-title="清除过滤条件"
+aria-label="清除过滤条件"
+role="button"
+tabindex="0"></span></div><nav class="devsite-book-nav devsite-nav nocontent" data-nosnippet
+aria-label="侧边菜单"><div class="devsite-mobile-header"><button type="button"
+id="devsite-close-nav"
+class="devsite-header-icon-button button-flat material-icons gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Close navigation"
+aria-label="关闭导航栏"></button><div class="devsite-product-name-wrapper"><a href="/" class="devsite-site-logo-link gc-analytics-event"
+data-category="Site-Wide Custom Events" data-label="Site logo" track-type="globalNav"
+track-name="webDevForChina" track-metadata-position="nav"
+track-metadata-eventDetail="nav"><picture><img src="https://www.gstatic.cn/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/web/images/lockup.svg" class="devsite-site-logo" alt="web.dev for China"></picture></a></div></div><div class="devsite-book-nav-wrapper"><div class="devsite-mobile-nav-top"><ul class="devsite-nav-list"><li class="devsite-nav-item"><span
+class="devsite-nav-title"
+tooltip
+data-category="Site-Wide Custom Events"
+data-label="Tab: 资源"
+track-name="资源"
+><span class="devsite-nav-text" tooltip >
+资源
+</span></span><ul class="devsite-nav-responsive-tabs devsite-nav-has-menu
+"><li class="devsite-nav-item"><span
+class="devsite-nav-title"
+tooltip
+data-category="Site-Wide Custom Events"
+data-label="Tab: 资源"
+track-name="资源"
+><span class="devsite-nav-text" tooltip menu="资源">
+更多
+</span><span class="devsite-nav-icon material-icons" data-icon="forward"
+menu="资源"></span></span></li></ul></li><li class="devsite-nav-item"><a href="/discover"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Tab: Discover"
+track-name="discover"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: Discover"
+track-type="globalNav"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+Discover
+</span></a></li><li class="devsite-nav-item"><a href="/baseline"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Tab: 基准"
+track-name="基准"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 基准"
+track-type="globalNav"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+基准
+</span></a></li><li class="devsite-nav-item"><a href="/how-to-use-baseline"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Tab: 如何使用 Baseline"
+track-name="如何使用 baseline"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 如何使用 Baseline"
+track-type="globalNav"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+如何使用 Baseline
+</span></a></li><li class="devsite-nav-item"><a href="/blog"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Tab: 博客"
+track-name="博客"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 博客"
+track-type="globalNav"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+博客
+</span></a></li><li class="devsite-nav-item"><a href="/case-studies"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Tab: 案例研究"
+track-name="案例研究"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 案例研究"
+track-type="globalNav"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+案例研究
+</span></a></li></ul></div><div class="devsite-mobile-nav-bottom"><ul class="devsite-nav-list" menu="资源"
+aria-label="侧边菜单" hidden><li class="devsite-nav-item devsite-nav-heading"><span
+class="devsite-nav-title"
+tooltip
+><span class="devsite-nav-text" tooltip >
+网络平台
+</span></span></li><li class="devsite-nav-item"><a href="/html"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: HTML"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+HTML
+</span></a></li><li class="devsite-nav-item"><a href="/css"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: CSS"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+CSS
+</span></a></li><li class="devsite-nav-item"><a href="/javascript"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: JavaScript"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+JavaScript
+</span></a></li><li class="devsite-nav-item devsite-nav-heading"><span
+class="devsite-nav-title"
+tooltip
+><span class="devsite-nav-text" tooltip >
+用户体验
+</span></span></li><li class="devsite-nav-item"><a href="/performance"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 性能"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+性能
+</span></a></li><li class="devsite-nav-item"><a href="/accessibility"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 无障碍"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+无障碍
+</span></a></li><li class="devsite-nav-item"><a href="/identity"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 身份"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+身份
+</span></a></li><li class="devsite-nav-item devsite-nav-heading"><span
+class="devsite-nav-title"
+tooltip
+><span class="devsite-nav-text" tooltip >
+学习
+</span></span></li><li class="devsite-nav-item"><a href="/learn/html"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 学习 HTML"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+学习 HTML
+</span></a></li><li class="devsite-nav-item"><a href="/learn/css"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 学习 CSS"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+学习 CSS
+</span></a></li><li class="devsite-nav-item"><a href="/learn/javascript"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 了解 JavaScript"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+了解 JavaScript
+</span></a></li><li class="devsite-nav-item"><a href="/learn/ai"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 学习 AI"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+学习 AI
+</span></a></li><li class="devsite-nav-item"><a href="/learn/performance"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 了解效果"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+了解效果
+</span></a></li><li class="devsite-nav-item"><a href="/learn/accessibility"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 了解无障碍功能"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+了解无障碍功能
+</span></a></li><li class="devsite-nav-item"><a href="/learn"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 更多课程"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+更多课程
+</span></a></li><li class="devsite-nav-item devsite-nav-heading"><span
+class="devsite-nav-title"
+tooltip
+><span class="devsite-nav-text" tooltip >
+其他资源
+</span></span></li><li class="devsite-nav-item"><a href="/explore/ai"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: AI 和 Web"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+AI 和 Web
+</span></a></li><li class="devsite-nav-item"><a href="/explore"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 探索"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+探索
+</span></a></li><li class="devsite-nav-item"><a href="https://pagespeed.web.dev/"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: PageSpeed Insights"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+PageSpeed Insights
+</span></a></li><li class="devsite-nav-item"><a href="/shows"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 播客和节目"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+播客和节目
+</span></a></li><li class="devsite-nav-item"><a href="/newsletter"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 开发者简报"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+开发者简报
+</span></a></li><li class="devsite-nav-item"><a href="/about"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 关于 web.dev"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+关于 web.dev
+</span></a></li></ul></div></div></nav></devsite-book-nav><section id="gc-wrapper"><main role="main" id="main-content" class="devsite-main-content"
+has-sidebar
+><div class="devsite-sidebar"><div class="devsite-sidebar-content"><devsite-toc class="devsite-nav"
+role="navigation"
+aria-label="本页内容"
+depth="2"
+scrollbars
+data-nosnippet
+></devsite-toc><devsite-recommendations-sidebar class="nocontent devsite-nav" data-nosnippet></devsite-recommendations-sidebar></div></div><devsite-content><article class="devsite-article"><div class="devsite-banner devsite-banner-translated nocontent"><div class="devsite-banner-message"><div class="devsite-banner-message-text"><img src="https://web.developers.google.cn/_static/images/translated.svg?hl=zh-cn"
+class="devsite-banner-translated-image invert"
+alt=""><span class="devsite-banner-translated-text">
+Google 会使用 AI 技术将内容翻译成您偏好的语言。AI 翻译可能包含错误。
+</span></div><devsite-switch-to-english-button></devsite-switch-to-english-button></div></div><div class="devsite-article-meta nocontent" role="navigation" data-nosnippet><ul class="devsite-breadcrumb-list"
+aria-label="面包屑导航"><li class="devsite-breadcrumb-item
+"><a href="https://web.developers.google.cn/?hl=zh-cn"
+class="devsite-breadcrumb-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Breadcrumbs"
+data-value="1"
+track-type="globalNav"
+track-name="breadcrumb"
+track-metadata-position="1"
+track-metadata-eventdetail=""
+>
+首页
+</a></li><li class="devsite-breadcrumb-item
+"><div class="devsite-breadcrumb-guillemet material-icons" aria-hidden="true"></div><a href="https://web.developers.google.cn/blog?hl=zh-cn"
+class="devsite-breadcrumb-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Breadcrumbs"
+data-value="2"
+track-type="globalNav"
+track-name="breadcrumb"
+track-metadata-position="2"
+track-metadata-eventdetail="Blog"
+>
+Blog
+</a></li></ul></div><h1 class="devsite-page-title" tabindex="-1">
+主流浏览器现已支持 WebGPU<devsite-actions hidden data-nosnippet><devsite-feature-tooltip
+ack-key="AckCollectionsBookmarkTooltipDismiss"
+analytics-category="Site-Wide Custom Events"
+analytics-action-show="Callout Profile displayed"
+analytics-action-close="Callout Profile dismissed"
+analytics-label="Create Collection Callout"
+class="devsite-page-bookmark-tooltip nocontent"
+data-nosnippet
+dismiss-button="true"
+id="devsite-collections-dropdown"
+dismiss-button-text="关闭"
+close-button-text="知道了"><devsite-openid-bookmark></devsite-openid-bookmark><span slot="popout-heading">
+使用集合让一切井井有条
+</span><span slot="popout-contents">
+根据您的偏好保存内容并对其进行分类。
+</span></devsite-feature-tooltip><devsite-llm-tools></devsite-llm-tools></devsite-actions></h1><div class="devsite-page-title-meta"><devsite-view-release-notes></devsite-view-release-notes></div><devsite-toc class="devsite-nav"
+depth="2"
+devsite-toc-embedded
+></devsite-toc><div class="devsite-article-body clearfix
+"><p><style>
+.wd-author__links {
+display: flex;
+}
+</style></p><div class="wd-authors" translate="no"><div class="wd-author"><img alt="François Beaufort" class="devsite-landing-row-item-icon" decoding="async" height="64" loading="lazy" src="https://web.developers.google.cn/images/authors/beaufortfrancois.jpg?hl=zh-cn" width="64" /><div><span>
+François Beaufort
+</span><div class="wd-author__links"><a aria-label="François Beaufort on GitHub" href="https://github.com/beaufortfrancois" rel="me"><svg height="22" viewBox="0 0 32.6 31.8" width="22" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path clip-rule="evenodd" d="M16.3 0C7.3 0 0 7.3 0 16.3c0 7.2 4.7 13.3 11.1 15.5.8.1 1.1-.4 1.1-.8v-2.8c-4.5 1-5.5-2.2-5.5-2.2-.7-1.9-1.8-2.4-1.8-2.4-1.5-1 .1-1 .1-1 1.6.1 2.5 1.7 2.5 1.7 1.5 2.5 3.8 1.8 4.7 1.4.1-1.1.6-1.8 1-2.2-3.6-.4-7.4-1.8-7.4-8.1 0-1.8.6-3.2 1.7-4.4-.1-.3-.7-2 .2-4.2 0 0 1.4-.4 4.5 1.7 1.3-.4 2.7-.5 4.1-.5 1.4 0 2.8.2 4.1.5 3.1-2.1 4.5-1.7 4.5-1.7.9 2.2.3 3.9.2 4.3 1 1.1 1.7 2.6 1.7 4.4 0 6.3-3.8 7.6-7.4 8 .6.5 1.1 1.5 1.1 3V31c0 .4.3.9 1.1.8 6.5-2.2 11.1-8.3 11.1-15.5C32.6 7.3 25.3 0 16.3 0z" fill="currentColor" fill-rule="evenodd"></path></svg></a></div></div></div></div><p></p><p></p><p class="wd-pubdates" style="font-size: 90%; border-bottom: 1px solid var(--devsite-ref-palette--grey200);color: var(--devsite-ref-palette--blue-grey700);">
+发布时间：2025 年 11 月 25 日
+</p><p></p><p>面向 Web 开发者和用户的重磅消息。
+<a href="https://developer.mozilla.org/docs/Web/API/WebGPU_API">WebGPU</a> 是一种功能强大的 API，可用于运行高性能 3D 图形和通用 GPU 计算，目前已在 Chrome、Edge、Firefox 和 Safari 中获得正式支持。这意味着，未来高端的浏览器内体验（例如 AAA 级游戏、复杂的 3D 建模和高级 AI 应用）已成为现实！</p><p>这一重大里程碑是 <a href="https://www.w3.org/groups/wg/gpu/">W3C Web GPU 工作组</a>多年来广泛协作开发的结果，Apple、Google、Intel、Microsoft 和 Mozilla 等公司都做出了贡献。</p><h2 data-text="WebGPU 的重要性" id="why_webgpu_matters" tabindex="-1">WebGPU 的重要性</h2><p>WebGPU 不仅仅是 <a href="https://developer.mozilla.org/docs/Web/API/WebGL_API">WebGL</a> 的替代品，更是一次巨大的飞跃，它提供了一个更简洁、更高效的接口，从一开始就为现代 Web 量身打造。它包含惯用的 JavaScript API 和基于文本的现代着色器语言。</p><p>WebGPU 开启了网页上高性能计算和图形的新时代，可<strong>直接访问现代 GPU 功能</strong>，而这些功能之前受到 WebGL 等旧版 API 的限制。它的主要应用场景是<strong>高级 3D 图形和渲染</strong>，可在浏览器中实现更丰富、更逼真的游戏体验、复杂的数据可视化效果和精密的编辑工具。至关重要的是，它还通过其计算流水线实现了 <strong>GPU 加速的通用计算</strong>。这可大幅提升<strong>机器学习推理</strong>和<strong>训练</strong>（运行大型语言模型等工作负载）、<strong>视频处理</strong>、<strong>物理模拟</strong>等任务的性能，基本上可为 Web 上计算密集型应用带来<strong>桌面级性能</strong>。</p><p><a href="https://onnxruntime.ai/">ONNX Runtime</a> 和 <a href="https://huggingface.co/docs/transformers.js/index">Transformers.js</a> 均已使用 WebGPU，以便在浏览器中实现高速本地模型推理和计算。这一进步为开发高性能的基于 Web 的 AI 应用带来了新的可能性。</p><p>WebGPU 还引入了渲染包，这是一项强大的功能，可让开发者记录和重复使用一组渲染命令，从而提高性能并减少 CPU 开销。<a href="https://doc.babylonjs.com/setup/support/webGPU/webGPUOptimization/webGPUSnapshotRendering">Babylon.js 的快照渲染</a>使用 GPU 渲染软件包，可帮助将场景渲染速度提高约 10 倍。</p><h2 data-text="浏览器和操作系统可用性" id="browser_and_os_availability" tabindex="-1">浏览器和操作系统可用性</h2><p></p><div class="wd-browser-compat" translate="no"><p>Browser Support</p><ul><li data-support="yes"><img alt="Chrome: 113." src="data:stripped" /><span aria-hidden="true">
+113
+</span></li><li data-support="yes"><img alt="Edge: 113." src="data:stripped"/><span aria-hidden="true">
+113
+</span></li><li data-support="yes"><img alt="Firefox: 141." src="data:stripped" /><span aria-hidden="true">
+141
+</span></li><li data-support="yes"><img alt="Safari: 26." src="data:stripped"/><span aria-hidden="true">
+26
+</span></li></ul><p><a href="https://developer.mozilla.org/docs/Web/API/GPU">Source</a></p></div><p></p><p>WebGPU 可在以下浏览器和操作系统上使用：</p><ul><li><p><strong>Chrome、Edge 和其他基于 Chromium 的浏览器</strong>：</p><p>从 Chrome 和 Edge 版本 113 开始，WebGPU 可在 Windows（使用 Direct3D 12）、macOS 和 ChromeOS 上使用。</p><p>Chrome 版本 121 中新增了对 Android 的支持，适用于搭载至少 Android 12 且配备 Qualcomm/ARM GPU 的设备。</p><p>我们正在设法支持 Linux，并扩大对现有平台的支持。</p></li><li><p><strong>Firefox</strong>：</p><p>自 Firefox 141 起，WebGPU 已在 Windows 上推出。</p><p>自 Firefox 145 起，WebGPU 可在 ARM64 机器上的 macOS Tahoe 26 中使用。</p><p>我们正在努力支持 Linux、Android 和基于 Intel 的 Mac。</p></li><li><p><strong>Safari</strong>：</p><p>WebGPU 适用于 macOS Tahoe 26、iOS 26、iPadOS 26 和 visionOS 26。</p></li></ul><p>如需详细了解 WebGPU 的可用性（包括其在哪些平台上推出），请参阅 <a href="https://github.com/gpuweb/gpuweb/wiki/Implementation-Status">WebGPU 实现状态页面</a>。</p><h2 data-text="不断壮大的生态系统" id="a_growing_ecosystem" tabindex="-1">不断壮大的生态系统</h2><p>您无需从头开始即可使用 WebGPU！您喜爱的库已支持 WebGPU：</p><ul><li><a href="https://doc.babylonjs.com/setup/support/webGPU">Babylon.js</a></li><li><a href="https://blog.playcanvas.com/build-webgpu-apps-today-with-playcanvas/">PlayCanvas</a></li><li><a href="https://onnxruntime.ai/docs/tutorials/web/ep-webgpu.html">ONNX 运行时</a></li><li><a href="https://github.com/wcandillon/react-native-webgpu">React Native</a></li><li><a href="https://threejs.org/examples/?q=webgpu">Three.js</a></li><li><a href="https://huggingface.co/blog/transformersjs-v3">Transformers.js</a></li><li><a href="https://docs.swmansion.com/TypeGPU/">TypeGPU</a></li><li><a href="https://docs.unity3d.com/6000.3/Documentation/Manual/WebGPU.html">Unity</a></li></ul><p>此外，底层引擎 <a href="https://dawn.googlesource.com/dawn">Dawn</a> (Chromium) 和 <a href="https://github.com/gfx-rs/wgpu">wgpu</a> (Firefox) 都是独立的便携式软件包。它们简化了跨平台开发，让您能够非常轻松地使用 <a href="https://webassembly.org/">Wasm</a> 和 <a href="https://emscripten.org/">emscripten</a>、Rust <a href="https://docs.rs/web-sys/latest/web_sys/">web-sys</a> 等工具将特定于平台的 GPU 应用移植到 Web。</p><p>高性能 Web 应用的未来已在眼前！</p><h2 class="hide-from-toc" data-text="致谢" id="acknowledgements" tabindex="-1">致谢</h2><p>衷心感谢所有贡献者提供的宝贵意见和协作。特别感谢：Corentin Wallez、Jim Blandy、Ken Russell、Mike Wyrzykowsk、Nishitha Burman Dey、Patrick Brosset、Sebastien Vandenberghe、Thomas Lucchini 和 Thomas Nattestad。</p></div><div class="devsite-floating-action-buttons"></div></article><devsite-content-footer class="nocontent" data-nosnippet><p>如未另行说明，那么本页面中的内容已根据<a href="https://creativecommons.org/licenses/by/4.0/">知识共享署名 4.0 许可</a>获得了许可，并且代码示例已根据 <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2.0 许可</a>获得了许可。有关详情，请参阅 <a href="https://developers.google.cn/site-policies?hl=zh-cn">Google 开发者网站政策</a>。Java 是 Oracle 和/或其关联公司的注册商标。</p><p>最后更新时间 (UTC)：2025-11-25。</p></devsite-content-footer><devsite-notification
+></devsite-notification><div class="devsite-content-data"><template class="devsite-content-data-template">
+[null,null,["最后更新时间 (UTC)：2025-11-25。"],[],[]]
+</template></div></devsite-content></main><devsite-footer-promos class="devsite-footer"></devsite-footer-promos><devsite-footer-linkboxes class="devsite-footer"><nav class="devsite-footer-linkboxes nocontent"
+aria-label="页脚链接"
+data-nosnippet><ul class="devsite-footer-linkboxes-list"><li class="devsite-footer-linkbox wd-footer-promo"><h3 class="devsite-footer-linkbox-heading no-link">web.dev</h3><ul class="devsite-footer-linkbox-list"><li class="devsite-footer-linkbox-item"><h3 class="devsite-footer-linkbox-heading no-link">
+web.dev
+</h3><div class="devsite-footer-linkbox-description">我们希望帮助您构建美观、易于访问、快速且安全的网站，从而能跨浏览器并为您的所有用户提供服务。本网站包含各种内容，由 Chrome 团队成员及外部专家撰写，可协助您顺利踏上这一旅程。</div></li></ul></li><li class="devsite-footer-linkbox "><h3 class="devsite-footer-linkbox-heading no-link">参与</h3><ul class="devsite-footer-linkbox-list"><li class="devsite-footer-linkbox-item"><a href="https://issuetracker.google.com/issues/new?component=1400680&amp%3Btemplate=1857359&hl=zh-cn"
+class="devsite-footer-linkbox-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Footer Link (index 1)"
+>
+提交 bug
+</a></li><li class="devsite-footer-linkbox-item"><a href="https://issuetracker.google.com/issues?q=status%3Aopen+componentid%3A1400680&amp%3Bs=created_time%3Adesc&hl=zh-cn"
+class="devsite-footer-linkbox-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Footer Link (index 2)"
+>
+查看未处理完毕的问题
+</a></li></ul></li><li class="devsite-footer-linkbox "><h3 class="devsite-footer-linkbox-heading no-link">相关内容</h3><ul class="devsite-footer-linkbox-list"><li class="devsite-footer-linkbox-item"><a href="https://developer.chrome.google.cn/?hl=zh-cn"
+class="devsite-footer-linkbox-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Footer Link (index 1)"
+>
+Chrome 开发者版
+</a></li><li class="devsite-footer-linkbox-item"><a href="https://blog.chromium.org/"
+class="devsite-footer-linkbox-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Footer Link (index 2)"
+>
+Chromium 更新
+</a></li><li class="devsite-footer-linkbox-item"><a href="https://web.developers.google.cn/case-studies?hl=zh-cn"
+class="devsite-footer-linkbox-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Footer Link (index 3)"
+>
+案例研究
+</a></li><li class="devsite-footer-linkbox-item"><a href="https://web.developers.google.cn/shows?hl=zh-cn"
+class="devsite-footer-linkbox-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Footer Link (index 4)"
+>
+播客和节目
+</a></li></ul></li><li class="devsite-footer-linkbox "><h3 class="devsite-footer-linkbox-heading no-link">关注</h3><ul class="devsite-footer-linkbox-list"><li class="devsite-footer-linkbox-item"><a href="https://twitter.com/ChromiumDev"
+class="devsite-footer-linkbox-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Footer Link (index 1)"
+>
+关于 X 的 @ChromiumDev
+</a></li><li class="devsite-footer-linkbox-item"><a href="https://www.youtube.com/user/ChromeDevelopers?hl=zh-cn"
+class="devsite-footer-linkbox-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Footer Link (index 2)"
+>
+YouTube
+</a></li><li class="devsite-footer-linkbox-item"><a href="https://www.linkedin.com/showcase/chrome-for-developers"
+class="devsite-footer-linkbox-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Footer Link (index 3)"
+>
+LinkedIn 上的 Chrome for Developers
+</a></li><li class="devsite-footer-linkbox-item"><a href="https://web.developers.google.cn/static/blog/feed.xml?hl=zh-cn"
+class="devsite-footer-linkbox-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Footer Link (index 4)"
+>
+RSS
+</a></li></ul></li></ul></nav></devsite-footer-linkboxes><devsite-footer-utility class="devsite-footer"><div class="devsite-footer-utility nocontent" data-nosnippet><nav class="devsite-footer-utility-links" aria-label="实用程序链接"><ul class="devsite-footer-utility-list"><li class="devsite-footer-utility-item
+"><a class="devsite-footer-utility-link gc-analytics-event"
+href="//policies.google.cn/terms?hl=zh-cn"
+data-category="Site-Wide Custom Events"
+data-label="Footer Terms link"
+>
+条款
+</a></li><li class="devsite-footer-utility-item
+"><a class="devsite-footer-utility-link gc-analytics-event"
+href="//policies.google.cn/privacy?hl=zh-cn"
+data-category="Site-Wide Custom Events"
+data-label="Footer Privacy link"
+>
+隐私权政策
+</a></li><li class="devsite-footer-utility-item
+glue-cookie-notification-bar-control"><a class="devsite-footer-utility-link gc-analytics-event"
+href="#"
+data-category="Site-Wide Custom Events"
+data-label="Footer Manage cookies link"
+aria-hidden="true"
+>
+Manage cookies
+</a></li></ul><devsite-language-selector><ul role="presentation"><li role="presentation"><a role="menuitem" lang="en"
+>English</a></li><li role="presentation"><a role="menuitem" lang="de"
+>Deutsch</a></li><li role="presentation"><a role="menuitem" lang="es_419"
+>Español – América Latina</a></li><li role="presentation"><a role="menuitem" lang="fr"
+>Français</a></li><li role="presentation"><a role="menuitem" lang="id"
+>Indonesia</a></li><li role="presentation"><a role="menuitem" lang="it"
+>Italiano</a></li><li role="presentation"><a role="menuitem" lang="pl"
+>Polski</a></li><li role="presentation"><a role="menuitem" lang="pt_br"
+>Português – Brasil</a></li><li role="presentation"><a role="menuitem" lang="vi"
+>Tiếng Việt</a></li><li role="presentation"><a role="menuitem" lang="tr"
+>Türkçe</a></li><li role="presentation"><a role="menuitem" lang="ru"
+>Русский</a></li><li role="presentation"><a role="menuitem" lang="he"
+>עברית</a></li><li role="presentation"><a role="menuitem" lang="ar"
+>العربيّة</a></li><li role="presentation"><a role="menuitem" lang="fa"
+>فارسی</a></li><li role="presentation"><a role="menuitem" lang="hi"
+>हिंदी</a></li><li role="presentation"><a role="menuitem" lang="bn"
+>বাংলা</a></li><li role="presentation"><a role="menuitem" lang="th"
+>ภาษาไทย</a></li><li role="presentation"><a role="menuitem" lang="zh_cn"
+>中文 – 简体</a></li><li role="presentation"><a role="menuitem" lang="zh_tw"
+>中文 – 繁體</a></li><li role="presentation"><a role="menuitem" lang="ja"
+>日本語</a></li><li role="presentation"><a role="menuitem" lang="ko"
+>한국어</a></li></ul></devsite-language-selector></nav></div></devsite-footer-utility><devsite-panel></devsite-panel></section></section><devsite-sitemask></devsite-sitemask><devsite-snackbar></devsite-snackbar><devsite-tooltip blocked-link></devsite-tooltip><devsite-heading-link></devsite-heading-link><devsite-analytics><script type="application/json" analytics>[]</script><script type="application/json" tag-management>{&#34;at&#34;: &#34;False&#34;, &#34;ga4&#34;: [], &#34;ga4p&#34;: [], &#34;gtm&#34;: [{&#34;id&#34;: &#34;GTM-MZWCJPP&#34;, &#34;purpose&#34;: 0}], &#34;parameters&#34;: {&#34;internalUser&#34;: &#34;False&#34;, &#34;language&#34;: {&#34;machineTranslated&#34;: &#34;True&#34;, &#34;requested&#34;: &#34;zh-cn&#34;, &#34;served&#34;: &#34;zh-cn&#34;}, &#34;pageType&#34;: &#34;blog&#34;, &#34;projectName&#34;: &#34;Blog&#34;, &#34;signedIn&#34;: &#34;False&#34;, &#34;tenant&#34;: &#34;web_china&#34;, &#34;recommendations&#34;: {&#34;sourcePage&#34;: &#34;&#34;, &#34;sourceType&#34;: 0, &#34;sourceRank&#34;: 0, &#34;sourceIdenticalDescriptions&#34;: 0, &#34;sourceTitleWords&#34;: 0, &#34;sourceDescriptionWords&#34;: 0, &#34;experiment&#34;: &#34;&#34;}, &#34;experiment&#34;: {&#34;ids&#34;: &#34;&#34;}}}</script></devsite-analytics><devsite-openid-badger></devsite-openid-badger><script nonce="CqObjMbDRXUALP3GGKoEy8K6nI9/QF">
+(function(d,e,v,s,i,t,E){d['GoogleDevelopersObject']=i;
+t=e.createElement(v);t.async=1;t.src=s;E=e.getElementsByTagName(v)[0];
+E.parentNode.insertBefore(t,E);})(window, document, 'script',
+'https://www.gstatic.cn/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/web/js/app_loader.js', '[57,"zh_cn",null,"/js/devsite_app_module.js","https://www.gstatic.cn/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037","https://www.gstatic.cn/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/web","https://web-dot-google-developers.gonglchuangl.net",1,null,["/_pwa/web/manifest.json","https://www.gstatic.cn/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/images/video-placeholder.svg","https://www.gstatic.cn/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/web/images/favicon.png","https://www.gstatic.cn/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/web/images/lockup.svg","https://fonts.googleapis.com/css?family=Google+Sans:400,500|Roboto:400,400italic,500,500italic,700,700italic|Roboto+Mono:400,500,700&display=swap"],1,null,[1,6,8,12,14,17,21,25,50,52,63,70,75,76,80,87,91,92,93,97,98,100,101,102,103,104,105,107,108,109,110,112,113,117,118,120,122,124,125,126,127,129,130,131,132,133,134,135,136,138,140,141,147,148,149,151,152,156,157,158,159,161,163,164,168,169,170,179,180,182,183,186,191,193,196],"AIza***********************************","AIza***********************************","web.developers.google.cn","AIza***********************************","AIza***********************************",null,null,null,["MiscFeatureFlags__enable_explicit_template_dependencies","Cloud__enable_cloud_shell_fte_user_flow","MiscFeatureFlags__fix_lower_breadcrumbs","Profiles__enable_profile_collections","Search__enable_suggestions_from_borg","MiscFeatureFlags__enable_appearance_cookies","DevPro__enable_google_payments_buyflow","MiscFeatureFlags__enable_framebox_badge_methods","DevPro__enable_developer_subscriptions","Profiles__enable_targeted_hero","Cloud__enable_cloud_shell","DevPro__enable_vertex_credit_card","DevPro__enable_g1_ineligible_redirect","TpcFeatures__proxy_prod_host","DevPro__enable_google_one_card","Concierge__enable_devsite_llm_tools","DevPro__enable_free_benefits","Search__enable_dynamic_content_confidential_banner","TpcFeatures__enable_unmirrored_page_left_nav","MiscFeatureFlags__developers_footer_dark_image","MiscFeatureFlags__developers_footer_image","DevPro__remove_eu_tax_intake_form","Profiles__enable_completequiz_endpoint","DevPro__enable_devpro_offers","Profiles__enable_developer_profiles_callout","Profiles__enable_purchase_prompts","Profiles__enable_callout_notifications","Cloud__cache_serialized_dynamic_content","Profiles__enable_developer_profile_benefits_ui_redesign","DevPro__enable_credits_banner","Search__enable_ai_eligibility_checks","Cloud__enable_cloud_dlp_service","Profiles__enable_release_notes_notifications","DevPro__enable_firebase_workspaces_card","CloudShell__cloud_shell_button","Profiles__enable_stripe_subscription_management","OnSwitch__enable","Cloud__enable_free_trial_server_call","Profiles__enable_complete_playlist_endpoint","Profiles__enable_public_developer_profiles","MiscFeatureFlags__gdp_dashboard_reskin_enabled","MiscFeatureFlags__enable_variable_operator_index_yaml","Concierge__enable_pushui","DevPro__enable_g1_integration","Profiles__enable_page_saving","Concierge__enable_remove_info_panel_tags","MiscFeatureFlags__remove_cross_domain_tracking_params","MiscFeatureFlags__enable_project_variables","DevPro__enable_devsite_captcha","Analytics__enable_clearcut_logging","Profiles__enable_playlist_community_acl","Cloud__enable_cloudx_experiment_ids","Search__enable_page_map","Profiles__require_profile_eligibility_for_signin","CloudShell__cloud_code_overflow_menu","Profiles__enable_recognition_badges","Profiles__enable_completecodelab_endpoint","MiscFeatureFlags__enable_view_transitions","MiscFeatureFlags__enable_llms_txt","Profiles__enable_dashboard_curated_recommendations","BookNav__enable_tenant_cache_key","Profiles__enable_auto_apply_credits","Profiles__enable_awarding_url","SignIn__enable_l1_signup_flow","MiscFeatureFlags__enable_firebase_utm","Profiles__enable_developer_profile_pages_as_content","Cloud__enable_legacy_calculator_redirect","DevPro__enable_cloud_innovators_plus","DevPro__enable_enterprise","EngEduTelemetry__enable_engedu_telemetry","Profiles__enable_user_type","DevPro__enable_code_assist","Concierge__enable_actions_menu","Experiments__reqs_query_experiments","DevPro__enable_nvidia_credits_card","MiscFeatureFlags__enable_variable_operator","Analytics__enable_devpro_interaction_logging","DevPro__enable_embed_profile_creation","Cloud__fast_free_trial","Search__enable_ai_search_summaries_for_all","AIStudioInteractionsToggle__interactions_are_default","Profiles__enable_join_program_group_endpoint"],null,null,"AIza***********************************","https://developerscontentserving-pa.googleapis.com","AIza***********************************","https://developerscontentsearch-pa.googleapis.com",2,4,null,"https://developerprofiles-pa.googleapis.com",[57,"web_china","web.dev for China","web.developers.google.cn",null,"web-dot-google-developers.gonglchuangl.net",null,null,[null,null,null,null,null,null,null,null,null,null,null,[1],null,null,null,null,null,null,null,null,null,null,null,null,null,null,[1],null,null,null,[1]],null,[38,null,null,null,null,null,"/images/lockup.svg","/images/touchicon-180.png",null,null,null,1,1,null,null,null,null,null,null,null,null,1,null,null,null,"/images/lockup-dark-theme.svg",[]],[],null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,[[null,null,null,null,null,["GTM-MZWCJPP"],null,null,null,null,null,[["GTM-MZWCJPP",1]]]],null,4],null,null,1,null,"https://developerscontentinsights-pa.googleapis.com","AIza***********************************","AIza***********************************","https://developers.googleapis.com",null,null,"AIza***********************************",null,null,"https://developers.googleapis.com"]')
+</script><devsite-a11y-announce></devsite-a11y-announce></body></html>

@@ -1,0 +1,1172 @@
+
+<!doctype html><html
+lang="zh-CN-x-mtfrom-en"
+dir="ltr"><head><meta name="google-signin-client-id" content="157101835696-ooapojlodmuabs2do2vuhhnf90bccmoi.apps.googleusercontent.com"><meta name="google-signin-scope"
+content="profile email https://www.googleapis.com/auth/developerprofiles https://www.googleapis.com/auth/developerprofiles.award https://www.googleapis.com/auth/devprofiles.full_control.firstparty"><meta property="og:site_name" content="Chrome for Developers"><meta property="og:type" content="website"><meta name="theme-color" content="#1a73e8"><meta charset="utf-8"><meta content="IE=Edge" http-equiv="X-UA-Compatible"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="manifest" href="/_pwa/chrome/manifest.json"
+crossorigin="use-credentials"><link rel="preconnect" href="//www.gstatic.com" crossorigin><link rel="preconnect" href="//fonts.googleapis.com" crossorigin><link rel="preconnect" href="//www.google-analytics.com" crossorigin><link rel="stylesheet" href="//fonts.googleapis.com/css?family=Google+Sans:400,500|Roboto:400,400italic,500,500italic,700,700italic|Roboto+Mono:400,500,700&display=swap"><link rel="stylesheet"
+href="//fonts.googleapis.com/css2?family=Material+Icons&family=Material+Symbols+Outlined&display=block"><link rel="stylesheet" href="https://www.gstatic.com/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/chrome/css/app.css"><link rel="stylesheet" href="https://www.gstatic.com/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/chrome/css/dark-theme.css" disabled><link rel="shortcut icon" href="https://www.gstatic.com/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/chrome/images/favicon.png"><link rel="apple-touch-icon" href="https://www.gstatic.com/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/chrome/images/touchicon-180.png"><link rel="canonical" href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=zh-cn"><link rel="search" type="application/opensearchdescription+xml"
+title="Chrome for Developers" href="https://developer.chrome.com/s/opensearch.xml?hl=zh-cn"><link rel="alternate" hreflang="en"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news" /><link rel="alternate" hreflang="x-default" href="https://developer.chrome.com/docs/web-platform/webgpu/news" /><link rel="alternate" hreflang="ar"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=ar" /><link rel="alternate" hreflang="bn"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=bn" /><link rel="alternate" hreflang="zh-Hans"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=zh-cn" /><link rel="alternate" hreflang="zh-Hant"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=zh-tw" /><link rel="alternate" hreflang="nl"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=nl" /><link rel="alternate" hreflang="fa"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=fa" /><link rel="alternate" hreflang="fr"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=fr" /><link rel="alternate" hreflang="de"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=de" /><link rel="alternate" hreflang="he"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=he" /><link rel="alternate" hreflang="hi"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=hi" /><link rel="alternate" hreflang="id"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=id" /><link rel="alternate" hreflang="it"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=it" /><link rel="alternate" hreflang="ja"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=ja" /><link rel="alternate" hreflang="ko"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=ko" /><link rel="alternate" hreflang="pl"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=pl" /><link rel="alternate" hreflang="pt-BR"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=pt-br" /><link rel="alternate" hreflang="ru"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=ru" /><link rel="alternate" hreflang="es-419"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=es-419" /><link rel="alternate" hreflang="th"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=th" /><link rel="alternate" hreflang="tr"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=tr" /><link rel="alternate" hreflang="vi"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=vi" /><link rel="alternate" hreflang="en-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news" /><link rel="alternate" hreflang="x-default" href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news" /><link rel="alternate" hreflang="ar-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news?hl=ar" /><link rel="alternate" hreflang="bn-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news?hl=bn" /><link rel="alternate" hreflang="zh-Hans-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news?hl=zh-cn" /><link rel="alternate" hreflang="zh-Hant-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news?hl=zh-tw" /><link rel="alternate" hreflang="nl-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news?hl=nl" /><link rel="alternate" hreflang="fa-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news?hl=fa" /><link rel="alternate" hreflang="fr-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news?hl=fr" /><link rel="alternate" hreflang="de-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news?hl=de" /><link rel="alternate" hreflang="he-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news?hl=he" /><link rel="alternate" hreflang="hi-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news?hl=hi" /><link rel="alternate" hreflang="id-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news?hl=id" /><link rel="alternate" hreflang="it-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news?hl=it" /><link rel="alternate" hreflang="ja-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news?hl=ja" /><link rel="alternate" hreflang="ko-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news?hl=ko" /><link rel="alternate" hreflang="pl-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news?hl=pl" /><link rel="alternate" hreflang="pt-BR-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news?hl=pt-br" /><link rel="alternate" hreflang="ru-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news?hl=ru" /><link rel="alternate" hreflang="es-419-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news?hl=es-419" /><link rel="alternate" hreflang="th-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news?hl=th" /><link rel="alternate" hreflang="tr-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news?hl=tr" /><link rel="alternate" hreflang="vi-cn"
+href="https://developer.chrome.google.cn/docs/web-platform/webgpu/news?hl=vi" /><title>WebGPU 的新变化 &nbsp;|&nbsp; Chrome for Developers</title><meta property="og:title" content="WebGPU 的新变化 &nbsp;|&nbsp; Chrome for Developers"><meta name="description" content="及时了解 WebGPU 的最新变化。"><meta property="og:description" content="及时了解 WebGPU 的最新变化。"><meta property="og:url" content="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=zh-cn"><meta property="og:locale" content="zh_cn"><script type="application/ld+json">
+{
+"@context": "https://schema.org",
+"@type": "Article",
+"dateModified": "2023-12-08",
+"headline": "WebGPU 的新变化"
+}
+</script><script type="application/ld+json">
+{
+"@context": "https://schema.org",
+"@type": "BreadcrumbList",
+"itemListElement": [{
+"@type": "ListItem",
+"position": 1,
+"name": "WebGPU",
+"item": "https://developer.chrome.com/docs/web-platform/webgpu"
+},{
+"@type": "ListItem",
+"position": 2,
+"name": "WebGPU 的新变化",
+"item": "https://developer.chrome.com/docs/web-platform/webgpu/news"
+}]
+}
+</script><link rel="alternate machine-translated-from" hreflang="en"
+href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=en"></head><body class="color-scheme--light"
+template="page"
+theme="chrome-theme"
+type="article"
+appearance
+layout="docs"
+display-toc
+pending><devsite-progress type="indeterminate" id="app-progress"></devsite-progress><a href="#main-content" class="skip-link button">
+跳至主要内容
+</a><section class="devsite-wrapper"><devsite-cookie-notification-bar></devsite-cookie-notification-bar><devsite-header role="banner"><div class="devsite-header--inner" data-nosnippet><div class="devsite-top-logo-row-wrapper-wrapper"><div class="devsite-top-logo-row-wrapper"><div class="devsite-top-logo-row"><button type="button" id="devsite-hamburger-menu"
+class="devsite-header-icon-button button-flat material-icons gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Navigation menu button"
+visually-hidden
+aria-label="打开菜单"></button><div class="devsite-product-name-wrapper"><a href="/" class="devsite-site-logo-link gc-analytics-event"
+data-category="Site-Wide Custom Events" data-label="Site logo" track-type="globalNav"
+track-name="chromeForDevelopers" track-metadata-position="nav"
+track-metadata-eventDetail="nav"><picture><source srcset="https://www.gstatic.com/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/chrome/images/lockup-dark-theme.svg"
+media="(prefers-color-scheme: dark)"
+class="devsite-dark-theme"><img src="https://www.gstatic.com/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/chrome/images/lockup.svg" class="devsite-site-logo" alt="Chrome for Developers"></picture></a></div><div class="devsite-top-logo-row-middle"><div class="devsite-header-upper-tabs"><devsite-tabs class="upper-tabs"><nav class="devsite-tabs-wrapper" aria-label="上面的标签页"><tab class="devsite-dropdown
+devsite-dropdown-full
+devsite-active
+"><a href="https://developer.chrome.com/docs?hl=zh-cn"
+class="devsite-tabs-content gc-analytics-event "
+track-metadata-eventdetail="https://developer.chrome.com/docs?hl=zh-cn"
+track-type="nav"
+track-metadata-position="nav - 文档"
+track-metadata-module="primary nav"
+aria-label="文档, selected"
+data-category="Site-Wide Custom Events"
+data-label="Tab: 文档"
+track-name="文档"
+>
+文档
+</a><button
+aria-haspopup="menu"
+aria-expanded="false"
+aria-label="以下项的下拉菜单 文档"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="primary nav"
+data-category="Site-Wide Custom Events"
+data-label="Tab: 文档"
+track-name="文档"
+class="devsite-tabs-dropdown-toggle devsite-icon devsite-icon-arrow-drop-down"></button><div class="devsite-tabs-dropdown" role="menu" aria-label="submenu" hidden><div class="devsite-tabs-dropdown-content"><div class="devsite-tabs-dropdown-column
+"><ul class="devsite-tabs-dropdown-section
+build-icon dcc-subnav"><li class="devsite-nav-title" role="heading" tooltip>使用 Chrome 构建</li><li class="devsite-nav-description">了解 Chrome 的运作方式、参与源试用并随时随地使用 Chrome 构建应用。
+</li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/web-platform?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/web-platform?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="使用 chrome 构建"
+tooltip
+><div class="devsite-nav-item-title">
+网络平台
+</div></a></li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/iwa?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/iwa?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="使用 chrome 构建"
+tooltip
+><div class="devsite-nav-item-title">
+独立式 Web 应用 (IWA)
+</div></a></li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/capabilities?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/capabilities?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="使用 chrome 构建"
+tooltip
+><div class="devsite-nav-item-title">
+功能
+</div></a></li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/automation-and-testing?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/automation-and-testing?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="使用 chrome 构建"
+tooltip
+><div class="devsite-nav-item-title">
+自动化和测试
+</div></a></li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/chromedriver?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/chromedriver?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="使用 chrome 构建"
+tooltip
+><div class="devsite-nav-item-title">
+ChromeDriver
+</div></a></li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/extensions?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/extensions?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="使用 chrome 构建"
+tooltip
+><div class="devsite-nav-item-title">
+Extensions
+</div></a></li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/webstore?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/webstore?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="使用 chrome 构建"
+tooltip
+><div class="devsite-nav-item-title">
+Chrome Web Store
+</div></a></li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/chromium?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/chromium?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="使用 chrome 构建"
+tooltip
+><div class="devsite-nav-item-title">
+Chromium
+</div></a></li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/android?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/android?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="使用 chrome 构建"
+tooltip
+><div class="devsite-nav-item-title">
+Android 设备上的 Web
+</div></a></li><li class="devsite-nav-item"><a href="https://developer.chrome.com/origintrials/?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/origintrials/?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="使用 chrome 构建"
+tooltip
+><div class="devsite-nav-item-title">
+源试用
+</div></a></li><li class="devsite-nav-item"><a href="https://developer.chrome.com/release-notes?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/release-notes?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="使用 chrome 构建"
+tooltip
+><div class="devsite-nav-item-title">
+版本说明
+</div></a></li></ul></div><div class="devsite-tabs-dropdown-column
+"><ul class="devsite-tabs-dropdown-section
+productivity-icon dcc-subnav"><li class="devsite-nav-title" role="heading" tooltip>工作效率</li><li class="devsite-nav-description">利用网络最佳工具为用户创造最佳体验。</li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/devtools?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/devtools?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="工作效率"
+tooltip
+><div class="devsite-nav-item-title">
+DevTools
+</div></a></li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/lighthouse?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/lighthouse?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="工作效率"
+tooltip
+><div class="devsite-nav-item-title">
+Lighthouse
+</div></a></li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/crux?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/crux?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="工作效率"
+tooltip
+><div class="devsite-nav-item-title">
+Chrome 用户体验报告
+</div></a></li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/accessibility?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/accessibility?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="工作效率"
+tooltip
+><div class="devsite-nav-item-title">
+无障碍
+</div></a></li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/modern-web-guidance?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/modern-web-guidance?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="工作效率"
+tooltip
+><div class="devsite-nav-item-title">
+现代 Web 指南
+</div></a></li></ul><ul class="devsite-tabs-dropdown-section
+dcc-subnav second-column-list"><li class="devsite-nav-description">借助我们现成的库，您可以更快速、更简洁地完成工作。
+</li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/workbox?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/workbox?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="工作效率"
+tooltip
+><div class="devsite-nav-item-title">
+Workbox
+</div></a></li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/puppeteer?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/puppeteer?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="工作效率"
+tooltip
+><div class="devsite-nav-item-title">
+木偶操作师
+</div></a></li></ul></div><div class="devsite-tabs-dropdown-column
+"><ul class="devsite-tabs-dropdown-section
+experience-icon dcc-subnav"><li class="devsite-nav-title" role="heading" tooltip>体验</li><li class="devsite-nav-description">使用 Chrome 设计外观精美且性能出色的网页。
+</li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/ai?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/ai?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="体验"
+tooltip
+><div class="devsite-nav-item-title">
+AI
+</div></a></li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/performance?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/performance?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="体验"
+tooltip
+><div class="devsite-nav-item-title">
+性能
+</div></a></li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/css-ui?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/css-ui?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="体验"
+tooltip
+><div class="devsite-nav-item-title">
+CSS 和界面
+</div></a></li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/identity?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/identity?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="体验"
+tooltip
+><div class="devsite-nav-item-title">
+身份
+</div></a></li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/payments?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/payments?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="体验"
+tooltip
+><div class="devsite-nav-item-title">
+收款
+</div></a></li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs/privacy-security?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs/privacy-security?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="体验"
+tooltip
+><div class="devsite-nav-item-title">
+隐私权和安全
+</div></a></li></ul></div><div class="devsite-tabs-dropdown-column
+"><ul class="devsite-tabs-dropdown-section
+resources-icon dcc-subnav"><li class="devsite-nav-title" role="heading" tooltip>资源</li><li class="devsite-nav-description">更多 Chrome 和 Google 产品。
+</li><li class="devsite-nav-item"><a href="https://developer.chrome.com/docs?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://developer.chrome.com/docs?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="资源"
+tooltip
+><div class="devsite-nav-item-title">
+所有文档
+</div></a></li><li class="devsite-nav-item"><a href="https://web.dev/baseline?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://web.dev/baseline?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="资源"
+tooltip
+><div class="devsite-nav-item-title">
+基准 <span aria-hidden="true" class="material-icons" style="font-size: 12px;" translate="no">open_in_new</span></div></a></li><li class="devsite-nav-item"><a href="https://web.dev?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://web.dev?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="资源"
+tooltip
+><div class="devsite-nav-item-title">
+web.dev <span aria-hidden="true" class="material-icons" style="font-size: 12px;" translate="no">open_in_new</span></div></a></li><li class="devsite-nav-item"><a href="https://pagespeed.web.dev?hl=zh-cn"
+track-type="nav"
+track-metadata-eventdetail="https://pagespeed.web.dev?hl=zh-cn"
+track-metadata-position="nav - 文档"
+track-metadata-module="tertiary nav"
+track-metadata-module_headline="资源"
+tooltip
+><div class="devsite-nav-item-title">
+PageSpeed Insights 审核 <span aria-hidden="true" class="material-icons" style="font-size: 12px;" translate="no">open_in_new</span></div></a></li></ul></div></div></div></tab><tab ><a href="https://developer.chrome.com/case-studies?hl=zh-cn"
+class="devsite-tabs-content gc-analytics-event "
+track-metadata-eventdetail="https://developer.chrome.com/case-studies?hl=zh-cn"
+track-type="nav"
+track-metadata-position="nav - 案例研究"
+track-metadata-module="primary nav"
+data-category="Site-Wide Custom Events"
+data-label="Tab: 案例研究"
+track-name="案例研究"
+>
+案例研究
+</a></tab><tab ><a href="https://developer.chrome.com/blog?hl=zh-cn"
+class="devsite-tabs-content gc-analytics-event "
+track-metadata-eventdetail="https://developer.chrome.com/blog?hl=zh-cn"
+track-type="nav"
+track-metadata-position="nav - 博客"
+track-metadata-module="primary nav"
+data-category="Site-Wide Custom Events"
+data-label="Tab: 博客"
+track-name="博客"
+>
+博客
+</a></tab><tab ><a href="https://developer.chrome.com/new?hl=zh-cn"
+class="devsite-tabs-content gc-analytics-event "
+track-metadata-eventdetail="https://developer.chrome.com/new?hl=zh-cn"
+track-type="nav"
+track-metadata-position="nav - chrome 中的新功能"
+track-metadata-module="primary nav"
+data-category="Site-Wide Custom Events"
+data-label="Tab: Chrome 中的新功能"
+track-name="chrome 中的新功能"
+>
+Chrome 中的新功能
+</a></tab></nav></devsite-tabs></div><devsite-search
+enable-signin
+enable-search
+enable-suggestions
+enable-query-completion
+enable-search-summaries
+project-name="WebGPU"
+tenant-name="Chrome for Developers"
+><form class="devsite-search-form" action="https://developer.chrome.com/s/results?hl=zh-cn" method="GET"><div class="devsite-search-container"><button type="button"
+search-open
+class="devsite-search-button devsite-header-icon-button button-flat material-icons"
+aria-label="打开搜索框"></button><div class="devsite-searchbox"><input
+aria-activedescendant=""
+aria-autocomplete="list"
+aria-label="搜索"
+aria-expanded="false"
+aria-haspopup="listbox"
+autocomplete="off"
+class="devsite-search-field devsite-search-query"
+name="q"
+placeholder="搜索"
+role="combobox"
+type="text"
+value=""
+><div class="devsite-search-image material-icons" aria-hidden="true"><svg class="devsite-search-ai-image" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_6641_386)"><path d="M19.6 21L13.3 14.7C12.8 15.1 12.225 15.4167 11.575 15.65C10.925 15.8833 10.2333 16 9.5 16C7.68333 16 6.14167 15.375 4.875 14.125C3.625 12.8583 3 11.3167 3 9.5C3 7.68333 3.625 6.15 4.875 4.9C6.14167 3.63333 7.68333 3 9.5 3C10.0167 3 10.5167 3.05833 11 3.175C11.4833 3.275 11.9417 3.43333 12.375 3.65L10.825 5.2C10.6083 5.13333 10.3917 5.08333 10.175 5.05C9.95833 5.01667 9.73333 5 9.5 5C8.25 5 7.18333 5.44167 6.3 6.325C5.43333 7.19167 5 8.25 5 9.5C5 10.75 5.43333 11.8167 6.3 12.7C7.18333 13.5667 8.25 14 9.5 14C10.6667 14 11.6667 13.625 12.5 12.875C13.35 12.1083 13.8417 11.15 13.975 10H15.975C15.925 10.6333 15.7833 11.2333 15.55 11.8C15.3333 12.3667 15.05 12.8667 14.7 13.3L21 19.6L19.6 21ZM17.5 12C17.5 10.4667 16.9667 9.16667 15.9 8.1C14.8333 7.03333 13.5333 6.5 12 6.5C13.5333 6.5 14.8333 5.96667 15.9 4.9C16.9667 3.83333 17.5 2.53333 17.5 0.999999C17.5 2.53333 18.0333 3.83333 19.1 4.9C20.1667 5.96667 21.4667 6.5 23 6.5C21.4667 6.5 20.1667 7.03333 19.1 8.1C18.0333 9.16667 17.5 10.4667 17.5 12Z" fill="#5F6368"/></g><defs><clipPath id="clip0_6641_386"><rect width="24" height="24" fill="white"/></clipPath></defs></svg></div><div class="devsite-search-shortcut-icon-container" aria-hidden="true"><kbd class="devsite-search-shortcut-icon">/</kbd></div></div></div></form><button type="button"
+search-close
+class="devsite-search-button devsite-header-icon-button button-flat material-icons"
+aria-label="关闭搜索框"></button></devsite-search></div><devsite-appearance-selector></devsite-appearance-selector><devsite-language-selector><ul role="presentation"><li role="presentation"><a role="menuitem" lang="en"
+>English</a></li><li role="presentation"><a role="menuitem" lang="de"
+>Deutsch</a></li><li role="presentation"><a role="menuitem" lang="es_419"
+>Español – América Latina</a></li><li role="presentation"><a role="menuitem" lang="fr"
+>Français</a></li><li role="presentation"><a role="menuitem" lang="id"
+>Indonesia</a></li><li role="presentation"><a role="menuitem" lang="it"
+>Italiano</a></li><li role="presentation"><a role="menuitem" lang="nl"
+>Nederlands</a></li><li role="presentation"><a role="menuitem" lang="pl"
+>Polski</a></li><li role="presentation"><a role="menuitem" lang="pt_br"
+>Português – Brasil</a></li><li role="presentation"><a role="menuitem" lang="vi"
+>Tiếng Việt</a></li><li role="presentation"><a role="menuitem" lang="tr"
+>Türkçe</a></li><li role="presentation"><a role="menuitem" lang="ru"
+>Русский</a></li><li role="presentation"><a role="menuitem" lang="he"
+>עברית</a></li><li role="presentation"><a role="menuitem" lang="ar"
+>العربيّة</a></li><li role="presentation"><a role="menuitem" lang="fa"
+>فارسی</a></li><li role="presentation"><a role="menuitem" lang="hi"
+>हिंदी</a></li><li role="presentation"><a role="menuitem" lang="bn"
+>বাংলা</a></li><li role="presentation"><a role="menuitem" lang="th"
+>ภาษาไทย</a></li><li role="presentation"><a role="menuitem" lang="zh_cn"
+>中文 – 简体</a></li><li role="presentation"><a role="menuitem" lang="zh_tw"
+>中文 – 繁體</a></li><li role="presentation"><a role="menuitem" lang="ja"
+>日本語</a></li><li role="presentation"><a role="menuitem" lang="ko"
+>한국어</a></li></ul></devsite-language-selector><devsite-user
+enable-profiles
+id="devsite-user"><span class="button devsite-top-button" aria-hidden="true" visually-hidden>登录</span></devsite-user></div></div></div><div class="devsite-collapsible-section
+"><div class="devsite-header-background"><div class="devsite-product-id-row"
+><div class="devsite-product-description-row"><div class="devsite-product-id"><ul class="devsite-breadcrumb-list"
+><li class="devsite-breadcrumb-item
+"><a href="https://developer.chrome.com/docs/web-platform/webgpu?hl=zh-cn"
+class="devsite-breadcrumb-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Lower Header"
+data-value="1"
+track-type="globalNav"
+track-name="breadcrumb"
+track-metadata-position="1"
+track-metadata-eventdetail="WebGPU"
+>
+WebGPU
+</a></li></ul></div></div></div><div class="devsite-doc-set-nav-row"><devsite-tabs class="lower-tabs"><nav class="devsite-tabs-wrapper" aria-label="下面的标签页"><tab ><a href="https://developer.chrome.com/docs/web-platform?hl=zh-cn"
+class="devsite-tabs-content gc-analytics-event "
+track-metadata-eventdetail="https://developer.chrome.com/docs/web-platform?hl=zh-cn"
+track-type="nav"
+track-metadata-position="nav - 网络平台"
+track-metadata-module="primary nav"
+data-category="Site-Wide Custom Events"
+data-label="Tab: 网络平台"
+track-name="网络平台"
+>
+网络平台
+</a></tab><tab ><a href="https://developer.chrome.com/docs/web-platform/new-in-chrome?hl=zh-cn"
+class="devsite-tabs-content gc-analytics-event "
+track-metadata-eventdetail="https://developer.chrome.com/docs/web-platform/new-in-chrome?hl=zh-cn"
+track-type="nav"
+track-metadata-position="nav - 新上架"
+track-metadata-module="primary nav"
+data-category="Site-Wide Custom Events"
+data-label="Tab: 新上架"
+track-name="新上架"
+>
+新上架
+</a></tab><tab class="devsite-active"><a href="https://developer.chrome.com/docs/web-platform/webgpu?hl=zh-cn"
+class="devsite-tabs-content gc-analytics-event "
+track-metadata-eventdetail="https://developer.chrome.com/docs/web-platform/webgpu?hl=zh-cn"
+track-type="nav"
+track-metadata-position="nav - webgpu"
+track-metadata-module="primary nav"
+aria-label="WebGPU, selected"
+data-category="Site-Wide Custom Events"
+data-label="Tab: WebGPU"
+track-name="webgpu"
+>
+WebGPU
+</a></tab></nav></devsite-tabs></div></div></div></div></devsite-header><devsite-book-nav scrollbars ><div class="devsite-book-nav-filter"
+hidden><span class="filter-list-icon material-icons" aria-hidden="true"></span><input type="text"
+placeholder="过滤条件"
+aria-label="输入文本以进行过滤"
+role="searchbox"><span class="filter-clear-button hidden"
+data-title="清除过滤条件"
+aria-label="清除过滤条件"
+role="button"
+tabindex="0"></span></div><nav class="devsite-book-nav devsite-nav nocontent" data-nosnippet
+aria-label="侧边菜单"><div class="devsite-mobile-header"><button type="button"
+id="devsite-close-nav"
+class="devsite-header-icon-button button-flat material-icons gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Close navigation"
+aria-label="关闭导航栏"></button><div class="devsite-product-name-wrapper"><a href="/" class="devsite-site-logo-link gc-analytics-event"
+data-category="Site-Wide Custom Events" data-label="Site logo" track-type="globalNav"
+track-name="chromeForDevelopers" track-metadata-position="nav"
+track-metadata-eventDetail="nav"><picture><source srcset="https://www.gstatic.com/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/chrome/images/lockup-dark-theme.svg"
+media="(prefers-color-scheme: dark)"
+class="devsite-dark-theme"><img src="https://www.gstatic.com/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/chrome/images/lockup.svg" class="devsite-site-logo" alt="Chrome for Developers"></picture></a></div></div><div class="devsite-book-nav-wrapper"><div class="devsite-mobile-nav-top"><ul class="devsite-nav-list"><li class="devsite-nav-item"><a href="/docs"
+class="devsite-nav-title gc-analytics-event
+devsite-nav-active"
+data-category="Site-Wide Custom Events"
+data-label="Tab: 文档"
+track-name="文档"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 文档"
+track-type="globalNav"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+文档
+</span></a><ul class="devsite-nav-responsive-tabs devsite-nav-has-menu
+"><li class="devsite-nav-item"><span
+class="devsite-nav-title"
+tooltip
+data-category="Site-Wide Custom Events"
+data-label="Tab: 文档"
+track-name="文档"
+><span class="devsite-nav-text" tooltip menu="文档">
+更多
+</span><span class="devsite-nav-icon material-icons" data-icon="forward"
+menu="文档"></span></span></li></ul><ul class="devsite-nav-responsive-tabs"><li class="devsite-nav-item"><a href="/docs/web-platform"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Tab: 网络平台"
+track-name="网络平台"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 网络平台"
+track-type="globalNav"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+网络平台
+</span></a></li><li class="devsite-nav-item"><a href="/docs/web-platform/new-in-chrome"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Tab: 新上架"
+track-name="新上架"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 新上架"
+track-type="globalNav"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+新上架
+</span></a></li><li class="devsite-nav-item"><a href="/docs/web-platform/webgpu"
+class="devsite-nav-title gc-analytics-event
+devsite-nav-active"
+data-category="Site-Wide Custom Events"
+data-label="Tab: WebGPU"
+track-name="webgpu"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: WebGPU"
+track-type="globalNav"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip menu="_book">
+WebGPU
+</span></a></li></ul></li><li class="devsite-nav-item"><a href="/case-studies"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Tab: 案例研究"
+track-name="案例研究"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 案例研究"
+track-type="globalNav"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+案例研究
+</span></a></li><li class="devsite-nav-item"><a href="/blog"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Tab: 博客"
+track-name="博客"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 博客"
+track-type="globalNav"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+博客
+</span></a></li><li class="devsite-nav-item"><a href="/new"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Tab: Chrome 中的新功能"
+track-name="chrome 中的新功能"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: Chrome 中的新功能"
+track-type="globalNav"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+Chrome 中的新功能
+</span></a></li></ul></div><div class="devsite-mobile-nav-bottom"><ul class="devsite-nav-list" menu="_book"><li class="devsite-nav-item
+devsite-nav-heading"><div class="devsite-nav-title devsite-nav-title-no-path"><span class="devsite-nav-text" tooltip>WebGPU</span></div></li><li class="devsite-nav-item"><a href="/docs/web-platform/webgpu/overview"
+class="devsite-nav-title"
+><span class="devsite-nav-text" tooltip>概览</span></a></li><li class="devsite-nav-item"><a href="/docs/web-platform/webgpu/news"
+class="devsite-nav-title"
+><span class="devsite-nav-text" tooltip>新变化</span></a></li><li class="devsite-nav-item"><a href="/docs/web-platform/webgpu/colab-headless"
+class="devsite-nav-title"
+><span class="devsite-nav-text" tooltip>在 Google Colab 中进行 Web AI 模型测试</span></a></li><li class="devsite-nav-item"><a href="/docs/web-platform/webgpu/build-app"
+class="devsite-nav-title"
+><span class="devsite-nav-text" tooltip>使用 WebGPU 构建应用</span></a></li><li class="devsite-nav-item"><a href="/docs/web-platform/webgpu/from-webgl-to-webgpu"
+class="devsite-nav-title"
+><span class="devsite-nav-text" tooltip>从 WebGL 到 WebGPU</span></a></li><li class="devsite-nav-item"><a href="/docs/web-platform/webgpu/webgpu-ecosystem"
+class="devsite-nav-title"
+><span class="devsite-nav-text" tooltip>把握 WebGPU 生态系统优势</span></a></li><li class="devsite-nav-item"><a href="/docs/web-platform/webgpu/troubleshooting-tips"
+class="devsite-nav-title"
+><span class="devsite-nav-text" tooltip>排查 WebGPU 问题</span></a></li><li class="devsite-nav-item
+devsite-nav-experimental"><a href="/docs/web-platform/webgpu/developer-features"
+class="devsite-nav-title"
+><span class="devsite-nav-text" tooltip>开发者功能</span><span class="devsite-nav-icon material-icons"
+data-icon="experimental"
+data-title="实验！"
+aria-hidden="true"></span></a></li><li class="devsite-nav-item
+devsite-nav-heading"><div class="devsite-nav-title devsite-nav-title-no-path"><span class="devsite-nav-text" tooltip>GPU 计算</span></div></li><li class="devsite-nav-item"><a href="/docs/capabilities/web-apis/gpu-compute"
+class="devsite-nav-title"
+><span class="devsite-nav-text" tooltip>GPU 计算使用入门 (Web)</span></a></li></ul><ul class="devsite-nav-list" menu="文档"
+aria-label="侧边菜单" hidden><li class="devsite-nav-item devsite-nav-heading"><span
+class="devsite-nav-title"
+tooltip
+><span class="devsite-nav-text" tooltip >
+使用 Chrome 构建
+</span></span></li><li class="devsite-nav-item"><a href="/docs/web-platform"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 网络平台"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+网络平台
+</span></a></li><li class="devsite-nav-item"><a href="/docs/iwa"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 独立式 Web 应用 (IWA)"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+独立式 Web 应用 (IWA)
+</span></a></li><li class="devsite-nav-item"><a href="/docs/capabilities"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 功能"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+功能
+</span></a></li><li class="devsite-nav-item"><a href="/docs/automation-and-testing"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 自动化和测试"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+自动化和测试
+</span></a></li><li class="devsite-nav-item"><a href="/docs/chromedriver"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: ChromeDriver"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+ChromeDriver
+</span></a></li><li class="devsite-nav-item"><a href="/docs/extensions"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: Extensions"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+Extensions
+</span></a></li><li class="devsite-nav-item"><a href="/docs/webstore"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: Chrome Web Store"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+Chrome Web Store
+</span></a></li><li class="devsite-nav-item"><a href="/docs/chromium"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: Chromium"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+Chromium
+</span></a></li><li class="devsite-nav-item"><a href="/docs/android"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: Android 设备上的 Web"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+Android 设备上的 Web
+</span></a></li><li class="devsite-nav-item"><a href="https://developer.chrome.com/origintrials/"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 源试用"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+源试用
+</span></a></li><li class="devsite-nav-item"><a href="/release-notes"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 版本说明"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+版本说明
+</span></a></li><li class="devsite-nav-item devsite-nav-heading"><span
+class="devsite-nav-title"
+tooltip
+><span class="devsite-nav-text" tooltip >
+工作效率
+</span></span></li><li class="devsite-nav-item"><a href="/docs/devtools"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: DevTools"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+DevTools
+</span></a></li><li class="devsite-nav-item"><a href="/docs/lighthouse"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: Lighthouse"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+Lighthouse
+</span></a></li><li class="devsite-nav-item"><a href="/docs/crux"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: Chrome 用户体验报告"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+Chrome 用户体验报告
+</span></a></li><li class="devsite-nav-item"><a href="/docs/accessibility"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 无障碍"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+无障碍
+</span></a></li><li class="devsite-nav-item"><a href="/docs/modern-web-guidance"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 现代 Web 指南"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+现代 Web 指南
+</span></a></li><li class="devsite-nav-item"><a href="/docs/workbox"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: Workbox"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+Workbox
+</span></a></li><li class="devsite-nav-item"><a href="/docs/puppeteer"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 木偶操作师"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+木偶操作师
+</span></a></li><li class="devsite-nav-item devsite-nav-heading"><span
+class="devsite-nav-title"
+tooltip
+><span class="devsite-nav-text" tooltip >
+体验
+</span></span></li><li class="devsite-nav-item"><a href="/docs/ai"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: AI"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+AI
+</span></a></li><li class="devsite-nav-item"><a href="/docs/performance"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 性能"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+性能
+</span></a></li><li class="devsite-nav-item"><a href="/docs/css-ui"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: CSS 和界面"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+CSS 和界面
+</span></a></li><li class="devsite-nav-item"><a href="/docs/identity"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 身份"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+身份
+</span></a></li><li class="devsite-nav-item"><a href="/docs/payments"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 收款"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+收款
+</span></a></li><li class="devsite-nav-item"><a href="/docs/privacy-security"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 隐私权和安全"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+隐私权和安全
+</span></a></li><li class="devsite-nav-item devsite-nav-heading"><span
+class="devsite-nav-title"
+tooltip
+><span class="devsite-nav-text" tooltip >
+资源
+</span></span></li><li class="devsite-nav-item"><a href="/docs"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab: 所有文档"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+所有文档
+</span></a></li><li class="devsite-nav-item"><a href="https://web.dev/baseline"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab:
+基准 &lt;span aria-hidden=&#34;true&#34; class=&#34;material-icons&#34; style=&#34;font-size: 12px;&#34; translate=&#34;no&#34;&gt;open_in_new&lt;/span&gt;
+"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+基准 &lt;span aria-hidden=&#34;true&#34; class=&#34;material-icons&#34; style=&#34;font-size: 12px;&#34; translate=&#34;no&#34;&gt;open_in_new&lt;/span&gt;
+</span></a></li><li class="devsite-nav-item"><a href="https://web.dev"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab:
+web.dev &lt;span aria-hidden=&#34;true&#34; class=&#34;material-icons&#34; style=&#34;font-size: 12px;&#34; translate=&#34;no&#34;&gt;open_in_new&lt;/span&gt;
+"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+web.dev &lt;span aria-hidden=&#34;true&#34; class=&#34;material-icons&#34; style=&#34;font-size: 12px;&#34; translate=&#34;no&#34;&gt;open_in_new&lt;/span&gt;
+</span></a></li><li class="devsite-nav-item"><a href="https://pagespeed.web.dev"
+class="devsite-nav-title gc-analytics-event
+"
+data-category="Site-Wide Custom Events"
+data-label="Responsive Tab:
+PageSpeed Insights 审核 &lt;span aria-hidden=&#34;true&#34; class=&#34;material-icons&#34; style=&#34;font-size: 12px;&#34; translate=&#34;no&#34;&gt;open_in_new&lt;/span&gt;
+"
+track-type="navMenu"
+track-metadata-eventDetail="globalMenu"
+track-metadata-position="nav"><span class="devsite-nav-text" tooltip >
+PageSpeed Insights 审核 &lt;span aria-hidden=&#34;true&#34; class=&#34;material-icons&#34; style=&#34;font-size: 12px;&#34; translate=&#34;no&#34;&gt;open_in_new&lt;/span&gt;
+</span></a></li></ul></div></div></nav></devsite-book-nav><section id="gc-wrapper"><main role="main" id="main-content" class="devsite-main-content"
+has-book-nav
+has-sidebar
+><div class="devsite-sidebar"><div class="devsite-sidebar-content"><devsite-toc class="devsite-nav"
+role="navigation"
+aria-label="本页内容"
+depth="2"
+scrollbars
+data-nosnippet
+></devsite-toc><devsite-recommendations-sidebar class="nocontent devsite-nav" data-nosnippet></devsite-recommendations-sidebar></div></div><devsite-content><article class="devsite-article"><div class="devsite-banner devsite-banner-translated nocontent"><div class="devsite-banner-message"><div class="devsite-banner-message-text"><img src="https://developer.chrome.com/_static/images/translated.svg?hl=zh-cn"
+class="devsite-banner-translated-image invert"
+alt=""><span class="devsite-banner-translated-text">
+Google 会使用 AI 技术将内容翻译成您偏好的语言。AI 翻译可能包含错误。
+</span></div><devsite-switch-to-english-button></devsite-switch-to-english-button></div></div><div class="devsite-article-meta nocontent" role="navigation" data-nosnippet><ul class="devsite-breadcrumb-list"
+aria-label="面包屑导航"><li class="devsite-breadcrumb-item
+"><a href="https://developer.chrome.com/?hl=zh-cn"
+class="devsite-breadcrumb-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Breadcrumbs"
+data-value="1"
+track-type="globalNav"
+track-name="breadcrumb"
+track-metadata-position="1"
+track-metadata-eventdetail=""
+>
+首页
+</a></li><li class="devsite-breadcrumb-item
+"><div class="devsite-breadcrumb-guillemet material-icons" aria-hidden="true"></div><a href="https://developer.chrome.com/docs?hl=zh-cn"
+class="devsite-breadcrumb-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Breadcrumbs"
+data-value="2"
+track-type="globalNav"
+track-name="breadcrumb"
+track-metadata-position="2"
+track-metadata-eventdetail="Docs"
+>
+Docs
+</a></li><li class="devsite-breadcrumb-item
+"><div class="devsite-breadcrumb-guillemet material-icons" aria-hidden="true"></div><a href="https://developer.chrome.com/docs/web-platform?hl=zh-cn"
+class="devsite-breadcrumb-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Breadcrumbs"
+data-value="3"
+track-type="globalNav"
+track-name="breadcrumb"
+track-metadata-position="3"
+track-metadata-eventdetail="Web Platform"
+>
+Web Platform
+</a></li><li class="devsite-breadcrumb-item
+"><div class="devsite-breadcrumb-guillemet material-icons" aria-hidden="true"></div><a href="https://developer.chrome.com/docs/web-platform/webgpu?hl=zh-cn"
+class="devsite-breadcrumb-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Breadcrumbs"
+data-value="4"
+track-type="globalNav"
+track-name="breadcrumb"
+track-metadata-position="4"
+track-metadata-eventdetail="WebGPU"
+>
+WebGPU
+</a></li></ul><devsite-thumb-rating position="header"></devsite-thumb-rating></div><h1 class="devsite-page-title" tabindex="-1">
+WebGPU 的新变化<devsite-actions hidden data-nosnippet><devsite-feature-tooltip
+ack-key="AckCollectionsBookmarkTooltipDismiss"
+analytics-category="Site-Wide Custom Events"
+analytics-action-show="Callout Profile displayed"
+analytics-action-close="Callout Profile dismissed"
+analytics-label="Create Collection Callout"
+class="devsite-page-bookmark-tooltip nocontent"
+data-nosnippet
+dismiss-button="true"
+id="devsite-collections-dropdown"
+dismiss-button-text="关闭"
+close-button-text="知道了"><devsite-bookmark></devsite-bookmark><span slot="popout-heading">
+使用集合让一切井井有条
+</span><span slot="popout-contents">
+根据您的偏好保存内容并对其进行分类。
+</span></devsite-feature-tooltip><devsite-llm-tools></devsite-llm-tools></devsite-actions></h1><div class="devsite-page-title-meta"><devsite-view-release-notes></devsite-view-release-notes></div><devsite-toc class="devsite-nav"
+depth="2"
+devsite-toc-embedded
+></devsite-toc><div class="devsite-article-body clearfix
+"><p><style>
+.wd-authors {
+--avatar-size: 65px;
+display: flex;
+gap: 2em;
+}
+.wd-author {
+display: flex;
+flex-wrap: wrap;
+gap: 1em;
+line-height: calc(var(--avatar-size) / 2);
+}
+.wd-author img {
+border-radius: 50%;
+height: var(--avatar-size, 65px);
+width: var(--avatar-size, 65px);
+}
+.dcc-authors {
+--avatar-size: 65px;
+display: flex;
+gap: 2em;
+}
+.dcc-author {
+display: flex;
+flex-wrap: wrap;
+gap: 1em;
+line-height: calc(var(--avatar-size) / 2);
+}
+.dcc-author img {
+border-radius: 50%;
+height: var(--avatar-size, 65px);
+width: var(--avatar-size, 65px);
+}
+.dcc-author__links {
+display: flex;
+}
+.dcc-author__links a {
+margin-inline-end: 6px;
+}
+.dcc-author__links a:last-of-type {
+margin-inline-end: 0;
+}
+</style></p><div class="dcc-authors" translate="no"><div class="dcc-author"><img alt="François Beaufort" class="devsite-landing-row-item-icon" decoding="async" height="64" loading="lazy" src="https://web.dev/images/authors/beaufortfrancois.jpg?hl=zh-cn" width="64" /><div><span>
+François Beaufort
+</span><div class="dcc-author__links"><a aria-label="François Beaufort on GitHub" href="https://github.com/beaufortfrancois" rel="me"><svg height="22" viewBox="0 0 32.6 31.8" width="22" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path clip-rule="evenodd" d="M16.3 0C7.3 0 0 7.3 0 16.3c0 7.2 4.7 13.3 11.1 15.5.8.1 1.1-.4 1.1-.8v-2.8c-4.5 1-5.5-2.2-5.5-2.2-.7-1.9-1.8-2.4-1.8-2.4-1.5-1 .1-1 .1-1 1.6.1 2.5 1.7 2.5 1.7 1.5 2.5 3.8 1.8 4.7 1.4.1-1.1.6-1.8 1-2.2-3.6-.4-7.4-1.8-7.4-8.1 0-1.8.6-3.2 1.7-4.4-.1-.3-.7-2 .2-4.2 0 0 1.4-.4 4.5 1.7 1.3-.4 2.7-.5 4.1-.5 1.4 0 2.8.2 4.1.5 3.1-2.1 4.5-1.7 4.5-1.7.9 2.2.3 3.9.2 4.3 1 1.1 1.7 2.6 1.7 4.4 0 6.3-3.8 7.6-7.4 8 .6.5 1.1 1.5 1.1 3V31c0 .4.3.9 1.1.8 6.5-2.2 11.1-8.3 11.1-15.5C32.6 7.3 25.3 0 16.3 0z" fill="currentColor" fill-rule="evenodd"></path></svg></a></div></div></div></div><p></p><p><img alt="WebGPU 的新变化。" height="400" sizes="(max-width: 840px) 100vw, 856px" src="https://developer.chrome.com/static/docs/web-platform/webgpu/news/image/logo.png?hl=zh-cn" srcset="https://developer.chrome.com/static/docs/web-platform/webgpu/news/image/logo_36.png?hl=zh-cn 36w,https://developer.chrome.com/static/docs/web-platform/webgpu/news/image/logo_48.png?hl=zh-cn 48w,https://developer.chrome.com/static/docs/web-platform/webgpu/news/image/logo_72.png?hl=zh-cn 72w,https://developer.chrome.com/static/docs/web-platform/webgpu/news/image/logo_96.png?hl=zh-cn 96w,https://developer.chrome.com/static/docs/web-platform/webgpu/news/image/logo_480.png?hl=zh-cn 480w,https://developer.chrome.com/static/docs/web-platform/webgpu/news/image/logo_720.png?hl=zh-cn 720w,https://developer.chrome.com/static/docs/web-platform/webgpu/news/image/logo_856.png?hl=zh-cn 856w,https://developer.chrome.com/static/docs/web-platform/webgpu/news/image/logo_960.png?hl=zh-cn 960w,https://developer.chrome.com/static/docs/web-platform/webgpu/news/image/logo_1440.png?hl=zh-cn 1440w,https://developer.chrome.com/static/docs/web-platform/webgpu/news/image/logo_1920.png?hl=zh-cn 1920w,https://developer.chrome.com/static/docs/web-platform/webgpu/news/image/logo_2880.png?hl=zh-cn 2880w" width="800" /></p><h2 data-text="WebGPU 的新变化" id="whats-new" tabindex="-1">WebGPU 的新变化</h2><p><a href="https://developer.chrome.com/docs/web-platform/webgpu/news?hl=zh-cn">WebGPU 新变化</a>系列中涵盖的所有内容列表。</p><h3 data-text="Chrome 149-150" id="chrome149-150" tabindex="-1">Chrome 149-150</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-149-150?hl=zh-cn#immediates">Immediates</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-149-150?hl=zh-cn#stricter_validation_for_transient_attachments">对临时附件进行更严格的验证</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-149-150?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 147-148" id="chrome147-148" tabindex="-1">Chrome 147-148</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-147-148?hl=zh-cn#wgsl_linear_indexing_extension">WGSL linear_indexing 扩展</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-147-148?hl=zh-cn#webgpu_on_linux_nvidia">Linux NVIDIA 上的 WebGPU</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-147-148?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 146" id="chrome146" tabindex="-1">Chrome 146</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-146?hl=zh-cn#support_webgpu_compatibility_mode_on_opengl_es_31">支持 OpenGL ES 3.1 上的 WebGPU 兼容模式</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-146?hl=zh-cn#transient_attachments">临时附件</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-146?hl=zh-cn#wgsl_texture_and_sampler_let_extension">WGSL texture_and_sampler_let 扩展</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-146?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 145" id="chrome145" tabindex="-1">Chrome 145</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-145?hl=zh-cn#wgsl_subgroup_uniformity_extension">WGSL subgroup_uniformity 扩展</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-145?hl=zh-cn#experimental_synchronous_buffer_mapping_in_workers">工作器中的实验性同步缓冲区映射</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-145?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 144" id="chrome144" tabindex="-1">Chrome 144</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-144?hl=zh-cn#wgsl_subgroup_id_extension">WGSL subgroup_id 扩展</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-144?hl=zh-cn#wgsl_uniform_buffer_standard_layout_extension">WGSL uniform_buffer_standard_layout 扩展</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-144?hl=zh-cn#webgpu_on_linux">Linux 上的 WebGPU</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu144?hl=zh-cn#faster_writebuffer_and_writetexture">更快的 writeBuffer 和 writeTexture</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-144?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 143" id="chrome143" tabindex="-1">Chrome 143</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-143?hl=zh-cn#texture_component_swizzle">纹理组件混排</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-143?hl=zh-cn#remove_bgra8unorm_read-only_storage_texture_usage">移除 bgra8unorm 只读存储纹理用法</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-143?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 142" id="chrome142" tabindex="-1">Chrome 142</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-142?hl=zh-cn#texture_format_support_capabilities_extended">扩展了纹理格式支持功能</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-142?hl=zh-cn#primitive_index_in_wgsl">WGSL 中的原始索引</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-142?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 141" id="chrome141" tabindex="-1">Chrome 141</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-141?hl=zh-cn#tint_ir_completed">Tint IR 已完成</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-141?hl=zh-cn#integer_range_analysis_in_wgsl_compiler">WGSL 编译器中的整数范围分析</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-141?hl=zh-cn#spir-v_14_update_for_vulkan_backend">Vulkan 后端的 SPIR-V 1.4 更新</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-141?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 140" id="chrome140" tabindex="-1">Chrome 140</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-140?hl=zh-cn#device_requests_consume_adapter">设备请求会消耗适配器</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-140?hl=zh-cn#shorthand_for_using_texture_where_texture_view_is_used">在用到纹理视图时使用纹理的简写</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-140?hl=zh-cn#wgsl_texturesamplelevel_supports_1d_textures">WGSL textureSampleLevel 支持 1D 纹理</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-140?hl=zh-cn#deprecate_bgra8unorm_read-only_storage_texture_usage">弃用 bgra8unorm 只读存储纹理用法</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-140?hl=zh-cn#remove_gpuadapter_isfallbackadapter_attribute">移除 GPUAdapter isFallbackAdapter 属性</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-140?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 139" id="chrome139" tabindex="-1">Chrome 139</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-139?hl=zh-cn#3d_texture_support_for_bc_and_astc_compressed_formats">支持 BC 和 ASTC 压缩格式的 3D 纹理</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-139?hl=zh-cn#new_core-features-and-limits_feature">新增“核心功能和限制”功能</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-139?hl=zh-cn#origin_trial_for_webgpu_compatibility_mode">WebGPU 兼容模式的源试用</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-139?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 138" id="chrome138" tabindex="-1">Chrome 138</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-138?hl=zh-cn#shorthand_for_using_buffer_as_a_binding_resource">将缓冲区用作绑定资源的简写</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-138?hl=zh-cn#size_requirement_changes_for_buffers_mapped_at_creation">创建时映射的缓冲区的大小要求变更</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-138?hl=zh-cn#architecture_report_for_recent_gpus">近期 GPU 的架构报告</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-138?hl=zh-cn#deprecate_gpuadapter_isfallbackadapter_attribute">弃用 GPUAdapter isFallbackAdapter 属性</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-138?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 137" id="chrome137" tabindex="-1">Chrome 137</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-137?hl=zh-cn#use_texture_view_for_externaltexture_binding">将纹理视图用于 externalTexture 绑定</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-137?hl=zh-cn#buffers_copy_without_specifying_offsets_and_size">复制缓冲区时无需指定偏移量和大小</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-137?hl=zh-cn#wgsl_workgroupuniformload_using_pointer_to_atomic">WGSL workgroupUniformLoad 使用指向原子的指针</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-137?hl=zh-cn#gpuadapterinfo_powerpreference_attribute">GPUAdapterInfo powerPreference 属性</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-137?hl=zh-cn#remove_gpurequestadapteroptions_compatibilitymode_attribute">移除 GPURequestAdapterOptions compatibilityMode 属性</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-137?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 136" id="chrome136" tabindex="-1">Chrome 136</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-136?hl=zh-cn#gpuadapterinfo_isfallbackadapter_attribute">GPUAdapterInfo isFallbackAdapter 属性</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-136?hl=zh-cn#shader_compilation_time_improvements_on_d3d12">D3D12 上的着色器编译时间改进</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-136?hl=zh-cn#save_and_copy_canvas_images">保存并复制画布图片</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-136?hl=zh-cn#lift_compatibility_mode_restrictions">解除兼容模式限制</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-136?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 135" id="chrome135" tabindex="-1">Chrome 135</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-135?hl=zh-cn#allow_creating_pipeline_layout_with_null_bind_group_layout">允许使用 null 绑定组布局创建流水线布局</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-135?hl=zh-cn#allow_viewports_to_extend_past_the_render_targets_bounds">允许视口超出渲染目标边界</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-135?hl=zh-cn#easier_access_to_the_experimental_compatibility_mode_on_android">更轻松地访问 Android 上的实验性兼容模式</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-135?hl=zh-cn#remove_maxinterstageshadercomponents_limit">移除 maxInterStageShaderComponents 限制</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-135?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 134" id="chrome134" tabindex="-1">Chrome 134</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-134?hl=zh-cn#improve_machine-learning_workloads_with_subgroups">使用子群组改进机器学习工作负载</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-134?hl=zh-cn#remove_float_filterable_texture_types_support_as_blendable">移除对浮点可过滤纹理类型的支持，使其可混合</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-134?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 133" id="chrome133" tabindex="-1">Chrome 133</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-133?hl=zh-cn#additional_unorm8x4-bgra_and_1-component_vertex_formats">新增 unorm8x4-bgra 和 1 组件顶点格式</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-133?hl=zh-cn#allow_unknown_limits_to_be_requested_with_undefined_value">允许使用未定义的值请求未知限制</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-133?hl=zh-cn#wgsl_alignment_rules_changes">WGSL 对齐规则变更</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-133?hl=zh-cn#wgsl_performance_gains_with_discard">使用 discard 提升 WGSL 性能</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-133?hl=zh-cn#use_videoframe_displaysize_for_external_textures">将 VideoFrame displaySize 用于外部纹理</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-133?hl=zh-cn#handle_images_with_non-default_orientations_using_copyexternalimagetotexture">使用 copyExternalImageToTexture 处理具有非默认方向的图片</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-133?hl=zh-cn#improving_developer_experience">提升开发者体验</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-133?hl=zh-cn#enable_compatibility_mode_with_featurelevel">使用 featureLevel 启用兼容模式</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-133?hl=zh-cn#experimental_subgroup_features_cleanup">实验性子群组功能清理</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-133?hl=zh-cn#deprecate_maxinterstageshadercomponents_limit">弃用 maxInterStageShaderComponents 限制</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-133?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 132" id="chrome132" tabindex="-1">Chrome 132</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-132?hl=zh-cn#texture_view_usage">纹理视图用法</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-132?hl=zh-cn#32-bit_float_textures_blending">32 位浮点纹理混合</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-132?hl=zh-cn#gpudevice_adapterinfo_attribute">GPUDevice adapterInfo 属性</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-132?hl=zh-cn#configuring_canvas_context_with_invalid_format_throw_javascript_error">使用无效格式配置画布上下文会抛出 JavaScript 错误</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-132?hl=zh-cn#filtering_sampler_restrictions_on_textures">对纹理的过滤采样器限制</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-132?hl=zh-cn#extended_subgroups_experimentation">扩展子群组实验</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-132?hl=zh-cn#improving_developer_experience">提升开发者体验</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-132?hl=zh-cn#experimental_support_for_16-bit_normalized_texture_formats">实验性支持 16 位标准化纹理格式</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-132?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 131" id="chrome131" tabindex="-1">Chrome 131</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-131?hl=zh-cn#clip_distances_in_wgsl">WGSL 中的剪辑距离</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-131?hl=zh-cn#gpucanvascontext_getconfiguration">GPUCanvasContext getConfiguration()</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-131?hl=zh-cn#point_and_line_primitives_must_not_have_depth_bias">点和线基元不得有深度偏差</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-131?hl=zh-cn#inclusive_scan_built-in_functions_for_subgroups">子群组的包含扫描内置函数</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-131?hl=zh-cn#experimental_support_for_multi-draw_indirect">实验性支持多重间接绘制</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-131?hl=zh-cn#shader_module_compilation_option_strict_math">着色器模块编译选项 strict math</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-131?hl=zh-cn#remove_gpuadapter_requestadapterinfo">移除 GPUAdapter requestAdapterInfo()</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-131?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 130" id="chrome130" tabindex="-1">Chrome 130</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-130?hl=zh-cn#dual_source_blending">双源混合</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-130?hl=zh-cn#shader_compilation_time_improvements_on_metal">Metal 上的着色器编译时间改进</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-130?hl=zh-cn#deprecation_of_gpuadapter_requestadapterinfo">弃用 GPUAdapter requestAdapterInfo()</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-130?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 129" id="chrome129" tabindex="-1">Chrome 129</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-129?hl=zh-cn#hdr_support_with_canvas_tone_mapping_mode">支持使用画布色调映射模式的 HDR</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-129?hl=zh-cn#expanded_subgroups_support">扩展了子群组支持</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-129?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 128" id="chrome128" tabindex="-1">Chrome 128</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-128?hl=zh-cn#experimenting_with_subgroups">子群组实验</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-128?hl=zh-cn#deprecate_setting_depth_bias_for_lines_and_points">弃用为线条和点设置深度偏差</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-128?hl=zh-cn#hide_uncaptured_error_devtools_warning_if_preventdefault">如果 preventDefault，则隐藏未捕获的错误开发者工具警告</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-128?hl=zh-cn#wgsl_interpolate_sampling_first_and_either">WGSL 插值采样优先</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-128?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 127" id="chrome127" tabindex="-1">Chrome 127</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-127?hl=zh-cn#experimental_support_for_opengl_es_on_android">实验性支持 Android 上的 OpenGL ES</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-127?hl=zh-cn#gpuadapter_info_attribute">GPUAdapter info 属性</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-127?hl=zh-cn#webassembly_interop_improvements">WebAssembly 互操作改进</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-127?hl=zh-cn#improved_command_encoder_errors">改进的命令编码器错误</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-127?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 126" id="chrome126" tabindex="-1">Chrome 126</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-126?hl=zh-cn#increase_maxtexturearraylayers_limit">提高 maxTextureArrayLayers 限制</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-126?hl=zh-cn#buffer_upload_optimization_for_vulkan_backend">Vulkan 后端的缓冲区上传优化</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-126?hl=zh-cn#shader_compilation_time_improvements">着色器编译时间改进</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-126?hl=zh-cn#submitted_command_buffers_must_be_unique">提交的命令缓冲区必须是唯一的</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-126?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 125" id="chrome125" tabindex="-1">Chrome 125</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-125?hl=zh-cn#subgroups_feature_in_development">子群组（开发中的功能）</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-125?hl=zh-cn#render_to_slice_of_3d_texture">渲染到 3D 纹理的切片</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-125?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 124" id="chrome124" tabindex="-1">Chrome 124</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-124?hl=zh-cn#read-only_and_read-write_storage_textures">只读和读写存储纹理</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-124?hl=zh-cn#service_workers_and_shared_workers_support">支持 Service Worker 和 Shared Worker</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-124?hl=zh-cn#new_adapter_information_attributes">新的适配器信息属性</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-124?hl=zh-cn#bug_fixes">bug 修复</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-124?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 123" id="chrome123" tabindex="-1">Chrome 123</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-123?hl=zh-cn#dp4a_built-in_functions_support_in_wgsl">WGSL 中支持 DP4a 内置函数</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-123?hl=zh-cn#unrestricted_pointer_parameters_in_wgsl">WGSL 中不受限制的指针形参</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-123?hl=zh-cn#syntax_sugar_for_dereferencing_composites_in_wgsl">WGSL 中取消引用复合项的语法糖</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-123?hl=zh-cn#separate_read-only_state_for_stencil_and_depth_aspects">为模具和深度方面单独设置只读状态</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-123?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 122" id="chrome122" tabindex="-1">Chrome 122</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-122?hl=zh-cn#expand_reach_with_compatibility_mode_feature_in_development">使用兼容模式扩大覆盖面（开发中的功能）</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-122?hl=zh-cn#increase_maxvertexattributes_limit">提高 maxVertexAttributes 限制</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-122?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 121" id="chrome121" tabindex="-1">Chrome 121</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-121?hl=zh-cn#support-webgpu-on-android">支持 Android 上的 WebGPU</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-121?hl=zh-cn#use_dxc_instead_of_fxc_for_shader_compilation_on_windows">在 Windows 上使用 DXC 而非 FXC 进行着色器编译</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-121?hl=zh-cn#timestamp_queries_in_compute_and_render_passes">计算和渲染通道中的时间戳查询</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-121?hl=zh-cn#default_entry_points_to_shader_modules">着色器模块的默认入口点</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-121?hl=zh-cn#support_display-p3_as_gpuexternaltexture_color_space">支持 display-p3 作为 GPUExternalTexture 色彩空间</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-121?hl=zh-cn#memory_heaps_info">内存堆信息</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-121?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 120" id="chrome120" tabindex="-1">Chrome 120</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-120?hl=zh-cn#support_for_16-bit_floating-point_values_in_wgsl">支持 WGSL 中的 16 位浮点值</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-120?hl=zh-cn#push_the_limits">突破极限</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-120?hl=zh-cn#changes_to_depth-stencil_state">深度模具状态的变更</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-120?hl=zh-cn#adapter_information_updates">适配器信息更新</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-120?hl=zh-cn#timestamp_queries_quantization">时间戳查询量化</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-120?hl=zh-cn#spring-cleaning_features">春季清理功能</a></li></ul><h3 data-text="Chrome 119" id="chrome119" tabindex="-1">Chrome 119</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-119?hl=zh-cn#filterable_32-bit_float_textures">可过滤的 32 位浮点纹理</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-119?hl=zh-cn#unorm10-10-10-2_vertex_format">unorm10-10-10-2 顶点格式</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-119?hl=zh-cn#rgb10a2uint_texture_format">rgb10a2uint 纹理格式</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-119?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 118" id="chrome118" tabindex="-1">Chrome 118</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-118?hl=zh-cn#htmlimageelement_and_imagedata_support_in_copyexternalimagetotexture">copyExternalImageToTexture()<code dir="ltr" translate="no">copyExternalImageToTexture()</code> 中支持 HTMLImageElement 和 ImageData</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-118?hl=zh-cn#experimental_support_for_read-write_and_read-only_storage_texture">实验性支持读写和只读存储纹理</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-118?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 117" id="chrome117" tabindex="-1">Chrome 117</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-117?hl=zh-cn#unset_vertex_buffer">取消设置顶点缓冲区</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-117?hl=zh-cn#unset_bind_group">取消设置绑定组</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-117?hl=zh-cn#silence_errors_from_async_pipeline_creation_when_device_is_lost">在设备丢失时，禁止显示异步流水线创建中的错误</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-117?hl=zh-cn#spir-v_shader_module_creation_updates">SPIR-V 着色器模块创建更新</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-117?hl=zh-cn#improving_developer_experience">提升开发者体验</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-117?hl=zh-cn#caching_pipelines_with_automatically_generated_layout">缓存具有自动生成的布局的流水线</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-117?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 116" id="chrome116" tabindex="-1">Chrome 116</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-116?hl=zh-cn#webcodecs_integration">WebCodecs 集成</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-116?hl=zh-cn#lost_device_returned_by_gpuadapter_requestdevice">GPUAdapter <code dir="ltr" translate="no">requestDevice()</code></a> 返回的丢失设备</li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-116?hl=zh-cn#keep_video_playback_smooth_if_importexternaltexture_is_called">如果调用了 <code dir="ltr" translate="no">importExternalTexture()</code>，则保持视频播放流畅</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-116?hl=zh-cn#spec_conformance">规范一致性</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-116?hl=zh-cn#improving_developer_experience">提升开发者体验</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-116?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 115" id="chrome115" tabindex="-1">Chrome 115</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-115?hl=zh-cn#supported_wgsl_language_extensions">支持的 WGSL 语言扩展</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-115?hl=zh-cn#experimental_support_for_direct3d_11">实验性支持 Direct3D 11</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-115?hl=zh-cn#get_discrete_gpu_by_default_on_ac_power">默认情况下，在交流电源上获取离散 GPU</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-115?hl=zh-cn#improving_developer_experience">提升开发者体验</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-115?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 114" id="chrome114" tabindex="-1">Chrome 114</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-114?hl=zh-cn#optimize_javascript">优化 JavaScript</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-114?hl=zh-cn#getcurrenttexture_on_unconfigured_canvas_throws_invalidstateerror">未配置的画布上的 getCurrentTexture() 会抛出 InvalidStateError</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-114?hl=zh-cn#wgsl_updates">WGSL 更新</a></li><li><a href="https://developer.chrome.com/blog/new-in-webgpu-114?hl=zh-cn#dawn_updates">Dawn 更新</a></li></ul><h3 data-text="Chrome 113" id="chrome113" tabindex="-1">Chrome 113</h3><ul><li><a href="https://developer.chrome.com/blog/new-in-webgpu-113?hl=zh-cn#use_webcodecs_videoframe_source_in_importexternaltexture">在 <code dir="ltr" translate="no">importExternalTexture()</code></a> 中使用 WebCodecs VideoFrame 来源</li></ul></div><devsite-thumb-rating position="footer"></devsite-thumb-rating><div class="devsite-floating-action-buttons"></div></article><devsite-content-footer class="nocontent" data-nosnippet><p>如未另行说明，那么本页面中的内容已根据<a href="https://creativecommons.org/licenses/by/4.0/">知识共享署名 4.0 许可</a>获得了许可，并且代码示例已根据 <a href="https://www.apache.org/licenses/LICENSE-2.0">Apache 2.0 许可</a>获得了许可。有关详情，请参阅 <a href="https://developers.google.com/site-policies?hl=zh-cn">Google 开发者网站政策</a>。Java 是 Oracle 和/或其关联公司的注册商标。</p><p>最后更新时间 (UTC)：2023-12-08。</p></devsite-content-footer><devsite-notification
+></devsite-notification><div class="devsite-content-data"><template class="devsite-content-data-template">
+[[["易于理解","easyToUnderstand","thumb-up"],["解决了我的问题","solvedMyProblem","thumb-up"],["其他","otherUp","thumb-up"]],[["没有我需要的信息","missingTheInformationINeed","thumb-down"],["太复杂/步骤太多","tooComplicatedTooManySteps","thumb-down"],["内容需要更新","outOfDate","thumb-down"],["翻译问题","translationIssue","thumb-down"],["示例/代码问题","samplesCodeIssue","thumb-down"],["其他","otherDown","thumb-down"]],["最后更新时间 (UTC)：2023-12-08。"],[],[]]
+</template></div></devsite-content></main><devsite-footer-promos class="devsite-footer"></devsite-footer-promos><devsite-footer-linkboxes class="devsite-footer"><nav class="devsite-footer-linkboxes nocontent"
+aria-label="页脚链接"
+data-nosnippet><ul class="devsite-footer-linkboxes-list"><li class="devsite-footer-linkbox "><h3 class="devsite-footer-linkbox-heading no-link">参与</h3><ul class="devsite-footer-linkbox-list"><li class="devsite-footer-linkbox-item"><a href="https://issuetracker.google.com/issues/new?component=1400036&amp%3Btemplate=1897236&hl=zh-cn"
+class="devsite-footer-linkbox-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Footer Link (index 1)"
+>
+提交 bug
+</a></li><li class="devsite-footer-linkbox-item"><a href="https://issuetracker.google.com/issues?q=status%3Aopen+componentid%3A1400036&amp%3Bs=created_time%3Adesc&hl=zh-cn"
+class="devsite-footer-linkbox-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Footer Link (index 2)"
+>
+查看未处理完毕的问题
+</a></li></ul></li><li class="devsite-footer-linkbox "><h3 class="devsite-footer-linkbox-heading no-link">相关内容</h3><ul class="devsite-footer-linkbox-list"><li class="devsite-footer-linkbox-item"><a href="https://blog.chromium.org/"
+class="devsite-footer-linkbox-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Footer Link (index 1)"
+>
+Chromium 更新
+</a></li><li class="devsite-footer-linkbox-item"><a href="https://developer.chrome.com/case-studies?hl=zh-cn"
+class="devsite-footer-linkbox-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Footer Link (index 2)"
+>
+案例研究
+</a></li><li class="devsite-footer-linkbox-item"><a href="https://developer.chrome.com/deprecated?hl=zh-cn"
+class="devsite-footer-linkbox-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Footer Link (index 3)"
+>
+归档
+</a></li><li class="devsite-footer-linkbox-item"><a href="https://web.dev/shows?hl=zh-cn"
+class="devsite-footer-linkbox-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Footer Link (index 4)"
+>
+播客和节目
+</a></li></ul></li><li class="devsite-footer-linkbox "><h3 class="devsite-footer-linkbox-heading no-link">关注</h3><ul class="devsite-footer-linkbox-list"><li class="devsite-footer-linkbox-item"><a href="https://twitter.com/ChromiumDev"
+class="devsite-footer-linkbox-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Footer Link (index 1)"
+>
+关于 X 的 @ChromiumDev
+</a></li><li class="devsite-footer-linkbox-item"><a href="https://www.youtube.com/user/ChromeDevelopers?hl=zh-cn"
+class="devsite-footer-linkbox-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Footer Link (index 2)"
+>
+YouTube
+</a></li><li class="devsite-footer-linkbox-item"><a href="https://www.linkedin.com/showcase/chrome-for-developers"
+class="devsite-footer-linkbox-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Footer Link (index 3)"
+>
+LinkedIn 上的 Chrome for Developers
+</a></li><li class="devsite-footer-linkbox-item"><a href="https://developer.chrome.com/static/blog/feed.xml?hl=zh-cn"
+class="devsite-footer-linkbox-link gc-analytics-event"
+data-category="Site-Wide Custom Events"
+data-label="Footer Link (index 4)"
+>
+RSS
+</a></li></ul></li></ul></nav></devsite-footer-linkboxes><devsite-footer-utility class="devsite-footer"><div class="devsite-footer-utility nocontent" data-nosnippet><nav class="devsite-footer-utility-links" aria-label="实用程序链接"><ul class="devsite-footer-utility-list"><li class="devsite-footer-utility-item
+"><a class="devsite-footer-utility-link gc-analytics-event"
+href="//policies.google.com/terms?hl=zh-cn"
+data-category="Site-Wide Custom Events"
+data-label="Footer Terms link"
+>
+条款
+</a></li><li class="devsite-footer-utility-item
+"><a class="devsite-footer-utility-link gc-analytics-event"
+href="//policies.google.com/privacy?hl=zh-cn"
+data-category="Site-Wide Custom Events"
+data-label="Footer Privacy link"
+>
+隐私权政策
+</a></li><li class="devsite-footer-utility-item
+glue-cookie-notification-bar-control"><a class="devsite-footer-utility-link gc-analytics-event"
+href="#"
+data-category="Site-Wide Custom Events"
+data-label="Footer Manage cookies link"
+aria-hidden="true"
+>
+Manage cookies
+</a></li></ul><devsite-language-selector><ul role="presentation"><li role="presentation"><a role="menuitem" lang="en"
+>English</a></li><li role="presentation"><a role="menuitem" lang="de"
+>Deutsch</a></li><li role="presentation"><a role="menuitem" lang="es_419"
+>Español – América Latina</a></li><li role="presentation"><a role="menuitem" lang="fr"
+>Français</a></li><li role="presentation"><a role="menuitem" lang="id"
+>Indonesia</a></li><li role="presentation"><a role="menuitem" lang="it"
+>Italiano</a></li><li role="presentation"><a role="menuitem" lang="nl"
+>Nederlands</a></li><li role="presentation"><a role="menuitem" lang="pl"
+>Polski</a></li><li role="presentation"><a role="menuitem" lang="pt_br"
+>Português – Brasil</a></li><li role="presentation"><a role="menuitem" lang="vi"
+>Tiếng Việt</a></li><li role="presentation"><a role="menuitem" lang="tr"
+>Türkçe</a></li><li role="presentation"><a role="menuitem" lang="ru"
+>Русский</a></li><li role="presentation"><a role="menuitem" lang="he"
+>עברית</a></li><li role="presentation"><a role="menuitem" lang="ar"
+>العربيّة</a></li><li role="presentation"><a role="menuitem" lang="fa"
+>فارسی</a></li><li role="presentation"><a role="menuitem" lang="hi"
+>हिंदी</a></li><li role="presentation"><a role="menuitem" lang="bn"
+>বাংলা</a></li><li role="presentation"><a role="menuitem" lang="th"
+>ภาษาไทย</a></li><li role="presentation"><a role="menuitem" lang="zh_cn"
+>中文 – 简体</a></li><li role="presentation"><a role="menuitem" lang="zh_tw"
+>中文 – 繁體</a></li><li role="presentation"><a role="menuitem" lang="ja"
+>日本語</a></li><li role="presentation"><a role="menuitem" lang="ko"
+>한국어</a></li></ul></devsite-language-selector></nav></div></devsite-footer-utility><devsite-panel></devsite-panel></section></section><devsite-sitemask></devsite-sitemask><devsite-snackbar></devsite-snackbar><devsite-tooltip ></devsite-tooltip><devsite-heading-link></devsite-heading-link><devsite-analytics><script type="application/json" analytics>[]</script><script type="application/json" tag-management>{&#34;at&#34;: &#34;True&#34;, &#34;ga4&#34;: [], &#34;ga4p&#34;: [], &#34;gtm&#34;: [{&#34;id&#34;: &#34;GTM-5QF3RT2&#34;, &#34;purpose&#34;: 0}], &#34;parameters&#34;: {&#34;internalUser&#34;: &#34;False&#34;, &#34;language&#34;: {&#34;machineTranslated&#34;: &#34;True&#34;, &#34;requested&#34;: &#34;zh-cn&#34;, &#34;served&#34;: &#34;zh-cn&#34;}, &#34;pageType&#34;: &#34;article&#34;, &#34;projectName&#34;: &#34;WebGPU&#34;, &#34;signedIn&#34;: &#34;False&#34;, &#34;tenant&#34;: &#34;chrome&#34;, &#34;recommendations&#34;: {&#34;sourcePage&#34;: &#34;&#34;, &#34;sourceType&#34;: 0, &#34;sourceRank&#34;: 0, &#34;sourceIdenticalDescriptions&#34;: 0, &#34;sourceTitleWords&#34;: 0, &#34;sourceDescriptionWords&#34;: 0, &#34;experiment&#34;: &#34;&#34;}, &#34;experiment&#34;: {&#34;ids&#34;: &#34;&#34;}}}</script></devsite-analytics><devsite-badger></devsite-badger><script nonce="S+BCe8ydbW7dwzlURjozRW3Zwm4UdM">
+(function(d,e,v,s,i,t,E){d['GoogleDevelopersObject']=i;
+t=e.createElement(v);t.async=1;t.src=s;E=e.getElementsByTagName(v)[0];
+E.parentNode.insertBefore(t,E);})(window, document, 'script',
+'https://www.gstatic.com/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/chrome/js/app_loader.js', '[53,"zh_cn",null,"/js/devsite_app_module.js","https://www.gstatic.com/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037","https://www.gstatic.com/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/chrome","https://chrome-dot-devsite-v2-prod-3p.appspot.com",1,null,["/_pwa/chrome/manifest.json","https://www.gstatic.com/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/images/video-placeholder.svg","https://www.gstatic.com/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/chrome/images/favicon.png","https://www.gstatic.com/devrel-devsite/prod/v5e941f15ff6710591bee254538202655020220785b40a3f4d932e94adb9f6037/chrome/images/lockup.svg","https://fonts.googleapis.com/css?family=Google+Sans:400,500|Roboto:400,400italic,500,500italic,700,700italic|Roboto+Mono:400,500,700&display=swap"],1,null,[1,6,8,12,14,17,21,25,50,52,63,70,75,76,80,87,91,92,93,97,98,100,101,102,103,104,105,107,108,109,110,112,113,117,118,120,122,124,125,126,127,129,130,131,132,133,134,135,136,138,140,141,147,148,149,151,152,156,157,158,159,161,163,164,168,169,170,179,180,182,183,186,191,193,196],"AIza***********************************","AIza***********************************","developer.chrome.com","AIza***********************************","AIza***********************************",null,null,null,["Concierge__enable_devsite_llm_tools","Profiles__enable_complete_playlist_endpoint","DevPro__enable_firebase_workspaces_card","Profiles__enable_callout_notifications","Profiles__enable_stripe_subscription_management","Profiles__enable_recognition_badges","DevPro__enable_devpro_offers","MiscFeatureFlags__enable_llms_txt","SignIn__enable_l1_signup_flow","Profiles__enable_completecodelab_endpoint","DevPro__enable_g1_ineligible_redirect","Cloud__fast_free_trial","Profiles__enable_developer_profile_pages_as_content","Profiles__enable_purchase_prompts","Cloud__cache_serialized_dynamic_content","MiscFeatureFlags__enable_variable_operator_index_yaml","Profiles__enable_join_program_group_endpoint","DevPro__enable_developer_subscriptions","DevPro__remove_eu_tax_intake_form","Cloud__enable_cloudx_experiment_ids","OnSwitch__enable","DevPro__enable_vertex_credit_card","Cloud__enable_free_trial_server_call","Concierge__enable_actions_menu","MiscFeatureFlags__enable_appearance_cookies","TpcFeatures__proxy_prod_host","Profiles__enable_profile_collections","Search__enable_ai_eligibility_checks","Concierge__enable_remove_info_panel_tags","Profiles__enable_developer_profile_benefits_ui_redesign","Cloud__enable_cloud_shell_fte_user_flow","Cloud__enable_legacy_calculator_redirect","MiscFeatureFlags__developers_footer_dark_image","Search__enable_ai_search_summaries_for_all","Profiles__enable_awarding_url","MiscFeatureFlags__enable_view_transitions","DevPro__enable_cloud_innovators_plus","MiscFeatureFlags__developers_footer_image","Profiles__enable_page_saving","MiscFeatureFlags__gdp_dashboard_reskin_enabled","EngEduTelemetry__enable_engedu_telemetry","DevPro__enable_google_one_card","Cloud__enable_cloud_dlp_service","DevPro__enable_free_benefits","DevPro__enable_enterprise","Search__enable_dynamic_content_confidential_banner","Experiments__reqs_query_experiments","Profiles__enable_completequiz_endpoint","Profiles__enable_user_type","Profiles__enable_targeted_hero","Concierge__enable_pushui","CloudShell__cloud_code_overflow_menu","Cloud__enable_cloud_shell","Profiles__enable_playlist_community_acl","Profiles__require_profile_eligibility_for_signin","Profiles__enable_developer_profiles_callout","DevPro__enable_google_payments_buyflow","MiscFeatureFlags__enable_framebox_badge_methods","Profiles__enable_auto_apply_credits","MiscFeatureFlags__enable_explicit_template_dependencies","AIStudioInteractionsToggle__interactions_are_default","BookNav__enable_tenant_cache_key","DevPro__enable_code_assist","Search__enable_page_map","MiscFeatureFlags__enable_project_variables","MiscFeatureFlags__enable_firebase_utm","Profiles__enable_dashboard_curated_recommendations","CloudShell__cloud_shell_button","MiscFeatureFlags__remove_cross_domain_tracking_params","MiscFeatureFlags__enable_variable_operator","DevPro__enable_devsite_captcha","Profiles__enable_public_developer_profiles","TpcFeatures__enable_unmirrored_page_left_nav","DevPro__enable_g1_integration","DevPro__enable_credits_banner","Profiles__enable_release_notes_notifications","DevPro__enable_embed_profile_creation","DevPro__enable_nvidia_credits_card","MiscFeatureFlags__fix_lower_breadcrumbs","Analytics__enable_devpro_interaction_logging","Analytics__enable_clearcut_logging","Search__enable_suggestions_from_borg"],null,null,"AIza***********************************","https://developerscontentserving-pa.googleapis.com","AIza***********************************","https://developerscontentsearch-pa.googleapis.com",2,4,null,"https://developerprofiles-pa.googleapis.com",[53,"chrome","Chrome for Developers","developer.chrome.com",null,"chrome-dot-devsite-v2-prod-3p.appspot.com",null,null,[null,null,null,null,null,null,null,null,null,null,null,[1],null,null,null,null,null,null,[1],null,null,null,null,[1,null,1],[1,1,null,1,1],null,null,null,null,null,[1]],null,[69,null,null,null,null,null,"/images/lockup.svg","/images/touchicon-180.png",null,null,null,1,1,null,null,null,null,null,null,null,null,2,null,null,null,"/images/lockup-dark-theme.svg",[]],[],null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,[[],[1,1]],[[null,null,null,null,null,["GTM-5QF3RT2"],null,null,null,null,null,[["GTM-5QF3RT2",1]],1]],null,4],null,null,1,null,"https://developerscontentinsights-pa.googleapis.com","AIza***********************************","AIza***********************************","https://developers.googleapis.com",null,null,"AIza***********************************",null,null,"https://developers.googleapis.com"]')
+</script><devsite-a11y-announce></devsite-a11y-announce></body></html>
