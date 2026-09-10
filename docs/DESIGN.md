@@ -1,316 +1,113 @@
-# Researcher — Design
+# Researcher — 设计
 
-Status: **draft, under discussion**. No pipeline code written yet.
-Companion documents: `docs/lecture-authoring-sop.md` (prior art), `docs/corpus-spec.md` (measured conventions).
-
----
-
-## 0 What this is
-
-An automated, general-purpose lecture-series generator.
-
-Give it a topic, an audience and (optionally) a style template; it runs the whole
-production line end to end — research, outline, modelling, computation, tables,
-prose, answers, review, verification, export — and hands back a printable
-lecture series plus an honest report of what it did and did not verify.
-
-It is **not** a prompt wrapper. The design bet is:
-
-> **The language model owns the narrative. Code owns the numbers.**
-
-Every countable or computable value in the output is produced by executed code,
-recorded in a ledger with full provenance, and re-derived independently before
-delivery. Prose refers to values by identifier; the model never types a number
-that code has not computed.
+状态：**M0–M5 已实现**。本文记录架构决策与理由，实现细节以代码为准。
 
 ---
 
-## 1 What the reference corpus taught us
+## 1 目标
 
-The five-lecture group-theory series (`Group-Theory-v2`) is a worked example of
-the target output quality. Measuring it produced a machine-checkable style
-specification. Full numbers in `docs/corpus-spec.md`; the load-bearing findings:
+把「用大模型做资料调研」从一次性对话，变成一条**可替换、可复现、可追溯**的流水线：
 
-| Finding | Measured value | Why it matters |
+1. 用户输入问题，得到带引用、带来源状态的合成报告。
+2. 主流程、搜索、整理、输出**四类角色全部是插件**，换后端只改配置。
+3. 零 API key 也能端到端跑通。
+4. 报告必须诚实：写清用了哪个插件、哪些来源失败、哪里降级了。
+
+## 2 关键决策与理由
+
+| 决策 | 选择 | 理由 |
 |---|---|---|
-| Theorem numbering | **shared counter** across Theorem/Lemma/Corollary/Proposition, restarting each lecture | A generator that numbers per-type produces a document that looks wrong to anyone who knows the series |
-| Exercise blank budget | **exactly 4** `<br>` inline, **exactly 12** chapter | Perfectly regular across all 5 lectures — a linter target with zero tolerance |
-| Chapter exercises | **exactly 8**, every lecture, marks summing 37–45 | Fixed quota, not "some exercises" |
-| Inline exercises | 16, 16, 16, 24, 20 — i.e. **exactly 4 per numbered chapter** | Structure is derived, not improvised |
-| Discussion sections | one per numbered section, questions only | Every section ends with an unanswered prompt |
-| Answer mirroring | body order == answer order, 100%, all 5 lectures | The single most valuable structural invariant |
-| Review section | 5–6 fill-in-the-blank items | Not free-form recall |
-| Notes section | 6–11 checkbox items | Self-check list, one per chapter |
-| Cross-lecture refs | `Theorem 10 of Lecture 2`, `§3.5`, `(planned)` | Requires a series-wide symbol table to validate |
-| Hand-made tables | 0 in L4, L5; 1–10 in L1–L3 | Tables were the most error-prone artifact |
+| 引擎语言 | TypeScript / Node | Electron 主进程、渲染进程、插件同一种语言；无需跨进程桥接引擎 |
+| 插件加载 | 编译期静态注册，**运行期选型** | 与 DSH 一致：可替换性来自统一接口 + 运行期选择，而非热加载第三方代码 |
+| 契约位置 | 单一 `engine/types.ts` | 插件只依赖它，因此插件之间零耦合；换任一插件不影响其它插件 |
+| 抓取为何不做成插件 | 内核内置服务 | 抓取+正文抽取是通用管道能力，不是领域逻辑；用户只要求 4 类插件 |
+| 整理的输出形态 | 结构化 JSON 而非散文 | 结构可校验、可过滤编造引用、可被不同输出插件复用 |
+| 默认整理策略 | 抽取式（`organize-extractive`）为零 key 兜底，LLM 为质量升级 | 保证「装了就能用」，同时给出升级路径 |
+| 与旧讲座生成器的关系 | 只保留「插件内核」与「诚实记录」两条原则 | 数学对象、表格校验等是领域逻辑，与本产品无关 |
 
-Two further observations that shaped the architecture:
-
-1. **Lecture 5's answers file ends with a verification note** naming
-   `scripts/verify_lecture5.py`. Verification was already part of the workflow —
-   just not automated for every lecture.
-2. **Lecture 1 defers to a future lecture** (`> Lecture 2 (planned): ...`). The
-   series is authored in order and forward-references are explicit.
-
-### 1.1 Inferred workflow
-
-Reading the artifacts backwards gives the process that produced them:
-
-```
-pick scope for this lecture
-  → fix the section list
-  → for each section: definitions first, then theorems (proofs), then a worked
-    example, then remarks, then 4 exercises
-  → generate the tables the section needs
-  → write the 8 chapter exercises with mark allocations
-  → write the answers file in body order
-  → cross-check numbering and references
-  → verify the numbers
-  → write the Notes self-check list
-  → export
-```
-
-Researcher automates exactly this, with a human gate where the corpus author
-would have thought hardest: the outline.
-
----
-
-## 2 Architecture: everything is a plugin
-
-The hard requirement: **workflows, search tools, and every other operation are
-plugins**, so the system can be extended without touching the core.
+## 3 分层
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
-│  Kernel  (small, stable, knows nothing about group theory)    │
-│  · plugin registry + manifest loader                          │
-│  · capability bus (typed events between plugins)              │
-│  · run store (append-only artifacts, versions, provenance)    │
-│  · scheduler (DAG of stages, resume, cancel, budget)          │
-│  · credential vault                                           │
-└───────────────┬──────────────────────────────────────────────┘
-                │  plugins register capabilities
-   ┌────────────┼────────────┬─────────────┬──────────────┐
-   │            │            │             │              │
- sources/    providers/   compute/      authoring/     verification/
- · web       · deepseek   · sandbox     · outline      · structure
- · pdf       · openai     · brute enum  · body         · numeric
- · local     · local llm  · formula     · answers      · reference
- · arxiv     · vision     · CAS         · tables       · critique
-   │            │            │             │              │
-   └────────────┴────────────┴─────────────┴──────────────┘
-                │
-           workflows/         export/
-           · math-lecture     · markdown
-           · generic-lecture  · pdf
-           · outline-only     · docx
+│ Electron 主进程   窗口、IPC、生命周期                          │
+├──────────────────────────────────────────────────────────────┤
+│ 内核 engine/      注册表 · 选型 · 配置 · run 仓库 · 事件 · 抓取  │  ← 不认识 Electron
+├──────────────────────────────────────────────────────────────┤
+│ 契约 types.ts     SearchProvider / LlmProvider / Organizer /  │  ← 插件只依赖这一层
+│                   OutputPlugin / Pipeline / PluginContext     │
+├──────────────────────────────────────────────────────────────┤
+│ 插件 plugins/     内置实现，互不 import                        │
+└──────────────────────────────────────────────────────────────┘
 ```
 
-**The core has no domain knowledge.** A "lecture about group theory" and a
-"lecture about the Thirty Years' War" are the same pipeline with different
-plugins loaded.
+内核与 Electron 完全解耦，因此 `scripts/run-example.ts` 能用同一个内核在命令行跑完整个流程。
 
-### 2.1 Plugin contract
+## 4 插件契约要点
 
-Every plugin is a directory with a manifest:
-
-```yaml
-# plugins/sources/web/manifest.yaml
-id: sources.web
-kind: source
-version: 1.0.0
-entry: plugin.py
-provides: [search, fetch]
-requires: [kernel.http]
-config_schema: schema.json      # drives the settings UI automatically
+```ts
+interface SearchProvider {
+  readonly id: string
+  readonly kind: 'search'
+  available(ctx: AvailabilityContext): boolean      // 纯本地检查，禁止网络
+  search(req, ctx: PluginContext, signal?): Promise<SearchResult>
+}
 ```
 
-```python
-# plugins/sources/web/plugin.py
-from researcher.kernel import SourcePlugin, capability
+**为什么 `available()` 接受一个上下文对象而不是零参数**：
+`organize-llm` 自己不需要 key，但它**依赖**大模型 provider 可用。
+把「查询另一个插件是否可用」的能力交给内核（而不是让它 import provider），
+既解决了依赖判断，又没有破坏「插件之间零耦合」。内核用 `seen` 集合防止配置写出循环依赖时无限递归。
 
-class WebSource(SourcePlugin):
-    id = "sources.web"
+**为什么所有方法都接收 `ctx`**：搜索插件需要 HTTP、LLM 插件需要配置、
+输出插件需要写产物。统一传 `ctx` 比给每个方法设计不同的注入方式更简单，也更一致。
 
-    @capability("search")
-    def search(self, query: str, limit: int = 5) -> list[Result]: ...
-
-    @capability("fetch")
-    def fetch(self, url: str) -> Document: ...
-```
-
-Rules:
-
-- Plugins communicate **only** through the capability bus, never by importing
-  each other. This is what makes replacement possible.
-- Every plugin declares a `config_schema`; the desktop settings UI is generated
-  from it. No plugin-specific UI code.
-- Plugins are sandboxed per their declared permissions (`network`, `filesystem`,
-  `subprocess`). A source plugin gets network; a compute plugin gets subprocess
-  but no network.
-- **Verification plugins may not declare a dependency on any authoring plugin.**
-  Enforced at load time by import-graph analysis.
-
-### 2.2 Plugin kinds
-
-| Kind | Contract | Ships with |
-|---|---|---|
-| `source` | `search`, `fetch` → `Document` | web, pdf, local files |
-| `provider` | `complete`, `complete_structured`, `embed` | any OpenAI-compatible endpoint |
-| `compute` | `evaluate(spec) -> Value` with provenance | sandbox python, brute-force enumerator, symbolic |
-| `authoring` | `plan`, `write_section`, `write_exercise`, ... | lecture body, answers |
-| `verification` | `check(artifact) -> [Finding]` | structure, numbers, cross-references |
-| `workflow` | declares a stage DAG | math-lecture, generic |
-| `export` | `render(artifact, format) -> file` | markdown, pdf, docx |
-
-The built-in workflow is itself a plugin, so a user can fork it.
-
----
-
-## 3 The pipeline
-
-| # | Stage | Produces | Plugin kind | Gate |
-|---|---|---|---|---|
-| 0 | Intake | `task-card.yaml` | workflow | required fields present |
-| 1 | Template | `style-contract.yaml` | source + provider (vision) | human confirm |
-| 2 | Research | `evidence/*.yaml` | source | every claim has a URL + date |
-| 3 | Boundary | `scope.md`, `termbase.yaml` | authoring | — |
-| 4 | Outline | `outline.md`, `outline.json` | authoring | **human approve** |
-| 5 | Model | `models/*.py` | provider + sandbox | sandbox exit 0 |
-| 6 | Compute | `ledger.json`, `tables/*.md` | compute | two independent paths agree |
-| 7 | Body | `lecture-N.md` | authoring | structure lint |
-| 8 | Answers | `lecture-N-answers.md` | authoring | numbering mirrors body |
-| 9 | Critique | `critique-N.json` | verification | no blocking findings |
-| 10 | Verify | `verify-N.json`, report | verification | exit 0, 0 FAIL |
-| 11 | Deliver | `report.md`, export | export | — |
-
-Every stage writes to `.researcher/runs/<run-id>/`, append-only. Any stage can be
-re-run in isolation; downstream stages resume from stored artifacts.
-
----
-
-## 4 How "LLM writes the code" stays trustworthy
-
-The owner's decision: the model may write computation code, and that code counts
-as a verification path. Four mechanisms make this safe.
-
-### 4.1 Sandbox with provenance
-
-Each generated snippet runs in a subprocess: isolated mode, temporary working
-directory, no network, wall-clock timeout, output cap, memory cap. Every run
-records model, prompt hash, code hash, stdout, exit code, random seed, and
-timing. **A value without provenance cannot enter the ledger.**
-
-### 4.2 Cross-redundant derivation
+## 5 一次运行的时序
 
 ```
-              one value
-            ╱          ╲
-   implementation A    implementation B
-   (model X, prompt P1) (model Y or same model, prompt P2, cannot see A)
-            ╲          ╱
-         must agree → ledger entry
+kernel.run(input, bus, signal)
+  ├─ 校验查询（空 / 超长 → INVALID_INPUT）
+  ├─ 建 run 目录，事件同时落盘 events.jsonl
+  ├─ emit run:start
+  └─ pipeline.run(input, ctx, signal)
+       ├─ [search]   ctx.search() → 选型（含降级）→ 去重 → 截断 → emit source:found
+       ├─ [fetch]    并发抓取（保序），单源失败记入 failures，不致命
+       ├─ [organize] ctx.organize() → 失败则 ctx.organizeFallback() 重跑并记录原因
+       ├─ 组装 Report + Provenance
+       └─ [output]   逐个 output 插件 render()
+  ├─ 写 report.json / provenance.json
+  └─ emit run:done（必须是最后一个事件）
 ```
 
-Two independent implementations agreeing is strong evidence; one implementation
-asserting itself is not. Disagreement escalates: a third implementation, or a
-value flagged for human review. This is the replacement for "the verifier must
-not import the generator" in a world where the model writes both.
+**并发抓取为什么要保序**：结果按下标写回，因此同样的输入得到同样的报告顺序。
+不保序会让报告随网络快慢而变，diff 两次运行就没有意义了。
 
-### 4.3 Invariant self-check
+## 6 失败与降级策略
 
-When the model writes a model, it must also declare checkable properties:
-the table is a Latin square; the count equals brute-force enumeration; the
-probabilities sum to 1; the subgroup order divides the group order. Code executes
-those assertions. **A value with no declared invariant is marked lower-trust.**
-
-### 4.4 Independent verifier
-
-The verifier re-parses the finished Markdown and re-derives every number from
-the stored model, never importing the generator. Structural checks are pure text
-analysis against the corpus spec.
-
----
-
-## 5 Style contract
-
-Derived from the corpus, `style-contract.yaml` is the frozen agreement:
-
-```yaml
-header: "<u>{series} {author}</u>"
-title: "# {series} {n}: {title}"
-answer_title: "<u>{series} {n}: {title} — Answers {author}</u>"
-numbering:
-  theorem_counter: shared          # Theorem/Lemma/Corollary share one counter
-  restart_per_lecture: true
-  sections: "## {n}.{m}"
-  exercises_inline: "**Exercise {n}.{m}.**"
-  exercises_chapter: "**Chapter Exercise {k}.**"
-blank_budget:
-  inline: 4
-  chapter: 12
-quota:
-  chapter_exercises: 8
-  inline_per_section: 4
-  review_items: 5-6
-blocks: [Definition, Theorem, Lemma, Corollary, Proof, Example, Non-example,
-         Remark, Step, Conclusion]
-sections_per_lecture: [Review, numbered chapters, Discussion, Notes,
-                       Chapter Exercises]
-```
-
-A `structure` verification plugin enforces this mechanically. Because the
-contract is data, a different teacher's style is a different YAML file.
-
----
-
-## 6 Desktop application
-
-Electron 33 + Vite 6 + React 18 + TypeScript, mirroring the MdReader stack.
-
-| Region | Contents |
+| 情形 | 行为 |
 |---|---|
-| Left | Projects → run list → stage tree (status, duration, cost) |
-| Centre | Artifact viewer: Markdown + KaTeX, diff between runs |
-| Right | Review panel (approve/reject/annotate a gate) + chat with the agent |
-| Settings | API providers (base_url, key, models, **test connection**); role → model mapping; autonomy level; budget cap; sandbox level; export options |
+| 主搜索插件不可用 | 用配置的备用插件；`provenance.searchFallbackUsed = true` |
+| 搜索插件运行期抛错 | 整次运行失败（没有来源就无事可做），错误码 `SEARCH_FAILED` |
+| 单个来源抓取失败 | 记入 `failures`，整理阶段只用成功正文，报告里逐条标注 |
+| LLM 输出非法 JSON | 追加修复指令重试一次；仍失败 → 降级到备用整理插件并记录原因 |
+| 用户取消 | `AbortSignal` 贯穿全部阶段；抛 `CANCELLED`，已落盘产物保留 |
+| 429 限流 | 带退避重试一次（LLM provider）；仍失败则作为类型化错误上报 |
+| 配置损坏 | 备份为 `config.json.bad`，回退缺省配置，不让应用起不来 |
 
-Settings are generated from each plugin's `config_schema`, so adding a provider
-plugin adds a settings pane with no UI work.
+## 7 安全与诚实
 
----
+- **渲染进程**：`contextIsolation: true`、`nodeIntegration: false`、`sandbox: true`；
+  只通过 preload 暴露的窄接口访问主进程；CSP 限制到 `'self'`。
+- **报告正文一律当文本渲染**，不用 `dangerouslySetInnerHTML`——抓来的网页里带脚本也不会被执行。
+- **API key 脱敏**：日志与事件在写出去之前，会把配置里出现的 key 字面量替换成 `***`。
+- **产物路径**：读写前先与 run 仓库的真实产物清单比对，拒绝越界路径。
+- **诚实性不是可选项**：`provenance` 记录实际使用的插件与降级原因；
+  抽取式整理的摘要里写明「未经大模型改写，不代表对来源内容的判断」。
 
-## 7 Decisions taken
+## 8 已知限制与后续方向
 
-| Decision | Choice |
-|---|---|
-| Automation | Full pipeline automated, every stage |
-| Generality | No domain in core; domain arrives via plugins |
-| LLM-written compute code | Allowed, and may serve as a verification path |
-| Safety net | Sandbox + provenance + cross-redundant derivation + invariants |
-| Interface | Desktop app (Electron), CLI shares the same engine |
-| Output | Markdown first, PDF on demand |
-| Non-math domains | Deferred; the plugin boundary is left open for them |
-| Human gate | Outline approval, adjustable via autonomy level |
-
-## 8 Open questions
-
-1. Sandbox default level: basic subprocess, hardened (no network + import
-   allowlist + memory cap), or Docker when available?
-2. Engine transport for the app: local HTTP + SSE, or stdio JSON-RPC?
-3. Reference corpus as test fixture: pin a copy into `examples/` or read from
-   the user's folder?
-
-## 9 Milestones
-
-| # | Scope | Done when |
-|---|---|---|
-| M0 | Kernel: plugin registry, run store, capability bus, provider plugin | `researcher init` creates a task card |
-| M1 | Source plugins + research stage + evidence ledger | a topic yields a sourced boundary note |
-| M2 | Outline stage + gate | outline produced and blocks on approval |
-| M3 | Sandbox + compute plugins + ledger + cross-redundancy | values agree across two paths |
-| M4 | Authoring plugins: body + answers with id injection | one lecture, zero unregistered numbers |
-| M5 | Verification plugins + critique loop | verifier exit 0 |
-| M6 | Export to PDF | printable output |
-| M7 | Desktop app | full run driven from the UI |
-| M8 | Corpus conformance | generated lecture passes the structure contract derived from `Group-Theory-v2` |
+- 插件热加载（当前需要重新构建）。
+- 搜索适配器只实现了 DeepSeek 与 DuckDuckGo；Tavily / Exa / Brave 只是再写一个适配器。
+- 抓取不执行 JS，纯前端渲染页面会抓到空正文；可换成无头浏览器或第三方抽取服务。
+- 凭据用 `safeStorage` 加密存储。
+- 流式整理（边生成边显示）。
+- PDF 导出与打包分发。
