@@ -390,6 +390,56 @@ describe('写作任务的自检与收尾', () => {
     expect(task.explain(board)).toBe('全部小节已通过自检')
   })
 
+  it('自检不过时，模型可以在重写里自己选择补搜，再写出通过的稿子', async () => {
+    const search: SearchProvider = {
+      id: 's',
+      kind: 'search',
+      available: () => true,
+      search: async (): Promise<SearchResult> => ({
+        providerId: 's',
+        sources: [{ url: 'https://new.com/1', title: '补搜来源', snippet: '补充摘要' }],
+        truncated: false,
+      }),
+    }
+    const fetch = staticFetch({ 'https://new.com/1': `<html><body><p>${'补搜到的正文。'.repeat(50)}</p></body></html>` })
+
+    let checkRounds = 0
+    const llm = new ScriptedWriterLlm((request, _index, sectionCalls) => {
+      if (systemOf(request).includes(CHECK_MARK)) {
+        checkRounds += 1
+        // 第一稿自检不过，第二稿通过
+        return { text: checkRounds === 1 ? '{"passed":false,"notes":"资料不足，缺少实测数据"}' : '{"passed":true,"notes":""}' }
+      }
+      // 第一稿直接交；重写时先补搜再写
+      if (sectionCalls === 0) return { text: '第一稿。' }
+      if (!request.messages.some((message) => message.role === 'tool')) {
+        return { toolCalls: [{ id: 'c1', name: TOOL_SEARCH_MORE, arguments: { query: '补实测数据' } }] }
+      }
+      return { text: '补搜之后写出的第二稿。' }
+    })
+
+    const { ctx } = makeContext({ llm, search, fetch })
+    const board = seedBoard()
+    const task = new WritingTask(templateById('report'), CONFIG, new LlmMeter())
+
+    // 第一稿：自检不过
+    await task.step(board, ctx)
+    expect(board.document[0]?.selfCheckPassed).toBe(false)
+    expect(board.document[0]?.selfCheckNotes).toContain('资料不足')
+    const sourcesBefore = board.sources.length
+
+    // 重写：模型自己决定先补搜
+    await task.step(board, ctx)
+
+    expect(board.sources.length).toBeGreaterThan(sourcesBefore)
+    expect(board.sources.some((source) => source.url === 'https://new.com/1')).toBe(true)
+    expect(board.document[0]?.body).toBe('补搜之后写出的第二稿。')
+    expect(board.document[0]?.selfCheckPassed).toBe(true)
+    expect(task.isSatisfied(board)).toBe(true)
+    // 补搜用的还是那个工具，因此计数也应记上
+    expect(task.totalToolCalls).toBeGreaterThan(0)
+  })
+
   it('没有大纲时不空转', async () => {
     const llm = new ScriptedWriterLlm(() => ({ text: '不该被调用' }))
     const { ctx } = makeContext({ llm, search: unusedSearch, fetch: staticFetch({}) })

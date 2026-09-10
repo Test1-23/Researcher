@@ -334,6 +334,38 @@ describe('搜索任务的自终止', () => {
     expect(board.map.nodes[0]?.sourceIds).toEqual([board.sources[0]?.id])
   })
 
+  it('预生成查询用尽后转向地图盲区，并把地图现状带进提示词', async () => {
+    const urls = ['https://a.com/1', 'https://b.com/1']
+    const search = new ScriptedSearch(urls.map((url) => ({ providerId: 's', sources: [hit(url)], truncated: false })))
+    const prompts: string[] = []
+    const llm = new RoutingLlm({
+      expand: () => '{"queries":["唯一查询"]}',
+      targeted: (request) => {
+        prompts.push(request.messages.find((message) => message.role === 'user')?.content ?? '')
+        return '{"query":"盲区查询"}'
+      },
+    })
+    // 两轮都保持高贡献，避免因为饱和而提前收工
+    llm.claimBudget = [4, 4]
+    const { ctx } = makeContext({ llm, search, fetch: pagesFor(urls) })
+    const board = new Blackboard('主题')
+    const task = new SearchTask(TEST_CONFIG, new LlmMeter())
+
+    await task.step(board, ctx)
+    expect(task.history[0]?.origin).toBe('expansion')
+    expect(task.isSatisfied(board)).toBe(false)
+
+    await task.step(board, ctx)
+    expect(task.history[1]?.origin).toBe('map-weakness')
+    expect(search.queries[1]).toBe('盲区查询')
+
+    // 提示词里必须带上地图现状，否则「针对盲区」就只是嘴上说说。
+    // 不断言具体主题名：中间还有一次无关判定会调模型，主题编号取决于调用次序。
+    const joined = prompts.join('\n')
+    expect(joined).toContain('当前已知的主题结构')
+    expect(joined).toMatch(/- 主题\d+（\d+ 条来源/)
+  })
+
   it('缺口查询生成失败时抛出可读错误，不静默跳过', async () => {
     const search = new ScriptedSearch([])
     const llm = new RoutingLlm({ targeted: () => '不是 JSON' })

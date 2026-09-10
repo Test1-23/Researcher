@@ -192,7 +192,8 @@ function buildKernel(options: {
   ]
   if (options.search !== undefined) {
     extra.push(definePlugin({
-      id: 'growing',
+      // id 取自插件自身，避免清单与 entry 不一致
+      id: options.search.id,
       kind: 'search',
       version: '0.0.0',
       title: '假搜索',
@@ -204,7 +205,9 @@ function buildKernel(options: {
 
   const config = deepMerge(DEFAULT_CONFIG, {
     provider: { id: 'fake-llm' },
-    ...(options.search === undefined ? {} : { search: { id: 'growing', fallback: 'growing' } }),
+    ...(options.search === undefined
+      ? {}
+      : { search: { id: options.search.id, fallback: options.search.id } }),
     ...options.overrides,
   }) as AppConfig
 
@@ -356,6 +359,55 @@ describe('代理式主流程端到端', () => {
     expect(second.report.provenance.agentic?.reused).toBeUndefined()
     // 关掉复用后第二次仍然是全新采集：地图重新从零建起来
     expect(second.report.provenance.agentic?.mapNodes).toBeGreaterThan(0)
+  })
+
+  it('第二次运行只抓新增：语料里已有的 URL 不再重复抓取', async () => {
+    const dataRoot = await makeRoot()
+    const llm = new AllRolesLlm()
+    // 固定返回同一批 URL，这样「重复抓取」才会暴露出来
+    const fixed = ['https://fixed.com/a', 'https://fixed.com/b']
+    const queries: string[] = []
+    const search: SearchProvider = {
+      id: 'fixed',
+      kind: 'search',
+      available: () => true,
+      search: async (request): Promise<SearchResult> => {
+        queries.push(request.query)
+        return {
+          providerId: 'fixed',
+          sources: fixed.map((url) => ({ url, title: url, snippet: '摘要' })),
+          truncated: false,
+        }
+      },
+    }
+    const fetch = articleFetch()
+    const { kernel, bus } = buildKernel({
+      dataRoot,
+      llm,
+      search,
+      fetch,
+      overrides: {
+        search: { id: 'fixed', fallback: 'fixed', maxSources: 20, maxFetch: 20 },
+        agentic: { minSupport: 1, queryFanout: 2, candidatesPerQuery: 6, reuseTopicMaps: true },
+      },
+    })
+
+    const first = await kernel.run({ query: '固定话题' }, bus)
+    const afterFirst = [...fetch.requests]
+    expect(first.report.documents.length).toBeGreaterThan(0)
+    expect(afterFirst).toContain(fixed[0])
+
+    llm.reset()
+    const queriesBefore = queries.length
+    await kernel.run({ query: '固定话题' }, bus)
+    const secondRunRequests = fetch.requests.slice(afterFirst.length)
+
+    // 先证明第二次**确实搜过**，否则「没重复抓」可能只是因为压根没跑
+    expect(queries.length, '第二次运行一次都没搜，这条断言会变成空转').toBeGreaterThan(queriesBefore)
+    // 关键断言：搜了，但一次都没有重复抓那两个已有 URL
+    for (const url of fixed) {
+      expect(secondRunRequests, `第二次运行仍然抓取了已有的 ${url}`).not.toContain(url)
+    }
   })
 
   it('没有大模型时自动降到备用主流程，零 key 路径不破', async () => {
