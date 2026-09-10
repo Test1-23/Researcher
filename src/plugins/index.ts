@@ -12,6 +12,7 @@ import { extractiveOrganizerPlugin } from './organize-extractive/index.ts'
 import { htmlOutputPlugin } from './output-html/index.ts'
 import { jsonOutputPlugin } from './output-json/index.ts'
 import { markdownOutputPlugin } from './output-markdown/index.ts'
+import { materialsOutputPlugin } from './output-materials/index.ts'
 import { defaultPipelinePlugin } from './pipeline-default/index.ts'
 import { researchPipelinePlugin } from './pipeline-research/index.ts'
 import { openAiProviderPlugin } from './provider-openai/index.ts'
@@ -35,6 +36,7 @@ export const BUILT_IN_PLUGINS: readonly PluginManifest[] = [
   markdownOutputPlugin,
   htmlOutputPlugin,
   jsonOutputPlugin,
+  materialsOutputPlugin,
 ]
 
 /** 建好一个已注册全部内置插件的注册表。 */

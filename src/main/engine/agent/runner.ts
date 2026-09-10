@@ -33,6 +33,13 @@ export interface RunnerOptions {
 export interface RunOutcome {
   readonly status: 'converged' | 'stalled' | 'limits'
   readonly iterations: number
+  /** 每个任务实际走了多少步、是否满足、为什么停。**收尾时统一给出，避免上层猜。** */
+  readonly tasks: readonly {
+    readonly name: string
+    readonly steps: number
+    readonly satisfied: boolean
+    readonly reason: string
+  }[]
   /** 结束时仍未满足的任务，以及它们不能停的原因。 */
   readonly unsatisfied: readonly { readonly task: string; readonly reason: string }[]
   /** 一条人可读的收尾说明。 */
@@ -132,11 +139,18 @@ function finish(
   board: BlackboardView,
   message: string,
 ): RunOutcome {
-  const unsatisfied = states
-    .filter((state) => !state.task.isSatisfied(board))
-    .map((state) => ({ task: state.task.name, reason: state.task.explain(board) }))
+  // 步数由运行器自己报——上层拼一份假的（例如硬编码 0）比不报还糟
+  const tasks = states.map((state) => ({
+    name: state.task.name,
+    steps: state.steps,
+    satisfied: state.task.isSatisfied(board),
+    reason: state.task.explain(board),
+  }))
+  const unsatisfied = tasks
+    .filter((task) => !task.satisfied)
+    .map((task) => ({ task: task.name, reason: task.reason }))
 
-  return { status, iterations, unsatisfied, message }
+  return { status, iterations, tasks, unsatisfied, message }
 }
 
 /** 把 journal 转成可持久化 / 可回放的数组。 */

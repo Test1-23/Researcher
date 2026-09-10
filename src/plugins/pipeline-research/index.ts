@@ -34,6 +34,7 @@ import type {
   PluginManifest,
   Provenance,
   Report,
+  ReportMaterials,
   ReportSection,
   RunInput,
   SearchSource,
@@ -204,6 +205,7 @@ export class ResearchPipeline implements Pipeline {
         })),
       synthesis,
       provenance,
+      materials: materialsFromBoard(board),
     }
 
     ctx.events.emit({ type: 'stage:start', stage: 'output' })
@@ -219,6 +221,40 @@ export class ResearchPipeline implements Pipeline {
     })
 
     return rendered.report
+  }
+}
+
+/** 把黑板上的地图与语料转成资料文件的数据。 */
+function materialsFromBoard(board: Blackboard): ReportMaterials {
+  return {
+    themes: board.map.nodes.map((node) => ({
+      id: node.id,
+      topic: node.topic,
+      summary: node.summary,
+      claims: node.claims.map((claim) => ({
+        text: claim.text,
+        ...(claim.quote === undefined ? {} : { quote: claim.quote }),
+        sourceIds: claim.sourceIds,
+      })),
+      sourceIds: node.sourceIds,
+    })),
+    gaps: board.map.gaps,
+    conflicts: board.map.conflicts.map((conflict) => ({
+      topic: conflict.topic,
+      positions: conflict.positions,
+    })),
+    sources: board.sources.map((source) => ({
+      id: source.id,
+      url: source.url,
+      title: source.title,
+      status: source.status,
+      ...(source.extraction === undefined ? {} : { extraction: source.extraction }),
+      ...(source.extractionFallbackReason === undefined
+        ? {}
+        : { extractionFallbackReason: source.extractionFallbackReason }),
+      relevance: source.relevance,
+      ...(source.filterReason === undefined ? {} : { filterReason: source.filterReason }),
+    })),
   }
 }
 
@@ -286,13 +322,6 @@ function buildAgenticProvenance(
     else if (source.extraction === 'plain-text') plainText += 1
   }
 
-  const tasks = [searchTask, writingTask].map((task) => ({
-    name: task.name,
-    steps: 0,
-    satisfied: task.isSatisfied(board),
-    reason: task.explain(board),
-  }))
-
   return {
     iterations: outcome.iterations,
     outcome: outcome.status,
@@ -306,7 +335,8 @@ function buildAgenticProvenance(
     promptTokens: meter.promptTokens,
     completionTokens: meter.completionTokens,
     extraction: { readability, plainText },
-    tasks,
+    // 步数与理由直接来自运行器：这里不再自己拼一份（之前那份 steps 是硬编码的 0）
+    tasks: outcome.tasks,
     ...(reuse === undefined ? {} : { reused: reuse }),
   }
 }

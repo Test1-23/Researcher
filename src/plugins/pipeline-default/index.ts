@@ -20,6 +20,7 @@ import type {
   PluginManifest,
   Provenance,
   Report,
+  ReportMaterials,
   RunInput,
   SearchSource,
 } from '../../main/engine/types.ts'
@@ -121,8 +122,53 @@ export async function fetchAll(
   return { documents, failures }
 }
 
-/** 整理结果，附带实际使用的插件与降级说明。 */
-interface OrganizeOutcome {
+/**
+ * 把来源与抓取结果转成资料文件的数据。
+ *
+ * 默认主流程不建地图，所以 themes 为空——但语料清单**照常给出**，
+ * 这样 `output-materials` 在任何一条主流程下都有意义，而不是空转。
+ */
+export function materialsFromDocuments(
+  sources: readonly SearchSource[],
+  documents: readonly FetchedDocument[],
+  failures: readonly FetchFailure[],
+): ReportMaterials {
+  const documentBySource = new Map<string, FetchedDocument>()
+  for (const document of documents) documentBySource.set(document.sourceUrl ?? document.url, document)
+  const failureBySource = new Map<string, FetchFailure>()
+  for (const failure of failures) failureBySource.set(failure.url, failure)
+
+  return {
+    themes: [],
+    gaps: [],
+    conflicts: [],
+    sources: sources.map((source, index) => {
+      const id = `s${String(index + 1).padStart(3, '0')}`
+      const document = documentBySource.get(source.url)
+      const failure = failureBySource.get(source.url)
+      const base = { id, url: source.url, title: source.title ?? source.url, relevance: 'kept' as const }
+
+      if (document !== undefined) {
+        return {
+          ...base,
+          status: 'full' as const,
+          ...(document.extraction === undefined ? {} : { extraction: document.extraction }),
+          ...(document.extractionFallbackReason === undefined
+            ? {}
+            : { extractionFallbackReason: document.extractionFallbackReason }),
+        }
+      }
+
+      return {
+        ...base,
+        status: 'snippet-only' as const,
+        filterReason: failure?.reason ?? '未抓取（超出本次抓取上限）',
+      }
+    }),
+  }
+}
+
+/** 整理结果，附带实际使用的插件与降级说明。 */interface OrganizeOutcome {
   readonly output: OrganizeOutput
   readonly organizerId: string
   readonly degraded: string | undefined
@@ -247,6 +293,7 @@ export class DefaultPipeline implements Pipeline {
       failures,
       synthesis: organized.output,
       provenance,
+      materials: materialsFromDocuments(sources, documents, failures),
     }
 
     // ── 输出 ──

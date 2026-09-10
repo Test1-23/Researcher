@@ -17,6 +17,7 @@ import { join } from 'node:path'
 import { loadConfigResilient, envNameOf, secretSourceOf } from '../src/main/engine/config.ts'
 import { FetchError } from '../src/main/engine/errors.ts'
 import { SimpleEventBus } from '../src/main/engine/events.ts'
+import { extractContent } from '../src/main/engine/extract.ts'
 import { extractText } from '../src/main/engine/html.ts'
 import { Kernel } from '../src/main/engine/kernel.ts'
 import type { FetchedDocument, FetchService, RawResponse, RunEvent } from '../src/main/engine/types.ts'
@@ -96,13 +97,22 @@ function offlineFetch(): FetchService {
     fetchRaw,
     async fetchText(url: string): Promise<FetchedDocument> {
       const raw = await fetchRaw(url)
-      const extracted = extractText(raw.body)
+      // 走**真实的**抽取链（Readability + 回退 + 闸门），只是不联网。
+      // 这样离线示例与线上跑的是同一套逻辑，也会如实报告用了哪个实现。
+      const extracted = extractContent(raw.body, {
+        mode: 'auto',
+        maxTextChars: 20_000,
+        minChars: 400,
+        minRatio: 0.2,
+      })
       return {
         url: raw.url,
         status: raw.status,
         ...(extracted.title === undefined ? {} : { title: extracted.title }),
         text: extracted.text,
-        truncated: raw.truncated,
+        truncated: raw.truncated || extracted.truncated,
+        extraction: extracted.method,
+        ...(extracted.fallbackReason === undefined ? {} : { extractionFallbackReason: extracted.fallbackReason }),
       }
     },
   }

@@ -249,8 +249,9 @@ describe('插件通道', () => {
     expect(ids).toContain('pipeline-default')
     expect(ids).toContain('search-duckduckgo')
     expect(ids).toContain('organize-extractive')
+    expect(ids).toContain('output-materials')
     // 数量断言用于捕捉意外重复注册；增删插件时需同步更新
-    expect(plugins).toHaveLength(10)
+    expect(plugins).toHaveLength(11)
   })
 
   it('对不支持测试的类别返回可读说明，而不是抛错', async () => {

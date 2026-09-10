@@ -35,7 +35,7 @@ export const DEFAULT_CONFIG: AppConfig = {
     id: 'organize-llm',
     fallback: 'organize-extractive',
   },
-  output: { ids: ['output-markdown', 'output-html'], template: 'report' },
+  output: { ids: ['output-markdown', 'output-html', 'output-materials'], template: 'report' },
   agentic: {
     // 这一组是**阈值**：什么时候停由任务观测决定，不是步数。
     saturationWindow: 2,

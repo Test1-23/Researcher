@@ -72,9 +72,14 @@ export function renderReportHtml(report: Report): string {
   const citationIndex = new Map<string, number>()
   report.sources.forEach((source, index) => citationIndex.set(source.url, index + 1))
 
-  const fetchedBySource = new Map<string, { chars: number; truncated: boolean }>()
+  const fetchedBySource = new Map<string, { chars: number; truncated: boolean; extraction?: string; fallbackReason?: string }>()
   for (const document of report.documents) {
-    fetchedBySource.set(document.sourceUrl ?? document.url, { chars: document.text.length, truncated: document.truncated })
+    fetchedBySource.set(document.sourceUrl ?? document.url, {
+      chars: document.text.length,
+      truncated: document.truncated,
+      ...(document.extraction === undefined ? {} : { extraction: document.extraction }),
+      ...(document.extractionFallbackReason === undefined ? {} : { fallbackReason: document.extractionFallbackReason }),
+    })
   }
   const failedBySource = new Map(report.failures.map((failure) => [failure.url, failure.reason]))
 
@@ -122,6 +127,9 @@ export function renderReportHtml(report: Report): string {
     }
   }
 
+  parts.push(...renderMaterialsOverview(report))
+  parts.push(...renderAgentic(report))
+
   parts.push('<h2>来源</h2>')
   if (report.sources.length === 0) {
     parts.push('<p>（没有搜索到任何来源）</p>')
@@ -133,7 +141,12 @@ export function renderReportHtml(report: Report): string {
       const failure = failedBySource.get(source.url)
       let status: string
       if (fetched !== undefined) {
-        status = `<span class="status">已抓取正文 ${fetched.chars} 字${fetched.truncated ? '（已截断）' : ''}</span>`
+        const via = fetched.extraction === 'readability'
+          ? ' · Readability'
+          : fetched.extraction === 'plain-text'
+            ? ` · 纯文本回退${fetched.fallbackReason === undefined ? '' : `（${fetched.fallbackReason}）`}`
+            : ''
+        status = `<span class="status">已抓取正文 ${fetched.chars} 字${fetched.truncated ? '（已截断）' : ''}${escapeHtml(via)}</span>`
       } else if (failure !== undefined) {
         status = `<span class="status failed">抓取失败：${escapeHtml(failure)}</span>`
       } else {
@@ -175,6 +188,69 @@ export function renderReportHtml(report: Report): string {
   parts.push('</body></html>')
 
   return parts.join('\n')
+}
+
+/** 资料地图概要：只放骨架，完整内容在 materials.md 里。 */
+function renderMaterialsOverview(report: Report): string[] {
+  const materials = report.materials
+  if (materials === undefined || materials.themes.length === 0) return []
+
+  const parts: string[] = ['<h2>资料地图概要</h2>', `<p>本次归纳出 ${materials.themes.length} 个主题：</p>`, '<ul>']
+  for (const theme of materials.themes) {
+    const summary = theme.summary.length > 0 ? ` — ${escapeHtml(theme.summary)}` : ''
+    parts.push(`<li><strong>${escapeHtml(theme.topic)}</strong>（${theme.sourceIds.length} 条来源）${summary}</li>`)
+  }
+  parts.push('</ul>')
+
+  if (materials.gaps.length > 0) {
+    parts.push(`<p class="warn"><strong>尚未覆盖</strong>：${escapeHtml(materials.gaps.join('；'))}</p>`)
+  }
+  if (materials.conflicts.length > 0) {
+    parts.push('<p><strong>存在分歧</strong>：</p><ul>')
+    for (const conflict of materials.conflicts) {
+      parts.push(`<li>${escapeHtml(conflict.topic)}：${escapeHtml(conflict.positions.join(' / '))}</li>`)
+    }
+    parts.push('</ul>')
+  }
+  parts.push('<p class="citations">完整的论断、逐字引文与语料清单见同目录的 materials.md。</p>')
+  return parts
+}
+
+/** 代理式运行观测：让读者判断这份产出值多少信任。 */
+function renderAgentic(report: Report): string[] {
+  const agentic = report.provenance.agentic
+  if (agentic === undefined) return []
+
+  const outcomeText = agentic.outcome === 'converged'
+    ? '已收敛'
+    : agentic.outcome === 'stalled'
+      ? '卡住后收工'
+      : '撞上护栏后收工'
+  const rows: string[] = [
+    `<li>收敛情况：${escapeHtml(outcomeText)}（${escapeHtml(agentic.outcomeMessage)}）</li>`,
+    `<li>不动点迭代：${agentic.iterations} 轮</li>`,
+    `<li>搜索：${agentic.searchRounds} 轮；地图 ${agentic.mapNodes} 个主题 / ${agentic.gaps} 个盲区 / ${agentic.conflicts} 处分歧</li>`,
+    `<li>写作：${agentic.toolCalls} 次工具调用</li>`,
+    `<li>大模型：${agentic.llmCalls} 次调用（输入 ${agentic.promptTokens} / 输出 ${agentic.completionTokens} token）</li>`,
+    `<li>正文抽取：Readability ${agentic.extraction.readability} 篇 / 回退纯文本 ${agentic.extraction.plainText} 篇</li>`,
+  ]
+  if (agentic.reused !== undefined) {
+    rows.push(
+      `<li>复用了话题缓存：${agentic.reused.sources} 条来源 / ${agentic.reused.mapNodes} 个主题`
+      + `（更新于 ${escapeHtml(agentic.reused.updatedAt)}）</li>`,
+    )
+  }
+
+  const parts: string[] = ['<h2>本次调研过程</h2>', '<ul>', ...rows, '</ul>']
+  parts.push('<table><thead><tr><th>任务</th><th>步数</th><th>满足</th><th>为什么停</th></tr></thead><tbody>')
+  for (const task of agentic.tasks) {
+    parts.push(
+      `<tr><td>${escapeHtml(task.name)}</td><td>${task.steps}</td>`
+      + `<td>${task.satisfied ? '是' : '否'}</td><td>${escapeHtml(task.reason)}</td></tr>`,
+    )
+  }
+  parts.push('</tbody></table>')
+  return parts
 }
 
 /** HTML 输出插件。 */

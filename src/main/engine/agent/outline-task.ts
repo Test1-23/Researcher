@@ -118,7 +118,13 @@ export class OutlineTask implements AgentTask {
     // 支撑不足的节 → 写缺口请求（自己不搜）
     const problems = this.checkCoverage(board, outline)
     this.lastCoverage = `${outline.sections.length} 节，其中 ${problems.length} 处待补`
-    board.record(this.name, 'step', `产出大纲：${outline.sections.length} 节，${problems.length} 处支撑不足`, {
+    // 点名待补的节：只说「N 处待补」看不出是哪里缺，也就对不上「大纲因为哪一节把搜索叫回来」
+    const named = problems
+      .filter((problem) => problem.slot !== 'length')
+      .slice(0, 3)
+      .map((problem) => problem.what.replace(/^补充/, '').replace(/^补充能支撑/, '').trim())
+    const detail = named.length === 0 ? '' : `：${named.join('、')}${problems.length > named.length ? ' 等' : ''}`
+    board.record(this.name, 'step', `产出大纲：${outline.sections.length} 节，${problems.length} 处支撑不足${detail}`, {
       sections: outline.sections.length,
       problems,
     })
@@ -126,7 +132,7 @@ export class OutlineTask implements AgentTask {
       type: 'task:step',
       task: this.name,
       step: 1,
-      message: `大纲 ${outline.sections.length} 节${problems.length === 0 ? '，覆盖度达标' : `，${problems.length} 处待补`}`,
+      message: `大纲 ${outline.sections.length} 节${problems.length === 0 ? '，覆盖度达标' : `，${problems.length} 处待补${detail}`}`,
     })
 
     problems.forEach((problem) => {

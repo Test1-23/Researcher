@@ -197,6 +197,19 @@ export class SearchTask implements AgentTask {
     // ⑦ 并入黑板——**必须走这一步**：语料库在黑板里，后面的归纳、大纲、写作都从那里读
     board.addSources([...filtered.kept, ...filtered.dropped, ...duplicates])
 
+    // 让界面看得见「这一轮找到了什么」。
+    // 只报保留的：被过滤的仍进报告并标注原因，但不必刷屏。
+    for (const source of filtered.kept) {
+      ctx.events.emit({
+        type: 'source:found',
+        source: {
+          url: source.url,
+          ...(source.title.length === 0 ? {} : { title: source.title }),
+          ...(source.snippet === undefined ? {} : { snippet: source.snippet }),
+        },
+      })
+    }
+
     // ⑧ 归纳进地图
     const integrated = await this.integrate(board, filtered.kept, ctx, meter, signal)
     const newNodes = board.mergeMap(integrated.nodes, integrated.gaps, integrated.conflicts)

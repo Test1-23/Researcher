@@ -307,6 +307,52 @@ export interface OutputFailure {
   readonly reason: string
 }
 
+/** 资料文件里的一个主题。 */
+export interface MaterialTheme {
+  readonly id: string
+  readonly topic: string
+  readonly summary: string
+  readonly claims: readonly {
+    readonly text: string
+    /** 逐字原文片段（保真）。 */
+    readonly quote?: string
+    readonly sourceIds: readonly string[]
+  }[]
+  readonly sourceIds: readonly string[]
+}
+
+/** 资料文件里的一条语料。 */
+export interface MaterialSource {
+  /** 稳定 id（s001…），论断与它是靠这个对上的。 */
+  readonly id: string
+  readonly url: string
+  readonly title: string
+  /** `snippet-only` 表示没抓到正文（失败或超出上限），只有摘要。 */
+  readonly status: 'full' | 'snippet-only'
+  /** 实际使用的抽取实现。 */
+  readonly extraction?: string
+  readonly extractionFallbackReason?: string
+  readonly relevance: 'kept' | 'duplicate' | 'irrelevant'
+  readonly filterReason?: string
+}
+
+/**
+ * 资料文件：这次调研攒下的证据本体。
+ *
+ * 与 `Report.sources` 的区别：那个面向「引用编号」，这个面向「证据清单」——
+ * 带 id、带抓取状态与抽取实现，论断可以精确指回来源。
+ *
+ * 两条主流程都会填：代理式有主题与盲区，默认流程没有主题但有来源清单。
+ */
+export interface ReportMaterials {
+  readonly themes: readonly MaterialTheme[]
+  /** 尚未覆盖的方面。 */
+  readonly gaps: readonly string[]
+  /** 同一问题上的不同/冲突说法。 */
+  readonly conflicts: readonly { readonly topic: string; readonly positions: readonly string[] }[]
+  readonly sources: readonly MaterialSource[]
+}
+
 /** 一次运行的最终产物。 */
 export interface Report {
   readonly runId: string
@@ -325,6 +371,8 @@ export interface Report {
    * 单个格式失败不让整轮运行失败——报告已经算完了，不该因为一个渲染器出错就全丢。
    */
   readonly outputFailures?: readonly OutputFailure[]
+  /** 证据本体（资料文件的数据来源）。 */
+  readonly materials?: ReportMaterials
 }
 
 // ─────────────────────────────── 主 pipeline ───────────────────────────────
