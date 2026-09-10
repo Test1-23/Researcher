@@ -8,6 +8,7 @@
 import { useState } from 'react'
 import type { AppConfig, PluginInfo, PluginKind } from '../../../main/engine/types.ts'
 import type { ConfigSnapshot, SecretStatus } from '../../../shared/ipc.ts'
+import { BUILT_IN_TEMPLATES } from '../../../templates/index.ts'
 import { parseIpcError, requireApi } from '../api.ts'
 
 /** 设置面板属性。 */
@@ -106,7 +107,7 @@ export function SettingsPanel({ snapshot, plugins, onSaved, onClose }: SettingsP
     const ids = draft.output.ids.includes(id)
       ? draft.output.ids.filter((item) => item !== id)
       : [...draft.output.ids, id]
-    setDraft({ ...draft, output: { ids } })
+    setDraft({ ...draft, output: { ...draft.output, ids } })
   }
 
   return (
@@ -366,6 +367,51 @@ export function SettingsPanel({ snapshot, plugins, onSaved, onClose }: SettingsP
           </section>
 
           <section className="form-group">
+            <h3 className="section-title">主流程</h3>
+            <div className="field-row">
+              <label className="field">
+                <span>使用哪条主流程</span>
+                <select
+                  value={draft.pipeline.id}
+                  onChange={(event) => setDraft({ ...draft, pipeline: { ...draft.pipeline, id: event.target.value } })}
+                >
+                  {byKind('pipeline').map((plugin) => (
+                    <option key={plugin.id} value={plugin.id}>
+                      {plugin.title}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="field">
+                <span>不可用时降级到</span>
+                <select
+                  value={draft.pipeline.fallback ?? ''}
+                  onChange={(event) =>
+                    setDraft({
+                      ...draft,
+                      pipeline: {
+                        ...draft.pipeline,
+                        ...(event.target.value === '' ? {} : { fallback: event.target.value }),
+                      },
+                    })
+                  }
+                >
+                  <option value="">（不降级）</option>
+                  {byKind('pipeline').map((plugin) => (
+                    <option key={plugin.id} value={plugin.id}>
+                      {plugin.title}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <p className="hint">
+              代理式主流程需要大模型；没有 key 时它不可用，会自动降到上面选的备用主流程（默认是无需大模型的
+              pipeline-default）。两者产出的报告格式相同，输出插件也共用。
+            </p>
+          </section>
+
+          <section className="form-group">
             <h3 className="section-title">输出格式</h3>
             <div className="checkbox-row">
               {byKind('output').map((plugin) => (
@@ -380,6 +426,140 @@ export function SettingsPanel({ snapshot, plugins, onSaved, onClose }: SettingsP
               ))}
             </div>
             <p className="hint">至少选择一个。未勾选的格式不会生成对应文件。</p>
+          </section>
+
+          <section className="form-group">
+            <h3 className="section-title">文档模板</h3>
+            <label className="field">
+              <span>代理式主流程按这个模板组织文档结构</span>
+              <select
+                value={draft.output.template}
+                onChange={(event) => setDraft({ ...draft, output: { ...draft.output, template: event.target.value } })}
+              >
+                {BUILT_IN_TEMPLATES.map((template) => (
+                  <option key={template.id} value={template.id}>
+                    {template.title}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <p className="hint">
+              {BUILT_IN_TEMPLATES.find((template) => template.id === draft.output.template)?.description ?? ''}
+            </p>
+          </section>
+
+          <section className="form-group">
+            <h3 className="section-title">代理式调研参数</h3>
+            <p className="hint">
+              这里配的是<strong>阈值</strong>，不是步数——什么时候停由任务观测决定。
+              下面「全局迭代上限」「工具步数上限」只是防死循环的护栏，正常远达不到。
+            </p>
+            <div className="field-row">
+              <label className="field">
+                <span>每节最少来源支撑</span>
+                <input
+                  type="number"
+                  min="1"
+                  value={draft.agentic.minSupport}
+                  onChange={(event) =>
+                    setDraft({ ...draft, agentic: { ...draft.agentic, minSupport: Number(event.target.value) } })
+                  }
+                />
+              </label>
+              <label className="field">
+                <span>连续几轮低贡献算饱和</span>
+                <input
+                  type="number"
+                  min="1"
+                  value={draft.agentic.saturationWindow}
+                  onChange={(event) =>
+                    setDraft({ ...draft, agentic: { ...draft.agentic, saturationWindow: Number(event.target.value) } })
+                  }
+                />
+              </label>
+              <label className="field">
+                <span>饱和阈值（新内容/文档数）</span>
+                <input
+                  type="number"
+                  step="0.05"
+                  min="0"
+                  value={draft.agentic.saturationThreshold}
+                  onChange={(event) =>
+                    setDraft({ ...draft, agentic: { ...draft.agentic, saturationThreshold: Number(event.target.value) } })
+                  }
+                />
+              </label>
+            </div>
+            <div className="field-row">
+              <label className="field">
+                <span>互补查询数</span>
+                <input
+                  type="number"
+                  min="1"
+                  value={draft.agentic.queryFanout}
+                  onChange={(event) =>
+                    setDraft({ ...draft, agentic: { ...draft.agentic, queryFanout: Number(event.target.value) } })
+                  }
+                />
+              </label>
+              <label className="field">
+                <span>每次查询取多少候选</span>
+                <input
+                  type="number"
+                  min="1"
+                  value={draft.agentic.candidatesPerQuery}
+                  onChange={(event) =>
+                    setDraft({ ...draft, agentic: { ...draft.agentic, candidatesPerQuery: Number(event.target.value) } })
+                  }
+                />
+              </label>
+              <label className="field">
+                <span>最多多少节</span>
+                <input
+                  type="number"
+                  min="1"
+                  value={draft.agentic.maxSections}
+                  onChange={(event) =>
+                    setDraft({ ...draft, agentic: { ...draft.agentic, maxSections: Number(event.target.value) } })
+                  }
+                />
+              </label>
+            </div>
+            <div className="field-row">
+              <label className="field">
+                <span>单节工具步数护栏</span>
+                <input
+                  type="number"
+                  min="1"
+                  value={draft.agentic.maxToolSteps}
+                  onChange={(event) =>
+                    setDraft({ ...draft, agentic: { ...draft.agentic, maxToolSteps: Number(event.target.value) } })
+                  }
+                />
+              </label>
+              <label className="field">
+                <span>单节最大重写次数</span>
+                <input
+                  type="number"
+                  min="0"
+                  value={draft.agentic.maxRewriteAttempts}
+                  onChange={(event) =>
+                    setDraft({ ...draft, agentic: { ...draft.agentic, maxRewriteAttempts: Number(event.target.value) } })
+                  }
+                />
+              </label>
+              <label className="field">
+                <span>全局迭代护栏</span>
+                <input
+                  type="number"
+                  min="1"
+                  value={draft.agentic.globalIterations}
+                  onChange={(event) =>
+                    setDraft({ ...draft, agentic: { ...draft.agentic, globalIterations: Number(event.target.value) } })
+                  }
+                />
+              </label>
+            </div>
           </section>
 
           <section className="form-group">

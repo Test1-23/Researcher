@@ -20,6 +20,8 @@ export interface CorpusSource {
   /** 实际使用的抽取实现，进入 provenance。 */
   readonly extraction?: string
   readonly extractionFallbackReason?: string
+  /** 正文是否被上限截断。缺省表示未截断。 */
+  readonly truncated?: boolean
   /** 由哪些查询找到的（影响后续判断，也便于回溯）。 */
   readonly foundByQueries: readonly string[]
   readonly fetchedAt: string

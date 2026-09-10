@@ -111,8 +111,10 @@ describe('配置通道', () => {
   it('读取配置返回缺省值', async () => {
     await setup()
     const snapshot = await invoke(IPC.configGet) as ConfigSnapshot
-    expect(snapshot.config.pipeline.id).toBe('pipeline-default')
+    expect(snapshot.config.pipeline.id).toBe('pipeline-research')
+    expect(snapshot.config.pipeline.fallback).toBe('pipeline-default')
     expect(snapshot.config.search.fallback).toBe('search-duckduckgo')
+    expect(snapshot.config.output.template).toBe('report')
     expect(snapshot.storage.canPersist).toBe(true)
   })
 
@@ -242,9 +244,13 @@ describe('插件通道', () => {
   it('列出全部内置插件', async () => {
     await setup()
     const plugins = await invoke(IPC.pluginsList) as { id: string; kind: string }[]
-    expect(plugins.map((plugin) => plugin.id)).toContain('pipeline-default')
-    expect(plugins.map((plugin) => plugin.id)).toContain('search-duckduckgo')
-    expect(plugins).toHaveLength(9)
+    const ids = plugins.map((plugin) => plugin.id)
+    expect(ids).toContain('pipeline-research')
+    expect(ids).toContain('pipeline-default')
+    expect(ids).toContain('search-duckduckgo')
+    expect(ids).toContain('organize-extractive')
+    // 数量断言用于捕捉意外重复注册；增删插件时需同步更新
+    expect(plugins).toHaveLength(10)
   })
 
   it('对不支持测试的类别返回可读说明，而不是抛错', async () => {

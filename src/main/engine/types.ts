@@ -258,6 +258,40 @@ export interface Provenance {
   readonly usage?: TokenUsage
   readonly degraded?: string
   readonly generatedAt: string
+  /** 使用的文档模板 id（代理式主流程才有）。 */
+  readonly template?: string
+  /** 代理式主流程的观测数据：让读者判断这次产出值多少信任。 */
+  readonly agentic?: AgenticProvenance
+}
+
+/** 代理式主流程的运行观测。 */
+export interface AgenticProvenance {
+  /** 不动点迭代了几轮。 */
+  readonly iterations: number
+  /** 收敛 / 卡死 / 撞上护栏。 */
+  readonly outcome: 'converged' | 'stalled' | 'limits'
+  readonly outcomeMessage: string
+  /** 搜索进行了多少轮。 */
+  readonly searchRounds: number
+  /** 话题地图的规模。 */
+  readonly mapNodes: number
+  readonly gaps: number
+  readonly conflicts: number
+  /** 写作阶段的工具调用次数。 */
+  readonly toolCalls: number
+  /** 大模型调用次数与 token 用量。 */
+  readonly llmCalls: number
+  readonly promptTokens: number
+  readonly completionTokens: number
+  /** 抽取实现分布：多少篇走了 Readability，多少篇回退到纯文本。 */
+  readonly extraction: { readonly readability: number; readonly plainText: number }
+  /** 每个任务自己报告的状态与停下的理由。 */
+  readonly tasks: readonly {
+    readonly name: string
+    readonly steps: number
+    readonly satisfied: boolean
+    readonly reason: string
+  }[]
 }
 
 /** 一次运行的最终产物。 */
@@ -288,6 +322,13 @@ export interface RunInput {
 export interface Pipeline {
   readonly id: string
   readonly kind: 'pipeline'
+  /**
+   * 这条主流程现在可用吗。
+   *
+   * 代理式主流程依赖大模型；没有 key 时它为假，内核会自动降到配置的备用主流程。
+   * 默认实现（无依赖）返回 true。
+   */
+  available(ctx: AvailabilityContext): boolean
   run(input: RunInput, ctx: PluginContext, signal?: AbortSignal): Promise<Report>
 }
 
@@ -408,7 +449,11 @@ export interface PluginContext {
 
 /** 应用配置。每个插件读取 `plugins[自己的 id]` 段。 */
 export interface AppConfig {
-  readonly pipeline: { readonly id: string }
+  readonly pipeline: {
+    readonly id: string
+    /** 主流程不可用时使用的备用主流程（例如没有大模型 key 时降到默认流程）。 */
+    readonly fallback?: string
+  }
   readonly search: {
     readonly id: string
     /** 主插件不可用时使用的备用搜索插件。 */
@@ -422,7 +467,39 @@ export interface AppConfig {
     /** 整理失败（如 LLM 输出非法 JSON）时降级到的插件。 */
     readonly fallback?: string
   }
-  readonly output: { readonly ids: readonly string[] }
+  readonly output: {
+    readonly ids: readonly string[]
+    /** 文档模板 id（代理式主流程用它约束大纲与写作）。 */
+    readonly template: string
+  }
+  /**
+   * 代理式主流程的参数。
+   *
+   * 注意这里配的是**阈值**而不是步数：什么时候停由任务观测决定，
+   * 只有 `globalIterations` / `maxToolSteps` 这类是防死循环的护栏。
+   */
+  readonly agentic: {
+    /** 不动点迭代的全局护栏（防任务互相激活导致不收敛）。 */
+    readonly globalIterations: number
+    /** 每次查询取多少条候选。 */
+    readonly candidatesPerQuery: number
+    /** 第一轮生成的互补查询数。 */
+    readonly queryFanout: number
+    /** 连续多少轮贡献率低于阈值即判定地图饱和。 */
+    readonly saturationWindow: number
+    /** 饱和阈值：新增地图内容 / 本轮并入文档数。 */
+    readonly saturationThreshold: number
+    /** 抓取并发。 */
+    readonly fetchConcurrency: number
+    /** 大纲每节至少要多少条来源支撑。 */
+    readonly minSupport: number
+    /** 大纲最多多少节。 */
+    readonly maxSections: number
+    /** 单节写作的工具循环步数护栏。 */
+    readonly maxToolSteps: number
+    /** 单节自检不过时的最大重写次数。 */
+    readonly maxRewriteAttempts: number
+  }
   readonly fetch: {
     readonly concurrency: number
     readonly timeoutMs: number

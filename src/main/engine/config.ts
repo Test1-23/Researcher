@@ -19,7 +19,11 @@ export const ENGINE_VERSION = '0.1.0'
  * 因此「没有任何 API key」时整条链路依然可以跑通（整理自动降级为抽取式）。
  */
 export const DEFAULT_CONFIG: AppConfig = {
-  pipeline: { id: 'pipeline-default' },
+  pipeline: {
+    // 默认走代理式主流程；它依赖大模型，没有 key 时自动降到 pipeline-default。
+    id: 'pipeline-research',
+    fallback: 'pipeline-default',
+  },
   search: {
     id: 'search-deepseek',
     fallback: 'search-duckduckgo',
@@ -31,7 +35,21 @@ export const DEFAULT_CONFIG: AppConfig = {
     id: 'organize-llm',
     fallback: 'organize-extractive',
   },
-  output: { ids: ['output-markdown', 'output-html'] },
+  output: { ids: ['output-markdown', 'output-html'], template: 'report' },
+  agentic: {
+    // 这一组是**阈值**：什么时候停由任务观测决定，不是步数。
+    saturationWindow: 2,
+    saturationThreshold: 0.3,
+    minSupport: 2,
+    // 下面这几个是防死循环的护栏，设得远超正常所需。
+    globalIterations: 60,
+    candidatesPerQuery: 30,
+    queryFanout: 5,
+    fetchConcurrency: 6,
+    maxSections: 10,
+    maxToolSteps: 12,
+    maxRewriteAttempts: 2,
+  },
   fetch: {
     concurrency: 4,
     timeoutMs: 15_000,
@@ -145,6 +163,26 @@ export function assertValidConfig(config: AppConfig): void {
     fail('output.ids 必须是非空数组')
   }
   for (const id of config.output.ids) idOf(id, 'output.ids 的元素')
+  idOf(config.output?.template, 'output.template')
+
+  if (!isPlainObject(config.agentic)) fail('agentic 必须是对象')
+  positiveInt(config.agentic?.globalIterations, 'agentic.globalIterations')
+  positiveInt(config.agentic?.candidatesPerQuery, 'agentic.candidatesPerQuery')
+  positiveInt(config.agentic?.queryFanout, 'agentic.queryFanout')
+  positiveInt(config.agentic?.saturationWindow, 'agentic.saturationWindow')
+  positiveInt(config.agentic?.fetchConcurrency, 'agentic.fetchConcurrency')
+  positiveInt(config.agentic?.minSupport, 'agentic.minSupport')
+  positiveInt(config.agentic?.maxSections, 'agentic.maxSections')
+  positiveInt(config.agentic?.maxToolSteps, 'agentic.maxToolSteps')
+  if (typeof config.agentic?.maxRewriteAttempts !== 'number'
+    || !Number.isInteger(config.agentic.maxRewriteAttempts)
+    || config.agentic.maxRewriteAttempts < 0) {
+    fail('agentic.maxRewriteAttempts 必须是非负整数')
+  }
+  if (typeof config.agentic?.saturationThreshold !== 'number'
+    || !(config.agentic.saturationThreshold >= 0 && config.agentic.saturationThreshold <= 10)) {
+    fail('agentic.saturationThreshold 必须是 0–10 之间的数')
+  }
 
   if (!isPlainObject(config.plugins)) fail('plugins 必须是对象')
 }

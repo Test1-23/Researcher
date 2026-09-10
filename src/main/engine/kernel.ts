@@ -34,8 +34,8 @@ import type {
   SearchProvider,
 } from './types.ts'
 
-/** 可以查询可用性的类别（pipeline/output 没有 available 概念）。 */
-type AvailabilityKind = 'search' | 'provider' | 'organize'
+/** 可以查询可用性的类别（output 没有 available 概念）。 */
+type AvailabilityKind = 'pipeline' | 'search' | 'provider' | 'organize'
 
 /** 构造内核所需的依赖。 */
 export interface KernelOptions {
@@ -204,7 +204,7 @@ export class Kernel {
    * 并用 `seen` 防止配置写出循环依赖时无限递归。
    */
   isPluginAvailable(kind: PluginKind, id: string, seen: ReadonlySet<string> = new Set()): boolean {
-    if (kind !== 'search' && kind !== 'provider' && kind !== 'organize') return true
+    if (kind !== 'pipeline' && kind !== 'search' && kind !== 'provider' && kind !== 'organize') return true
     const manifest = this.registry.find(kind, id)
     if (manifest === undefined) return false
 
@@ -233,9 +233,37 @@ export class Kernel {
     return this.config.plugins[pluginId] ?? {}
   }
 
+  /**
+   * 解析要跑的主流程：主流程不可用时降到配置的备用主流程。
+   *
+   * 代理式主流程依赖大模型，没有 key 时不可用——这里就是「零 key 依然能跑」的实现点。
+   */
+  private resolvePipeline(log: Logger): Pipeline {
+    const primaryId = this.config.pipeline.id
+    const primary = this.registry.requireEntry<Pipeline>('pipeline', primaryId)
+    if (this.isPluginAvailable('pipeline', primaryId)) return primary
+
+    const fallbackId = this.config.pipeline.fallback
+    if (fallbackId !== undefined && fallbackId !== primaryId && this.registry.has('pipeline', fallbackId)) {
+      if (this.isPluginAvailable('pipeline', fallbackId)) {
+        log.warn(`主流程 ${primaryId} 不可用，已降级到 ${fallbackId}`)
+        return this.registry.requireEntry<Pipeline>('pipeline', fallbackId)
+      }
+    }
+
+    throw new ResearcherError(
+      `没有可用的主流程：${primaryId} 不可用`
+      + (fallbackId !== undefined ? `，备用 ${fallbackId} 也不可用` : '（未配置备用主流程）')
+      + '。请检查设置中的大模型配置，或把主流程切换为 pipeline-default。',
+      'LLM_UNAVAILABLE',
+    )
+  }
+
   /** 某类别当前配置的活动插件 id。 */
   private activeIdOf(kind: AvailabilityKind): string {
     switch (kind) {
+      case 'pipeline':
+        return this.config.pipeline.id
       case 'search':
         return this.config.search.id
       case 'provider':
@@ -249,7 +277,7 @@ export class Kernel {
   private isActive(id: string, kind: PluginKind): boolean {
     switch (kind) {
       case 'pipeline':
-        return this.config.pipeline.id === id
+        return this.config.pipeline.id === id || this.config.pipeline.fallback === id
       case 'search':
         return this.config.search.id === id || this.config.search.fallback === id
       case 'provider':
@@ -281,7 +309,7 @@ export class Kernel {
     // 让抓取重试在本次运行的日志里可见
     this.activeLogger = log
 
-    const pipeline = this.registry.requireEntry<Pipeline>('pipeline', this.config.pipeline.id)
+    const pipeline = this.resolvePipeline(log)
     const runId = makeRunId()
     const store = new FileRunStore(join(this.runsRoot, runId))
     await store.ensure()

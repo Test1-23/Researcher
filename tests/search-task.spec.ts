@@ -298,7 +298,7 @@ describe('搜索任务的自终止', () => {
 
     await task.step(board, ctx)
 
-    const bad = task.collected.find((source) => source.url === 'https://bad.com/1')
+    const bad = board.sources.find((source) => source.url === 'https://bad.com/1')
     expect(bad).toBeDefined()
     expect(bad?.status).toBe('snippet-only')
     expect(bad?.snippet).toBe('这条有摘要')
@@ -315,6 +315,23 @@ describe('搜索任务的自终止', () => {
     await task.step(board, ctx)
     expect(task.history[0]?.contribution).toBe(0)
     expect(task.history[0]?.candidates).toBe(0)
+    expect(board.sources).toHaveLength(0)
+  })
+
+  it('抓到的来源必须并入黑板——否则后面的归纳与会话都读不到', async () => {
+    const search = new ScriptedSearch([{ providerId: 's', sources: [hit('https://a.com/1')], truncated: false }])
+    const llm = new RoutingLlm({ expand: () => '{"queries":["q1"]}' })
+    llm.claimBudget = [2]
+    const { ctx } = makeContext({ llm, search, fetch: pagesFor(['https://a.com/1']) })
+    const board = new Blackboard('主题')
+    const task = new SearchTask(TEST_CONFIG, new LlmMeter())
+
+    await task.step(board, ctx)
+    expect(board.sources).toHaveLength(1)
+    expect(board.sources[0]?.status).toBe('full')
+    // 归纳出来的节点也落在黑板上，并且指向真实来源
+    expect(board.map.nodes.length).toBeGreaterThan(0)
+    expect(board.map.nodes[0]?.sourceIds).toEqual([board.sources[0]?.id])
   })
 
   it('缺口查询生成失败时抛出可读错误，不静默跳过', async () => {

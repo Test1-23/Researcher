@@ -78,6 +78,7 @@ export async function collectDocuments(
           ...(document.extractionFallbackReason === undefined
             ? {}
             : { extractionFallbackReason: document.extractionFallbackReason }),
+          truncated: document.truncated,
           relevance: 'kept',
         }
         ctx.events.emit({
@@ -99,6 +100,7 @@ export async function collectDocuments(
           ...base,
           text: '',
           status: 'snippet-only',
+          truncated: false,
           ...(candidate.snippet === undefined ? {} : { snippet: candidate.snippet }),
           relevance: 'kept',
           filterReason: `抓取失败：${normalized.message}`,

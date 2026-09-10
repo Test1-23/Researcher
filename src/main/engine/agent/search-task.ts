@@ -114,7 +114,6 @@ export class SearchTask implements AgentTask {
   private readonly rounds: ContributionRecord[] = []
   private pendingQueries: string[] = []
   private expanded = false
-  private readonly sources: CorpusSource[] = []
 
   constructor(
     private readonly config: SearchTaskConfig = DEFAULT_SEARCH_TASK,
@@ -124,10 +123,6 @@ export class SearchTask implements AgentTask {
   /** 本轮观测记录（写进 report / provenance）。 */
   get history(): readonly ContributionRecord[] {
     return this.rounds
-  }
-
-  get collected(): readonly CorpusSource[] {
-    return this.sources
   }
 
   isSatisfied(board: BlackboardView): boolean {
@@ -160,8 +155,10 @@ export class SearchTask implements AgentTask {
       signal,
     )
 
-    // ③ 转候选，排除已知 URL
-    const known = new Set(this.sources.map((source) => normalizeUrl(source.url)).filter((url): url is string => url !== undefined))
+    // ③ 转候选，排除已知 URL（黑板是唯一事实源）
+    const known = new Set(
+      board.sources.map((source) => normalizeUrl(source.url)).filter((url): url is string => url !== undefined),
+    )
     const candidates: Candidate[] = []
     for (const source of found.sources) {
       const url = normalizeUrl(source.url)
@@ -184,7 +181,7 @@ export class SearchTask implements AgentTask {
     const collected = await collectDocuments(
       candidates,
       ctx,
-      { concurrency: this.config.concurrency, startIndex: this.sources.length + 1 },
+      { concurrency: this.config.concurrency, startIndex: board.sources.length + 1 },
       signal,
     )
 
@@ -194,13 +191,15 @@ export class SearchTask implements AgentTask {
 
     // ⑥ 只淘汰无关（不许择优）
     const filtered = await filterIrrelevant(board.query, deduped, ctx, meter, { signal })
-    this.sources.push(...filtered.kept, ...filtered.dropped, ...duplicates)
 
-    // ⑦ 归纳进地图
+    // ⑦ 并入黑板——**必须走这一步**：语料库在黑板里，后面的归纳、大纲、写作都从那里读
+    board.addSources([...filtered.kept, ...filtered.dropped, ...duplicates])
+
+    // ⑧ 归纳进地图
     const integrated = await this.integrate(board, filtered.kept, ctx, meter, signal)
     const newNodes = board.mergeMap(integrated.nodes, integrated.gaps, integrated.conflicts)
 
-    // ⑧ 缺口请求得到回应后结清
+    // ⑨ 缺口请求得到回应后结清
     if (plan.origin === 'gap' && plan.requestId !== undefined) {
       board.resolveRequest(plan.requestId, `已针对缺口执行查询「${plan.query}」`)
     }

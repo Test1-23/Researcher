@@ -9,6 +9,7 @@ import { ENGINE_VERSION } from '../../main/engine/config.ts'
 import { FetchError, isCancellation, throwIfAborted, toResearcherError } from '../../main/engine/errors.ts'
 import { definePlugin } from '../../main/engine/registry.ts'
 import type {
+  AvailabilityContext,
   FetchedDocument,
   FetchFailure,
   OrganizeInput,
@@ -161,6 +162,11 @@ export async function organizeWithFallback(
 export class DefaultPipeline implements Pipeline {
   readonly id = 'pipeline-default'
   readonly kind = 'pipeline' as const
+
+  /** 只依赖搜索插件，没有额外依赖，永远可用——这正是它能当备用主流程的原因。 */
+  available(_ctx: AvailabilityContext): boolean {
+    return true
+  }
 
   async run(input: RunInput, ctx: PluginContext, signal?: AbortSignal): Promise<Report> {
     const startedAt = new Date()

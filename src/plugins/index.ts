@@ -13,6 +13,7 @@ import { htmlOutputPlugin } from './output-html/index.ts'
 import { jsonOutputPlugin } from './output-json/index.ts'
 import { markdownOutputPlugin } from './output-markdown/index.ts'
 import { defaultPipelinePlugin } from './pipeline-default/index.ts'
+import { researchPipelinePlugin } from './pipeline-research/index.ts'
 import { openAiProviderPlugin } from './provider-openai/index.ts'
 import { deepSeekSearchPlugin } from './search-deepseek/index.ts'
 import { duckDuckGoPlugin } from './search-duckduckgo/index.ts'
@@ -20,6 +21,7 @@ import { duckDuckGoPlugin } from './search-duckduckgo/index.ts'
 /** 全部内置插件。 */
 export const BUILT_IN_PLUGINS: readonly PluginManifest[] = [
   // 主流程
+  researchPipelinePlugin,
   defaultPipelinePlugin,
   // 搜索
   deepSeekSearchPlugin,
