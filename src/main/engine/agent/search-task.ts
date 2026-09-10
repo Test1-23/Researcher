@@ -10,7 +10,7 @@
  */
 
 import { ResearcherError, isCancellation, throwIfAborted } from '../errors.ts'
-import { asNumber, asString, asStringArray, isPlainObject } from '../json.ts'
+import { asNumberArray, asString, asStringArray, isPlainObject } from '../json.ts'
 import type { PluginContext } from '../types.ts'
 import { collectDocuments, type Candidate } from './collect.ts'
 import { dedupe, filterIrrelevant, normalizeUrl } from './filter.ts'
@@ -384,7 +384,7 @@ export class SearchTask implements AgentTask {
               if (!isPlainObject(raw)) continue
               const topic = asString(raw['topic'])
               if (topic.length === 0) continue
-              const sourceIds = resolveSourceIds(asStringArray(raw['sourceIndexes']).map((item) => Number(item)), batch)
+              const sourceIds = resolveSourceIds(asNumberArray(raw['sourceIndexes']), batch)
               const claimList: Claim[] = []
               const rawClaims = Array.isArray(raw['claims']) ? raw['claims'] : []
               for (const rawClaim of rawClaims) {
@@ -392,10 +392,7 @@ export class SearchTask implements AgentTask {
                 const text = asString(rawClaim['text'])
                 if (text.length === 0) continue
                 const quote = asString(rawClaim['quote'])
-                const claimSources = resolveSourceIds(
-                  asStringArray(rawClaim['sourceIndexes']).map((item) => Number(item)),
-                  batch,
-                )
+                const claimSources = resolveSourceIds(asNumberArray(rawClaim['sourceIndexes']), batch)
                 claimList.push({
                   text,
                   ...(quote.length === 0 ? {} : { quote }),
@@ -504,6 +501,3 @@ function freshSummary(kept: number, newNodes: number, newClaims: number): string
   if (newNodes === 0 && newClaims === 0) return `并入 ${kept} 篇资料，但地图没有新增内容`
   return `并入 ${kept} 篇资料，地图新增 ${newNodes} 个主题 / ${newClaims} 条论断`
 }
-
-/** 供其它模块复用的数字解析。 */
-export { asNumber }

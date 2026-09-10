@@ -60,3 +60,23 @@ export function asStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) return []
   return value.filter((item): item is string => typeof item === 'string').map((item) => item.trim()).filter((item) => item.length > 0)
 }
+
+/**
+ * 取数字下标数组。
+ *
+ * 模型给下标时可能用数字，也可能用字符串（`"1"`），两种都接受。
+ * **不要用 `asStringArray` 处理下标**——它会把数字全部滤掉，
+ * 于是引用链会静默变成空数组。
+ */
+export function asNumberArray(value: unknown): number[] {
+  if (!Array.isArray(value)) return []
+  const out: number[] = []
+  for (const item of value) {
+    if (typeof item === 'number' && Number.isFinite(item)) {
+      out.push(item)
+      continue
+    }
+    if (typeof item === 'string' && /^\d+$/.test(item.trim())) out.push(Number(item.trim()))
+  }
+  return out
+}

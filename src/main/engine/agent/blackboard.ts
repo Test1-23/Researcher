@@ -28,6 +28,7 @@ export function emptyMap(): TopicMap {
 export class Blackboard implements BlackboardView {
   readonly query: string
   private revisionCounter = 0
+  private mapRevisionCounter = 0
   private sourceList: CorpusSource[] = []
   private mapValue: TopicMap = emptyMap()
   private outlineValue: Outline | undefined
@@ -41,6 +42,10 @@ export class Blackboard implements BlackboardView {
 
   get revision(): number {
     return this.revisionCounter
+  }
+
+  get mapRevision(): number {
+    return this.mapRevisionCounter
   }
 
   get sources(): readonly CorpusSource[] {
@@ -74,6 +79,7 @@ export class Blackboard implements BlackboardView {
     if (fresh.length === 0) return 0
     this.sourceList = [...this.sourceList, ...fresh]
     this.bump()
+    this.mapRevisionCounter += 1
     return fresh.length
   }
 
@@ -116,9 +122,10 @@ export class Blackboard implements BlackboardView {
       nodes: [...byId.values()],
       gaps: [...gapSet],
       conflicts: mergedConflicts,
-      builtFromRevision: this.revisionCounter,
+      builtFromRevision: this.mapRevisionCounter,
     }
     this.bump()
+    this.mapRevisionCounter += 1
     return added
   }
 

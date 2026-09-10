@@ -64,6 +64,8 @@ export interface TopicMap {
 /** 大纲的一节。 */
 export interface OutlineSection {
   readonly id: string
+  /** 对应模板里的 slot key——校验覆盖度靠它，而不是靠标题文字。 */
+  readonly slot: string
   readonly heading: string
   /** 这一节要回答什么。 */
   readonly goal: string
@@ -150,6 +152,13 @@ export interface AgentTask {
 export interface BlackboardView {
   readonly query: string
   readonly revision: number
+  /**
+   * **只在地图/语料真的变化时**递增的版本号。
+   *
+   * 与 `revision` 分开是必要的：`revision` 连记一条观测都会推进，
+   * 若用它判断「大纲是否过期」，大纲一写完就会立刻被判定为过期。
+   */
+  readonly mapRevision: number
   readonly sources: readonly CorpusSource[]
   readonly map: TopicMap
   readonly outline: Outline | undefined

@@ -19,6 +19,7 @@
     "src/plugins/**/*.ts",
     "src/preload/**/*.ts",
     "src/shared/**/*.ts",
+    "src/templates/**/*.ts",
     "tests/**/*.ts",
     "scripts/**/*.ts",
     "tools/**/*.ts",

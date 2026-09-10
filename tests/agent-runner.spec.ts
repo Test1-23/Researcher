@@ -202,6 +202,7 @@ describe('不动点运行器', () => {
             thesis: 'th',
             sections: Array.from({ length: covered + 1 }, (_, index) => ({
               id: `s${index}`,
+              slot: 'body',
               heading: `第 ${index + 1} 节`,
               goal: 'g',
               sourceIds: [],
