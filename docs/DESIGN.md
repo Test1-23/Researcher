@@ -91,6 +91,7 @@ kernel.run(input, bus, signal)
 | LLM 输出非法 JSON | 追加修复指令重试一次；仍失败 → 降级到备用整理插件并记录原因 |
 | 用户取消 | `AbortSignal` 贯穿全部阶段；抛 `CANCELLED`，已落盘产物保留 |
 | 429 限流 | 带退避重试一次（LLM provider）；仍失败则作为类型化错误上报 |
+| 瞬时网络故障 | 抓取层按 `fetch.maxRetries` 重试（连接重置、TLS 握手被丢、超时、429、5xx）；4xx 与取消不重试 |
 | 配置损坏 | 备份为 `config.json.bad`，回退缺省配置，不让应用起不来 |
 
 ## 7 安全与诚实
