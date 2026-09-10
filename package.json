@@ -1,0 +1,33 @@
+{
+  "name": "researcher",
+  "version": "0.1.0",
+  "private": true,
+  "description": "综合信息搜索与整理引擎 — 模块化插件内核 + Electron 桌面应用",
+  "main": "out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "start": "electron-vite preview",
+    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "example": "node --no-warnings scripts/run-example.ts",
+    "example:offline": "node --no-warnings scripts/run-example.ts --offline",
+    "smoke:ui": "node --no-warnings scripts/smoke-ui.ts"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.17",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^33.2.1",
+    "electron-vite": "^2.3.0",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.8"
+  }
+}

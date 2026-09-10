@@ -1,0 +1,7 @@
+packages:
+  - '.'
+
+# 允许执行安装脚本的依赖：electron 需要下载运行时二进制，esbuild 需要安装平台二进制。
+allowBuilds:
+  electron: true
+  esbuild: true
