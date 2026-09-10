@@ -65,42 +65,81 @@
 
 ## 快速开始
 
-需要 Node.js ≥ 20（开发用 24）与 pnpm。
+需要 Node.js ≥ 22.6（开发与 CI 用 24；`scripts/*.ts` 依赖 Node 的类型剥离）与 pnpm 11。
 
 ```bash
 pnpm install
-pnpm dev          # 启动 Electron 桌面应用（渲染进程热更新）
-pnpm build        # 构建 main / preload / renderer 到 out/
-pnpm test         # 98 个测试
-pnpm typecheck    # 主进程 + 渲染进程分别类型检查
-pnpm smoke:ui     # 启动打包后的应用，用 DevTools 协议验证界面真的渲染了
+pnpm dev           # 启动 Electron 桌面应用（渲染进程热更新）
+pnpm build         # 构建 main / preload / renderer 到 out/
+pnpm test          # 130 个测试
+pnpm typecheck     # 主进程 + 渲染进程分别类型检查
+pnpm smoke:ui      # 启动打包后的应用，用 DevTools 协议验证界面与真实加密
+pnpm scan:secrets  # 扫描工作树 + 全量 git 历史里的密钥
 ```
 
 ### 配置大模型
 
 两种方式，任选其一：
 
-1. **环境变量**（推荐，不落盘）：启动前设置 `DEEPSEEK_API_KEY`。
-2. **应用内设置**：右上角「设置」→ 填 Base URL / 模型 / API Key。
+1. **环境变量**（推荐，完全不落盘）：启动前设置 `DEEPSEEK_API_KEY`。
+2. **应用内设置**：右上角「设置」→ 填 Base URL / 模型 / API Key（**加密保存**，见下）。
 
 默认端点是 `https://api.deepseek.com/v1`（OpenAI 兼容），默认模型 `deepseek-chat`。
 换成 OpenAI、vLLM、Ollama 或自建网关，只改 Base URL 与模型名即可。
-
-> ⚠️ 在设置面板里填的 API Key 以**明文**保存在应用数据目录的 `config.json`。
-> 不想落盘就用环境变量。日志与界面事件都会对 key 做脱敏。
 
 ### 零 key 也能跑
 
 不配置任何 key 时：搜索自动降级到 DuckDuckGo，整理自动降级到抽取式。
 两条降级都会在报告里如实标注。
 
+## API Key 怎么存
+
+**密钥明文既不写入配置文件，也不下发到界面。**
+
+- 界面填的 key 经 Electron `safeStorage` 加密后存进应用数据目录的 `config.json`
+  （Windows 走 DPAPI、macOS 走 Keychain、Linux 走 keyring），落盘字段是 `apiKeyEncrypted`。
+- 渲染进程拿到的是**脱敏快照**：配置里根本没有密钥字段，只有一个枚举说明「来自环境变量 /
+  已加密保存 / 明文保存 / 无法解密 / 未设置」。
+- 提交配置时，**没提到某个插件的密钥就保持原值**，传 `null` 才清除——
+  这样改个模型名不会顺手把密钥抹掉。
+- 密钥由别的机器或别的系统用户加密时，解密会失败：此时按「没有密钥」处理并提示重新填写，**不会崩溃**。
+- 旧版本留下的明文 key 会在启动时自动改写为密文。
+- 若平台没有可用的安全密钥库（例如没有 keyring 的 Linux），应用**拒绝保存密钥**并建议改用环境变量，
+  而不是悄悄退回明文；确实要明文保存需显式设置 `RESEARCHER_ALLOW_PLAINTEXT_KEY=1`，界面会持续警告。
+
+命令行没有 `safeStorage`：读到桌面应用加密的配置时会提示「解不开，请用环境变量」，绝不把密文当密钥发出去。
+
+## 持续集成
+
+`.github/workflows/ci.yml` 在 push 到 `main`、所有 PR 与手动触发时运行：
+
+| Job | Runner | 内容 |
+|---|---|---|
+| `verify` | ubuntu | 类型检查 → 测试（含「仓库不含密钥」检查）→ 构建（跳过 Electron 二进制下载） |
+| `secret-scan` | ubuntu | 扫描工作树与**全量 git 历史**（`fetch-depth: 0`），零依赖 |
+| `ui-smoke` | windows | 启动真实 Electron 窗口，验证界面渲染、IPC 往返、以及 API key 确实以密文落盘（DPAPI） |
+
+## 密钥泄漏防护
+
+三层，任何一层命中都会失败：
+
+1. `.gitignore` 覆盖 `.env*`、`config.json`、`*.pem`、`*.key`、`.researcher/` 等。
+2. `tests/no-secrets.spec.ts`：断言被跟踪文件里没有密钥，且没有把运行时数据/配置文件纳入版本控制。
+3. `scripts/scan-secrets.ts`：扫工作树 **+ 全量历史**，CI 与本地都可用。
+
+扫描器是仓库内自有的、零依赖的一份实现（`tools/secret-scan.ts`），规则偏向「宁可漏报也不误报」——
+告警一多就会被忽略。要放行只能显式加入 `ALLOWED_LITERALS`，或在那一行写 `secret-scan:allow`。
+
+> 顺带说明：历史上从未提交过真实密钥（扫描全量历史可验证）。
+
 ## 命令行
 
 引擎与 Electron 无关，可以直接在命令行跑：
 
 ```bash
-node scripts/run-example.ts "你想研究的问题"     # 走真实网络
-node scripts/run-example.ts --offline            # 用录制夹具，不联网，并生成 examples/
+node scripts/run-example.ts "你想研究的问题"                    # 走真实网络
+node scripts/run-example.ts --offline                          # 用录制夹具，不联网
+node scripts/run-example.ts "问题" --save-example               # 顺便写进 examples/
 ```
 
 ## 产物
@@ -123,14 +162,15 @@ node scripts/run-example.ts --offline            # 用录制夹具，不联网�
 ```
 src/
 ├── main/
-│   ├── index.ts          Electron 主进程入口（建窗口、装配内核）
-│   ├── ipc.ts            IPC handler（含路径越界校验）
+│   ├── index.ts          Electron 主进程入口（建窗口、装配内核、明文迁移）
+│   ├── ipc.ts            IPC handler（密钥脱敏、路径越界校验）
+│   ├── secrets.ts        safeStorage 编解码器 —— 唯一接触 Electron 加密的文件
 │   └── engine/           内核 —— 不含 Electron，也不含领域知识
 │       ├── types.ts      ★ 稳定契约（seam）：所有插件只依赖这一个文件
 │       ├── kernel.ts     运行期选型、可用性递归解析、一次运行的编排
 │       ├── registry.ts   插件注册与清单校验
-│       ├── config.ts     配置默认值、深合并、校验、脱敏
-│       ├── fetch.ts      抓取 + HTML→文本
+│       ├── config.ts     配置默认值、深合并、校验、密钥编解码接缝、脱敏
+│       ├── fetch.ts      抓取 + HTML→文本 + 瞬时故障重试
 │       ├── run-store.ts  append-only 产物仓库
 │       ├── events.ts     事件总线与日志脱敏
 │       └── errors.ts     带稳定错误码的类型化错误
@@ -138,8 +178,10 @@ src/
 ├── preload/index.ts      contextBridge 窄接口
 ├── renderer/             React 界面
 └── shared/ipc.ts         主 ↔ 渲染 的 IPC 契约
+tools/secret-scan.ts      密钥扫描规则（测试 / CLI / CI 共用同一套）
 fixtures/                 录制的结果页夹具（测试与离线示例共用）
-tests/                    84 个测试
+scripts/                  命令行示例、界面冒烟、密钥扫描
+tests/                    130 个测试
 ```
 
 ## 测试
@@ -151,29 +193,33 @@ pnpm test
 覆盖：HTML→文本抽取、配置合并与校验、插件清单校验（含坏样本）、
 DuckDuckGo 解析、DeepSeek 响应映射、模型 JSON 校验与重试、降级路径、
 抓取重试策略（含「4xx 不重试」「取消不重试」）、
-输出渲染、内核端到端（含**零 key 全链路**：仅替换网络层，跑真实内置插件）、
+**密钥存储**（明文不落盘、密文解不开时优雅降级、来源判定、脱敏快照、明文迁移）、
+**仓库不含密钥**、输出渲染、内核端到端（含**零 key 全链路**：仅替换网络层，跑真实内置插件）、
 以及 IPC 契约（含「每个通道都必须注册 handler」与产物路径越界校验）。
 
-界面本身由 `pnpm smoke:ui` 验证：启动打包后的应用，通过 DevTools 协议读取真实 DOM，
-确认 preload 桥已注入、界面渲染出内容、并且 IPC 可以往返。
+界面与真实加密由 `pnpm smoke:ui` 验证：启动打包后的应用，通过 DevTools 协议读取真实 DOM，
+确认 preload 桥已注入、界面渲染出内容、IPC 可以往返，并写入一个测试密钥后断言
+**磁盘上是密文、没有明文**（结束后按字节还原用户的配置）。
 
 ## 已知限制
 
 - **未做运行时热加载**：加插件需要重新构建。运行期选型已支持，热加载是后续扩展。
 - **仅抓取静态 HTML**：不执行 JS，纯前端渲染的页面会抓到空正文。
-- **API Key 明文存储**（见上）；`safeStorage` 加密是后续工作。
 - **单一并发运行**：同一时刻只允许一次运行。
-- 抽取式整理的摘要质量取决于页面正文质量；它能保证「不编造」，但不能保证「有洞见」。
+- **抽取式整理会摘到导航文字**：它取的是正文开头若干句，而网页开头常是导航/侧栏。
+  `examples/example-report.md` 里就能看到这个现象（这是刻意的：示例是真实运行结果，没有手工润色）。
+  它保证「不编造」，但不保证「抓得准」——配上大模型整理（`organize-llm`）质量会明显不同。
 - 部分站点会拒绝抓取（实测知乎返回 403）。这类失败会逐条记入报告的「抓取失败」，
-  不会影响其余来源。
+  不会影响其余来源，也不会中断运行。
 
 ### 关于 DuckDuckGo 与"网络不可达"
 
 开发过程中曾出现过 `duckduckgo.com` 连接失败，一度被判断为「该网络封锁了 DuckDuckGo」。
 **这个判断是错的**，记录在此以免重蹈覆辙：
 
-- 真实原因：本机所有域名都解析到 `198.18.0.0/15`（RFC 2544 基准段），说明存在**透明出口代理**；
-  该代理会**偶发丢掉 TLS 握手**（`Client network socket disconnected before secure TLS connection was established`）。
+- 真实原因：开发机上所有域名都解析到 `198.18.0.0/15`（RFC 2544 基准段，常被代理软件用作
+  fake-IP 池），说明存在**透明出口代理**；该代理会**偶发丢掉 TLS 握手**
+  （`Client network socket disconnected before secure TLS connection was established`）。
 - 复测结果：连续 6 次请求 DuckDuckGo 全部 HTTP 200，且一次真实的在线全链路运行成功
   （8 个来源 → 抓取 5 篇 → 产出报告）。
 - 代码层面的真问题不是「DDG 不可用」，而是**当时一次失败就终止整轮运行**——已修复（见「抓取重试」）。

@@ -13,7 +13,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "example": "node --no-warnings scripts/run-example.ts",
-    "example:offline": "node --no-warnings scripts/run-example.ts --offline",
+    "example:offline": "node --no-warnings scripts/run-example.ts --offline --save-example",
     "smoke:ui": "node --no-warnings scripts/smoke-ui.ts",
     "scan:secrets": "node --no-warnings scripts/scan-secrets.ts --history"
   },

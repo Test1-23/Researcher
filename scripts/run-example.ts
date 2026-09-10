@@ -4,13 +4,12 @@
  * 这同时是对「引擎与 Electron 无关」的直接证明——同一个内核既服务桌面应用，也能在这里跑。
  *
  * 用法：
- *   node scripts/run-example.ts "你想研究的问题"              # 走真实网络
- *   node scripts/run-example.ts --offline                    # 用录制夹具，不联网
+ *   node scripts/run-example.ts "你想研究的问题"                    # 走真实网络
+ *   node scripts/run-example.ts --offline                          # 用录制夹具，不联网
+ *   node scripts/run-example.ts "问题" --save-example               # 顺便写进 examples/
  *
  * 不传 key 时会走 DuckDuckGo + 抽取式整理（零配置可跑）；
  * 设了 DEEPSEEK_API_KEY 则走 DeepSeek 搜索 + 大模型整理。
- *
- * `--offline` 会把结果写进 examples/，作为可提交的示例产物。
  */
 
 import { copyFile, mkdir } from 'node:fs/promises'
@@ -26,6 +25,7 @@ import { DUCKDUCKGO_FIXTURE, DUCKDUCKGO_PAGES } from '../fixtures/duckduckgo.ts'
 
 const args = process.argv.slice(2)
 const offline = args.includes('--offline')
+const saveExample = args.includes('--save-example')
 const query = args.find((argument) => !argument.startsWith('--'))
   ?? '演示：Alpha 与 Beta 是什么关系'
 
@@ -124,7 +124,7 @@ try {
   console.log(`  产物：${outcome.artifacts.map((artifact) => artifact.path).join('、')}`)
   console.log(`  目录：${outcome.runDir}`)
 
-  if (offline) {
+  if (saveExample) {
     const exampleDir = join(process.cwd(), 'examples')
     await mkdir(exampleDir, { recursive: true })
     for (const [from, to] of [
