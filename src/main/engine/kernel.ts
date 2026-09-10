@@ -63,18 +63,39 @@ export class Kernel {
   private config: AppConfig
   private readonly dataRoot: string
   private readonly mirrorLogsToConsole: boolean
-  private readonly fetchServiceInternal: FetchService
+  /** 外部注入的抓取服务（测试用）；注入后不受配置变更影响。 */
+  private readonly injectedFetch: FetchService | undefined
+  private fetchServiceInternal: FetchService
+  /** 当前运行的日志器：抓取重试要写进这次运行的日志里。 */
+  private activeLogger: Logger | undefined
 
   constructor(options: KernelOptions) {
     this.registry = options.registry
     this.config = options.config
     this.dataRoot = options.dataRoot
     this.mirrorLogsToConsole = options.mirrorLogsToConsole ?? true
-    this.fetchServiceInternal = options.fetchService ?? new HttpFetchService({
-      timeoutMs: options.config.fetch.timeoutMs,
-      maxBytes: options.config.fetch.maxBytes,
-      maxTextChars: options.config.fetch.maxTextChars,
-      userAgent: options.config.fetch.userAgent,
+    this.injectedFetch = options.fetchService
+    this.fetchServiceInternal = options.fetchService ?? this.buildFetchService(options.config)
+  }
+
+  /**
+   * 按给定配置构造抓取服务。
+   *
+   * 超时、体积上限、重试次数都来自配置，因此配置变更时必须重建服务，
+   * 否则界面上改了设置、实际行为却要重启应用才生效。
+   */
+  private buildFetchService(config: AppConfig): HttpFetchService {
+    return new HttpFetchService({
+      timeoutMs: config.fetch.timeoutMs,
+      maxBytes: config.fetch.maxBytes,
+      maxTextChars: config.fetch.maxTextChars,
+      maxRetries: config.fetch.maxRetries,
+      userAgent: config.fetch.userAgent,
+      onRetry: (info) => {
+        this.activeLogger?.warn(
+          `抓取重试 ${info.attempt}/${info.maxAttempts}：${info.url}（${info.reason}），${info.delayMs}ms 后再试`,
+        )
+      },
     })
   }
 
@@ -83,9 +104,12 @@ export class Kernel {
     return this.config
   }
 
-  /** 替换配置（下次运行生效）。 */
+  /** 替换配置（下次运行生效；抓取参数会立即重建）。 */
   setConfig(config: AppConfig): void {
     this.config = config
+    if (this.injectedFetch === undefined) {
+      this.fetchServiceInternal = this.buildFetchService(config)
+    }
   }
 
   /** run 存放的根目录。 */
@@ -248,6 +272,8 @@ export class Kernel {
 
     const secrets = collectSecrets(this.config.plugins)
     const log = createLogger(bus, '[kernel] ', secrets, this.mirrorLogsToConsole)
+    // 让抓取重试在本次运行的日志里可见
+    this.activeLogger = log
 
     const pipeline = this.registry.requireEntry<Pipeline>('pipeline', this.config.pipeline.id)
     const runId = makeRunId()
@@ -302,6 +328,7 @@ export class Kernel {
       throw normalized
     } finally {
       unsubscribe()
+      this.activeLogger = undefined
     }
   }
 }

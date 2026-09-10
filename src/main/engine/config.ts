@@ -37,6 +37,8 @@ export const DEFAULT_CONFIG: AppConfig = {
     timeoutMs: 15_000,
     maxBytes: 512_000,
     maxTextChars: 20_000,
+    // 出口代理/网络偶发抖动不该让整轮研究失败：默认重试 2 次。
+    maxRetries: 2,
     userAgent: `Researcher/${ENGINE_VERSION} (+local desktop research tool)`,
   },
   plugins: {
@@ -116,6 +118,10 @@ export function assertValidConfig(config: AppConfig): void {
   positiveInt(config.fetch?.timeoutMs, 'fetch.timeoutMs')
   positiveInt(config.fetch?.maxBytes, 'fetch.maxBytes')
   positiveInt(config.fetch?.maxTextChars, 'fetch.maxTextChars')
+  // 允许为 0（即不重试），但不能是负数或小数
+  if (typeof config.fetch?.maxRetries !== 'number' || !Number.isInteger(config.fetch.maxRetries) || config.fetch.maxRetries < 0) {
+    fail('fetch.maxRetries 必须是非负整数')
+  }
   if (typeof config.fetch?.userAgent !== 'string' || config.fetch.userAgent.length === 0) {
     fail('fetch.userAgent 必须是非空字符串')
   }

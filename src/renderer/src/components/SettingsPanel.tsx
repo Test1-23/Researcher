@@ -365,6 +365,24 @@ export function SettingsPanel({ config, plugins, onSaved, onClose }: SettingsPan
                 />
               </label>
             </div>
+            <div className="field-row">
+              <label className="field">
+                <span>瞬时故障重试次数</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="5"
+                  value={draft.fetch.maxRetries}
+                  onChange={(event) =>
+                    setDraft({ ...draft, fetch: { ...draft.fetch, maxRetries: Number(event.target.value) } })
+                  }
+                />
+              </label>
+            </div>
+            <p className="hint">
+              只对瞬时故障重试（连接被重置、TLS 握手被丢、超时、429、5xx）；4xx 不重试。
+              设为 0 表示一次失败就放弃。
+            </p>
           </section>
 
           <section className="form-group">

@@ -383,6 +383,8 @@ export interface AppConfig {
     readonly maxBytes: number
     /** 抽取后正文的字符上限，超出则截断。 */
     readonly maxTextChars: number
+    /** 瞬时网络故障（连接被重置、TLS 握手被丢、超时、429、5xx）的重试次数，不含首次。 */
+    readonly maxRetries: number
     readonly userAgent: string
   }
   readonly plugins: Readonly<Record<string, Readonly<Record<string, unknown>>>>
