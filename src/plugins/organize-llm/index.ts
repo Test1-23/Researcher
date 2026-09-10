@@ -10,6 +10,7 @@
 
 import { sectionNumber, sectionPositiveInt } from '../../main/engine/config.ts'
 import { ResearcherError } from '../../main/engine/errors.ts'
+import { asString, extractJsonObject, isPlainObject, stripCodeFence } from '../../main/engine/json.ts'
 import { definePlugin } from '../../main/engine/registry.ts'
 import type {
   AvailabilityContext,
@@ -44,31 +45,6 @@ export interface ParsedOrganizeOutput {
   readonly title: string
   readonly summary: string
   readonly sections: readonly ReportSection[]
-}
-
-/** 判断是否普通对象。 */
-function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value)
-}
-
-/** 取字符串，非字符串返回空串。 */
-function asString(value: unknown): string {
-  return typeof value === 'string' ? value.trim() : ''
-}
-
-/** 去掉可能的 markdown 代码块包裹。 */
-export function stripCodeFence(text: string): string {
-  const trimmed = text.trim()
-  const fenced = /^```(?:json)?\s*([\s\S]*?)\s*```$/i.exec(trimmed)
-  return fenced?.[1]?.trim() ?? trimmed
-}
-
-/** 从可能夹带解释文字的输出里截出 JSON 对象。 */
-export function extractJsonObject(text: string): string | undefined {
-  const start = text.indexOf('{')
-  const end = text.lastIndexOf('}')
-  if (start === -1 || end === -1 || end <= start) return undefined
-  return text.slice(start, end + 1)
 }
 
 /**

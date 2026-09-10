@@ -101,7 +101,7 @@ export async function runToFixedPoint(
     for (const state of runnable) {
       if (isAborted()) break
       state.steps += 1
-      await state.task.step(board, ctx)
+      await state.task.step(board, ctx, options.signal)
       announce({
         type: 'task:step',
         task: state.task.name,

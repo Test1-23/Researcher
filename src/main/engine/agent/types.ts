@@ -134,7 +134,7 @@ export interface AgentTask {
   /** 我现在算完成了吗？ */
   isSatisfied(board: BlackboardView): boolean
   /** 走一步：观察 → 行动 → 更新黑板。 */
-  step(board: BlackboardView, ctx: PluginContext): Promise<void>
+  step(board: BlackboardView, ctx: PluginContext, signal?: AbortSignal): Promise<void>
   /** 安全护栏（步数），**不是目标**。 */
   readonly safetyLimit: number
   /** 为什么满足/不满足，给人看的一句话。 */
