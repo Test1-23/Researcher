@@ -135,3 +135,31 @@ describe('纯文本回退的取舍', () => {
     expect(result.text).not.toContain('解决了我的问题')
   })
 })
+
+/**
+ * linkedom 把 `canvas` 声明为**可选** peer 依赖：解析不到就用它自带的空壳。
+ * 这个兜底一旦失效（打包器替身模块会让 `createCanvas` 变成 undefined），
+ * 代价不是「画不出图」而是「整篇抽不出来」——只要页面里有 <canvas> 就在构造元素时抛错。
+ * canvas 元素在现代页面里很常见，所以这条路径必须钉住。
+ */
+describe('页面里的画布元素不该拖垮抽取', () => {
+  const CANVAS_PAGE = `<!doctype html>
+<html><head><title>带画布的页面</title></head><body>
+  <article>
+    <h1>带画布的页面</h1>
+    <canvas id="chart" width="600" height="300"></canvas>
+    ${ARTICLE_BODY}
+  </article>
+</body></html>`
+
+  it('含 <canvas> 的页面仍然抽出正文', () => {
+    const result = extractContent(CANVAS_PAGE, OPTIONS)
+    expect(result.text).toContain('计算着色器')
+    expect(result.text.length).toBeGreaterThan(400)
+  })
+
+  it('整页纯文本路径同样不受影响', () => {
+    const result = extractContent(CANVAS_PAGE, { ...OPTIONS, mode: 'plain-text' })
+    expect(result.text).toContain('计算着色器')
+  })
+})
